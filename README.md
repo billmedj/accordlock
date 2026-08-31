@@ -161,10 +161,15 @@ The desktop is an AccordLock distribution of [Goose](https://github.com/aaif-goo
 
 ```powershell
 cd desktop
-./scripts/build-windows.ps1 -Development -RuntimeRepo ../runtime
+# Validate and prepare the locked desktop sources without packaging.
+./scripts/build-windows.ps1 -Development -PrepareOnly -RuntimeRepo ../runtime
+
+# Create the Windows development package with the checksum- and
+# Authenticode-verified NuGet 7.9.0 executable.
+./scripts/build-windows.ps1 -Development -RuntimeRepo ../runtime -NuGetToolPath C:\path\to\nuget.exe
 ```
 
-This creates a development build. Release packaging has stricter clean-tree and build-marker gates. Until an installer is signed and tested on a clean machine, build from source and treat it as evaluation software. Detailed platform instructions live in [desktop/README.md](desktop/README.md).
+The second command creates a development package. Release packaging has stricter clean-tree and build-marker gates. Until an installer is signed and tested on a clean machine, build from source and treat it as evaluation software. Detailed platform instructions live in [desktop/README.md](desktop/README.md).
 
 ## Repository map
 

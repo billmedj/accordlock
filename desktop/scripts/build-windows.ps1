@@ -14,7 +14,7 @@
 #   cd C:\path\to\accordlock\desktop
 #   .\scripts\build-windows.ps1 -Release -ReleaseLockPath C:\path\to\release-manifest.json -RuntimeRepo ..\runtime -NuGetToolPath C:\path\to\nuget.exe
 #   $env:ACCORDLOCK_ALLOW_DIRTY_BUILD = "1"
-#   .\scripts\build-windows.ps1 -Development -AllowDirty -RuntimeRepo ..\runtime
+#   .\scripts\build-windows.ps1 -Development -AllowDirty -RuntimeRepo ..\runtime -NuGetToolPath C:\path\to\nuget.exe
 #   .\scripts\build-windows.ps1 -PrepareOnly -AllowDirty -RuntimeRepo ..\runtime
 
 param(

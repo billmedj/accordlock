@@ -39,7 +39,7 @@
       "upstreamRepository": "https://github.com/aaif-goose/goose.git",
       "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
       "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
-      "assembledTree": "a579edfcbba90720e31c59906689bfaedc583315",
+      "assembledTree": "d493bdd98e22045e37169f074b1e694d488dd747",
       "trackedTreeExclusions": [
         {
           "path": "documentation/",
@@ -55,6 +55,10 @@
         }
       ],
       "postImportAdjustments": [
+        {
+          "path": "README.md",
+          "reason": "Documented the reproducible monorepo preparation and Windows development-package commands, including the explicitly verified NuGet input."
+        },
         {
           "path": "scripts/check_accordlock_publication.py",
           "reason": "Removed checks for the two intentionally excluded upstream documentation surfaces and scoped Git-visible file enumeration to the desktop component when run inside the monorepo."

@@ -29,7 +29,19 @@ The protected Goose backend is built with an explicit feature set:
 cargo build --locked --no-default-features --features accordlock-distribution,rustls-tls,system-keyring -p goose-cli --bin goose
 ```
 
-For the Windows desktop and its local runtime, use `scripts/build-windows.ps1`. Local engineering may use its `-Development` switch. Release packaging requires clean source trees and verified v2 build markers. See `ui/desktop/ACCORDLOCK_DISTRIBUTION.md` for the integration contract.
+For the Windows desktop and its local runtime, first prepare the locked sources without packaging:
+
+```powershell
+./scripts/build-windows.ps1 -Development -PrepareOnly -RuntimeRepo ../runtime
+```
+
+To create the development package, download the official [NuGet 7.9.0 command-line executable](https://dist.nuget.org/win-x86-commandline/v7.9.0/nuget.exe) and pass its path explicitly:
+
+```powershell
+./scripts/build-windows.ps1 -Development -RuntimeRepo ../runtime -NuGetToolPath C:\path\to\nuget.exe
+```
+
+The script verifies NuGet's pinned checksum, file version, and Microsoft Authenticode signature before use. Release packaging additionally requires clean source trees and verified v2 build markers. See `ui/desktop/ACCORDLOCK_DISTRIBUTION.md` for the integration contract.
 
 ## Publication status
 
