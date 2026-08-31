@@ -5,6 +5,7 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "check_accordlock_publication.py"
@@ -64,6 +65,96 @@ class AccordLockPublicationGuardTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("https://", build_helper)
+
+    def test_macos_disk_image_uses_the_native_verified_pipeline(self) -> None:
+        errors: list[str] = []
+        PUBLICATION.check_macos_packaging_supply_chain(errors)
+
+        self.assertEqual(errors, [])
+
+    def test_vulnerable_macos_packaging_dependency_is_rejected(self) -> None:
+        original_read = PUBLICATION.read
+
+        def read_with_vulnerable_package(relative_path: str) -> str:
+            content = original_read(relative_path)
+            if relative_path == "ui/pnpm-lock.yaml":
+                return content + "\n  image-size@0.7.5:\n"
+            return content
+
+        errors: list[str] = []
+        with patch.object(PUBLICATION, "read", side_effect=read_with_vulnerable_package):
+            PUBLICATION.check_macos_packaging_supply_chain(errors)
+
+        self.assertIn(
+            "ui/pnpm-lock.yaml: forbidden vulnerable packaging dependency: image-size@",
+            errors,
+        )
+
+    def test_unsupported_electron_packager_override_is_rejected(self) -> None:
+        original_read = PUBLICATION.read
+
+        def read_with_packager_override(relative_path: str) -> str:
+            content = original_read(relative_path)
+            if relative_path == "ui/pnpm-workspace.yaml":
+                return content.replace(
+                    "overrides:\n",
+                    "overrides:\n  '@electron/packager': 20.3.0\n",
+                    1,
+                )
+            return content
+
+        errors: list[str] = []
+        with patch.object(PUBLICATION, "read", side_effect=read_with_packager_override):
+            PUBLICATION.check_macos_packaging_supply_chain(errors)
+
+        self.assertIn(
+            "ui/pnpm-workspace.yaml: Electron Packager must stay within Forge's supported range",
+            errors,
+        )
+
+    def test_macos_disk_image_requires_signature_verification_after_stapling(self) -> None:
+        original_read = PUBLICATION.read
+
+        def read_without_final_signature_check(relative_path: str) -> str:
+            content = original_read(relative_path)
+            if relative_path == "scripts/build-macos.ps1":
+                return content.replace(
+                    "The final DMG code signature is invalid after stapling.",
+                    "The DMG code signature is invalid.",
+                )
+            return content
+
+        errors: list[str] = []
+        with patch.object(PUBLICATION, "read", side_effect=read_without_final_signature_check):
+            PUBLICATION.check_macos_packaging_supply_chain(errors)
+
+        self.assertTrue(
+            any(
+                "final DMG signature verification must run after stapling" in error
+                for error in errors
+            )
+        )
+
+    def test_retired_pctx_dependency_is_rejected(self) -> None:
+        original_read = PUBLICATION.read
+
+        def read_with_retired_package(relative_path: str) -> str:
+            content = original_read(relative_path)
+            if relative_path == "Cargo.lock":
+                return (
+                    content
+                    + '\n[[package]]\nname = "pctx_code_mode"\nversion = "0.1.0"\n'
+                )
+            return content
+
+        errors: list[str] = []
+        with patch.object(PUBLICATION, "read", side_effect=read_with_retired_package):
+            PUBLICATION.check_retired_code_mode_surface(errors)
+
+        self.assertIn(
+            "Cargo.lock: retired PCTX package is forbidden: pctx_code_mode",
+            errors,
+        )
 
     def test_personal_home_paths_are_detected_without_naming_a_developer(self) -> None:
         self.assertTrue(

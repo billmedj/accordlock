@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.0",
-  "assemblyDate": "2026-08-31",
+  "schemaVersion": "1.1",
+  "assemblyDate": "2026-09-01",
   "assemblyMethod": "Exact committed Git trees imported from private development repositories without local working-tree state; this public monorepo contains the complete distributable source",
   "components": [
     {
@@ -8,7 +8,7 @@
       "sourceRepository": "https://github.com/billmedj/accordlock-core.git",
       "commit": "27301d159feccf53bc565a5de68c1c307d9bff09",
       "tree": "3a02ebe252285cacf180ca9c46976477ec71cfa7",
-      "assembledTree": "7cf66f417fcb68fda679714812a6121828ca7111",
+      "assembledTree": "39bbb72c6a4b9dcd6dbbed24981260544d4dfbe8",
       "trackedTreeExclusions": [],
       "postImportAdjustments": [
         {
@@ -62,6 +62,38 @@
         {
           "path": "SOURCE_MANIFEST.sha256",
           "reason": "Regenerated the exact source manifest for the complete public runtime component after the recorded public adjustments."
+        },
+        {
+          "path": "scripts/rustsec-advisory-db.commit",
+          "reason": "Advanced the reproducibly pinned RustSec advisory database to the audited current revision used by release security checks."
+        }
+      ],
+      "postImportChangeSets": [
+        {
+          "baseTree": "7cf66f417fcb68fda679714812a6121828ca7111",
+          "resultTree": "39bbb72c6a4b9dcd6dbbed24981260544d4dfbe8",
+          "changes": [
+            {
+              "path": "CHANGELOG.md",
+              "effect": "modified",
+              "reason": "Recorded the RustSec refresh in the first public engineering-alpha release section and aligned the release date."
+            },
+            {
+              "path": "CITATION.cff",
+              "effect": "modified",
+              "reason": "Aligned the runtime citation metadata with the actual engineering-alpha release date."
+            },
+            {
+              "path": "SOURCE_MANIFEST.sha256",
+              "effect": "modified",
+              "reason": "Regenerated all 418 exact source hashes after the recorded runtime release adjustments."
+            },
+            {
+              "path": "scripts/rustsec-advisory-db.commit",
+              "effect": "modified",
+              "reason": "Advanced the reproducibly pinned RustSec advisory database to the audited current revision."
+            }
+          ]
         }
       ]
     },
@@ -71,7 +103,7 @@
       "upstreamRepository": "https://github.com/aaif-goose/goose.git",
       "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
       "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
-      "assembledTree": "03081171a770204c6297766c092e70169a4bf2c6",
+      "assembledTree": "7734083400d8ee2b198c41c769f8690983f4ebbf",
       "trackedTreeExclusions": [
         {
           "path": "documentation/",
@@ -93,7 +125,23 @@
         },
         {
           "path": "MODIFICATIONS.md",
-          "reason": "Recorded the deterministic file-by-file inventory of inherited, modified, AccordLock-only, and omitted upstream paths, including the handling of strict-data and binary notice exceptions."
+          "reason": "Recorded the deterministic file-by-file inventory of inherited, modified, AccordLock-only, and omitted upstream paths, including the removed PCTX code-execution subsystem and strict-data notice exceptions."
+        },
+        {
+          "path": "Cargo.toml",
+          "reason": "Removed PCTX-only workspace dependencies while preserving the memory-constrained Windows development profiles used by the distributable crates."
+        },
+        {
+          "path": "Cargo.lock",
+          "reason": "Removed the complete PCTX dependency graph, including the obsolete OpenTelemetry 0.31 branch, without unrelated package upgrades."
+        },
+        {
+          "path": "crates/goose/Cargo.toml",
+          "reason": "Removed the optional PCTX code-mode feature and its version-pinning dependencies from the agent core."
+        },
+        {
+          "path": "crates/goose-cli/Cargo.toml",
+          "reason": "Removed the upstream code-mode feature from the CLI distribution feature graph."
         },
         {
           "path": "CUSTOM_DISTROS.md",
@@ -129,11 +177,11 @@
         },
         {
           "path": "scripts/check_accordlock_publication.py",
-          "reason": "Scoped the public desktop boundary, rejected credentials and personal paths across Git-visible text, rejected inherited analytics tokens and runtime download-and-execute helpers, and verified the checksum-pinned build-time uv fetch."
+          "reason": "Scoped the public desktop boundary, rejected credentials and personal paths, enforced the native DMG pipeline and Forge-compatible audited archive extractor, rejected inherited analytics tokens and runtime download-and-execute helpers, and verified checksum-pinned build inputs."
         },
         {
           "path": "scripts/tests/test_check_accordlock_publication.py",
-          "reason": "Added regression coverage for global secret detection, analytics-token rejection, tracked-input enforcement, and the fail-closed extension-helper supply-chain boundary."
+          "reason": "Added regression coverage for global secret detection, analytics-token rejection, tracked-input enforcement, the final stapled-DMG signature check, Forge compatibility, and the fail-closed extension-helper supply-chain boundary."
         },
         {
           "path": "scripts/check_upstream_modifications.py",
@@ -165,7 +213,254 @@
         },
         {
           "path": "scripts/build-macos.ps1",
-          "reason": "Updated release-orchestration copy without weakening the existing fail-closed signing and manifest requirements."
+          "reason": "Replaced the vulnerable JavaScript DMG builder with native hdiutil packaging, final post-stapling signature verification, Gatekeeper assessment, structural verification, and mounted-content checks."
+        },
+        {
+          "path": "ui/desktop/forge.config.ts",
+          "reason": "Removed the JavaScript DMG maker while retaining the supported signed application and cross-platform package configuration."
+        },
+        {
+          "path": "ui/desktop/package.json",
+          "reason": "Updated the Electron Forge, MCP, updater, utility, and packaging dependency surface and removed unused server dependencies."
+        },
+        {
+          "path": "ui/package.json",
+          "reason": "Updated the release-management toolchain to its audited supported version."
+        },
+        {
+          "path": "ui/pnpm-workspace.yaml",
+          "reason": "Pinned audited transitive dependency fixes while keeping Electron Packager inside Forge's supported range and substituting Electron's maintained extract-zip fork."
+        },
+        {
+          "path": "ui/pnpm-lock.yaml",
+          "reason": "Regenerated the deterministic pnpm lockfile for the zero-advisory audited desktop dependency graph."
+        },
+        {
+          "path": "ui/sdk/package.json",
+          "reason": "Updated the MCP and schema-generation SDK dependencies and recorded the inherited-file modification notice."
+        }
+      ],
+      "postImportChangeSets": [
+        {
+          "baseTree": "03081171a770204c6297766c092e70169a4bf2c6",
+          "resultTree": "7734083400d8ee2b198c41c769f8690983f4ebbf",
+          "changes": [
+            {
+              "path": "Cargo.lock",
+              "effect": "modified",
+              "reason": "Removed the complete PCTX dependency graph without adding or upgrading unrelated Rust packages."
+            },
+            {
+              "path": "Cargo.toml",
+              "effect": "modified",
+              "reason": "Removed PCTX-only workspace dependencies from the desktop build graph."
+            },
+            {
+              "path": "Justfile",
+              "effect": "modified",
+              "reason": "Removed the retired code-mode feature from ACP schema generation."
+            },
+            {
+              "path": "MERGE_FIXES.md",
+              "effect": "removed",
+              "reason": "Removed an obsolete internal merge-history document from the public product source."
+            },
+            {
+              "path": "MODIFICATIONS.md",
+              "effect": "modified",
+              "reason": "Regenerated the deterministic upstream classification after the recorded source changes and removals."
+            },
+            {
+              "path": "crates/goose-cli/Cargo.toml",
+              "effect": "modified",
+              "reason": "Removed code-mode from the CLI feature graph."
+            },
+            {
+              "path": "crates/goose/Cargo.toml",
+              "effect": "modified",
+              "reason": "Removed the optional code-mode feature and PCTX dependencies from the agent core."
+            },
+            {
+              "path": "crates/goose/src/agents/accordlock_authorization.rs",
+              "effect": "modified",
+              "reason": "Grouped exact tool-request inputs in a typed parameter object while preserving every validation and binding."
+            },
+            {
+              "path": "crates/goose/src/agents/accordlock_filesystem.rs",
+              "effect": "modified",
+              "reason": "Updated protected-filesystem tests to the typed tool-request constructor without changing policy behavior."
+            },
+            {
+              "path": "crates/goose/src/agents/accordlock_terminal.rs",
+              "effect": "modified",
+              "reason": "Updated protected-terminal tests to the typed tool-request constructor without changing policy behavior."
+            },
+            {
+              "path": "crates/goose/src/agents/agent.rs",
+              "effect": "modified",
+              "reason": "Adopted the typed pending-approval bundle and removed the retired code-mode inference dependency."
+            },
+            {
+              "path": "crates/goose/src/agents/extension_manager.rs",
+              "effect": "modified",
+              "reason": "Removed code-mode-only extension handling and retained exact AccordLock authorization fixtures."
+            },
+            {
+              "path": "crates/goose/src/agents/platform_extensions/code_execution.rs",
+              "effect": "removed",
+              "reason": "Removed the PCTX-backed code-execution platform extension."
+            },
+            {
+              "path": "crates/goose/src/agents/platform_extensions/mod.rs",
+              "effect": "modified",
+              "reason": "Unregistered the removed code-execution platform extension."
+            },
+            {
+              "path": "crates/goose/src/agents/prompt_manager.rs",
+              "effect": "modified",
+              "reason": "Removed code-mode prompt state and simplified distribution prompt composition."
+            },
+            {
+              "path": "crates/goose/src/agents/reply_parts.rs",
+              "effect": "modified",
+              "reason": "Removed PCTX-specific tool disclosure and prompt branching while retaining model-visibility filtering."
+            },
+            {
+              "path": "crates/goose/src/agents/snapshots/goose__agents__prompt_manager__tests__all_platform_extensions.snap",
+              "effect": "modified",
+              "reason": "Updated the prompt snapshot to exclude the removed code-mode instructions."
+            },
+            {
+              "path": "crates/goose/src/agents/state_machine/ops_llm.rs",
+              "effect": "modified",
+              "reason": "Removed code-mode extension state from state-machine inference preparation."
+            },
+            {
+              "path": "crates/goose/src/agents/state_machine/ops_toolcalling.rs",
+              "effect": "modified",
+              "reason": "Removed the code-mode-only extension-prompt bypass."
+            },
+            {
+              "path": "crates/goose/src/agents/state_machine/tests/pipeline.rs",
+              "effect": "modified",
+              "reason": "Updated the state-machine inference test constructor after removing code-mode state."
+            },
+            {
+              "path": "crates/goose/src/agents/tool_execution.rs",
+              "effect": "modified",
+              "reason": "Grouped approval-stream inputs in a typed parameter object while preserving execution order and ownership."
+            },
+            {
+              "path": "crates/goose/src/prompts/system.md",
+              "effect": "modified",
+              "reason": "Removed the retired code-mode condition from extension prompt rendering."
+            },
+            {
+              "path": "crates/goose/tests/acp_common_tests/mod.rs",
+              "effect": "modified",
+              "reason": "Removed the ACP code-mode integration scenario and recorded the inherited-file modification notice."
+            },
+            {
+              "path": "crates/goose/tests/acp_provider_test.rs",
+              "effect": "modified",
+              "reason": "Removed provider-side ACP code-mode registration and test coverage."
+            },
+            {
+              "path": "crates/goose/tests/acp_server_test.rs",
+              "effect": "modified",
+              "reason": "Removed server-side ACP code-mode registration and test coverage."
+            },
+            {
+              "path": "crates/goose/tests/acp_test_data/openai_builtin_execute.txt",
+              "effect": "removed",
+              "reason": "Removed the obsolete ACP code-mode execution fixture."
+            },
+            {
+              "path": "crates/goose/tests/acp_test_data/openai_builtin_final.txt",
+              "effect": "removed",
+              "reason": "Removed the obsolete ACP code-mode final-response fixture."
+            },
+            {
+              "path": "crates/goose/tests/acp_test_data/openai_builtin_search.txt",
+              "effect": "removed",
+              "reason": "Removed the obsolete ACP code-mode search fixture."
+            },
+            {
+              "path": "scripts/build-macos.ps1",
+              "effect": "modified",
+              "reason": "Replaced JavaScript DMG construction with a native signed, notarized, stapled, mounted, and verified pipeline."
+            },
+            {
+              "path": "scripts/check_accordlock_publication.py",
+              "effect": "modified",
+              "reason": "Enforced the hardened packaging boundary and prohibited restoration of retired PCTX/code-mode surfaces."
+            },
+            {
+              "path": "scripts/check_upstream_modifications.py",
+              "effect": "modified",
+              "reason": "Updated exact upstream classification and modification-notice enforcement for the candidate tree."
+            },
+            {
+              "path": "scripts/tests/test_check_accordlock_publication.py",
+              "effect": "modified",
+              "reason": "Added regression tests for packaging compatibility, final DMG verification, and PCTX reintroduction rejection."
+            },
+            {
+              "path": "ui/desktop/forge.config.ts",
+              "effect": "modified",
+              "reason": "Removed the JavaScript DMG maker from Electron Forge configuration."
+            },
+            {
+              "path": "ui/desktop/package.json",
+              "effect": "modified",
+              "reason": "Updated audited desktop dependencies and removed unused or vulnerable packaging and server packages."
+            },
+            {
+              "path": "ui/desktop/scripts/i18n-check.js",
+              "effect": "modified",
+              "reason": "Corrected the inherited-file notice to valid JavaScript syntax."
+            },
+            {
+              "path": "ui/desktop/scripts/i18n-compile.js",
+              "effect": "modified",
+              "reason": "Corrected the inherited-file notice to valid JavaScript syntax."
+            },
+            {
+              "path": "ui/desktop/src/accordlock/deploymentPreflightCiEvidence.crossContract.test.ts",
+              "effect": "modified",
+              "reason": "Resolved the GitHub evidence module from the public monorepo runtime path."
+            },
+            {
+              "path": "ui/desktop/src/components/ConfigContext.tsx",
+              "effect": "modified",
+              "reason": "Removed an obsolete code-execution comment and recorded the inherited-file modification notice."
+            },
+            {
+              "path": "ui/desktop/tests/integration/test_providers_code_exec.test.ts",
+              "effect": "removed",
+              "reason": "Removed the obsolete desktop provider code-mode integration test."
+            },
+            {
+              "path": "ui/package.json",
+              "effect": "modified",
+              "reason": "Updated the audited release-management dependency."
+            },
+            {
+              "path": "ui/pnpm-lock.yaml",
+              "effect": "modified",
+              "reason": "Regenerated the deterministic zero-advisory pnpm dependency graph."
+            },
+            {
+              "path": "ui/pnpm-workspace.yaml",
+              "effect": "modified",
+              "reason": "Pinned audited transitive fixes and the Forge-compatible maintained archive extractor."
+            },
+            {
+              "path": "ui/sdk/package.json",
+              "effect": "modified",
+              "reason": "Updated MCP and schema-generation SDK dependencies with inherited-file attribution."
+            }
+          ]
         }
       ]
     }

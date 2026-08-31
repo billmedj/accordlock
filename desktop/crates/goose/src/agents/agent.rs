@@ -15,8 +15,8 @@ use super::gen_ai_telemetry;
 use super::mcp_client::GooseMcpHostInfo;
 use super::tool_confirmation_router::ToolConfirmationRouter;
 use super::tool_execution::{
-    tool_stream, ToolCallResult, ToolStream, ToolStreamItem, CHAT_MODE_TOOL_SKIPPED_RESPONSE,
-    DECLINED_RESPONSE,
+    tool_stream, PendingToolApprovals, ToolCallResult, ToolStream, ToolStreamItem,
+    CHAT_MODE_TOOL_SKIPPED_RESPONSE, DECLINED_RESPONSE,
 };
 use crate::action_required_manager::ElicitationOutcome;
 use crate::agents::extension::{ExtensionConfig, ExtensionResult, ToolInfo};
@@ -1722,7 +1722,6 @@ impl Agent {
         let inference = Arc::new(InferenceRunner::new(
             provider,
             model_config,
-            self.extension_manager.clone(),
             &self.current_goose_mode,
             &self.prompt_manager,
             &self.tool_inspection_manager,
@@ -2696,13 +2695,15 @@ impl Agent {
 
                                     {
                                         let mut tool_approval_stream = self.handle_approval_tool_requests(
-                                            &permission_check_result.needs_approval,
-                                            &mut tool_futures,
-                                            &mut request_to_response_map,
-                                            cancel_token.clone(),
-                                            &session,
-                                            &inspection_results,
-                                            &response,
+                                            PendingToolApprovals {
+                                                tool_requests: &permission_check_result.needs_approval,
+                                                tool_futures: &mut tool_futures,
+                                                request_to_response_map: &mut request_to_response_map,
+                                                cancellation_token: cancel_token.clone(),
+                                                session: &session,
+                                                inspection_results: &inspection_results,
+                                                assistant_message: &response,
+                                            },
                                         );
 
                                         while let Some(msg) = tool_approval_stream.try_next().await? {

@@ -287,20 +287,6 @@ module.exports = {
       platforms: ['darwin', 'win32', 'linux'],
       config: {},
     },
-    ...(process.platform === 'darwin'
-      ? [
-          {
-            name: '@electron-forge/maker-dmg',
-            platforms: ['darwin'],
-            config: {
-              name: 'AccordLock',
-              format: 'ULFO',
-              icon: 'src/images/icon.icns',
-              overwrite: false,
-            },
-          },
-        ]
-      : []),
     {
       name: '@electron-forge/maker-deb',
       config: {

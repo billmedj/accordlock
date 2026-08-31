@@ -10,7 +10,7 @@ goose is being developed as an open-source software project.
 {{ moim_system_prompt_block }}
 {% endif %}
 
-{% if include_extensions and not code_execution_mode %}
+{% if include_extensions %}
 
 # Extensions
 

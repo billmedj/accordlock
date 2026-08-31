@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 #![recursion_limit = "256"]
 
 #[allow(dead_code)]
@@ -5,8 +6,6 @@
 mod common_tests;
 use common_tests::fixtures::provider::AcpProviderConnection;
 use common_tests::fixtures::run_test;
-#[cfg(feature = "code-mode")]
-use common_tests::run_prompt_codemode;
 use common_tests::{
     run_close_session, run_config_mcp, run_delete_session, run_fs_read_text_file_true,
     run_fs_write_text_file_false, run_fs_write_text_file_true, run_load_mode, run_load_model,
@@ -86,12 +85,6 @@ fn test_permission_persistence() {
 #[test]
 fn test_prompt_basic() {
     run_test(async { run_prompt_basic::<AcpProviderConnection>().await });
-}
-
-#[test]
-#[cfg(feature = "code-mode")]
-fn test_prompt_codemode() {
-    run_test(async { run_prompt_codemode::<AcpProviderConnection>().await });
 }
 
 #[test]

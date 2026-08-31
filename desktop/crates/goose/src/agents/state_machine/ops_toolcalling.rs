@@ -635,17 +635,6 @@ impl Operation<Session, GooseEffect> for ToolExecutionOperation<'_> {
         }
         let mut prompt_parts = hints.load_new_hints(&session.working_dir);
 
-        #[cfg(feature = "code-mode")]
-        if self
-            .extension_manager
-            .is_extension_enabled(
-                crate::agents::platform_extensions::code_execution::EXTENSION_NAME,
-            )
-            .await
-        {
-            return Ok(prompt_parts);
-        }
-
         let mut extensions = self
             .extension_manager
             .get_extensions_info(&session.working_dir)

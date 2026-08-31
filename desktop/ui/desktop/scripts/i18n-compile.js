@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-# Modified by AccordLock contributors; see UPSTREAM.md.
+// Modified by AccordLock contributors; see UPSTREAM.md.
 /**
  * Cross-platform i18n compile script.
  * Compiles the English source catalog using formatjs.

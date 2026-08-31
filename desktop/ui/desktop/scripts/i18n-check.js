@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-# Modified by AccordLock contributors; see UPSTREAM.md.
+// Modified by AccordLock contributors; see UPSTREAM.md.
 /**
  * Cross-platform i18n check script.
  * Extracts messages to a temp file and compares against the committed file

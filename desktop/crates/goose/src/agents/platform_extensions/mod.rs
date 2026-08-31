@@ -1,8 +1,7 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 pub mod analyze;
 pub mod apps;
 pub mod chatrecall;
-#[cfg(feature = "code-mode")]
-pub mod code_execution;
 pub mod developer;
 pub mod ext_manager;
 pub mod orchestrator;
@@ -140,29 +139,6 @@ pub static PLATFORM_EXTENSIONS: Lazy<HashMap<&'static str, PlatformExtensionDef>
                 unprefixed_tools: false,
                 hidden: false,
                 client_factory: |ctx| Some(Box::new(summarize::SummarizeClient::new(ctx).unwrap())),
-            },
-        );
-
-        #[cfg(feature = "code-mode")]
-        map.insert(
-            code_execution::EXTENSION_NAME,
-            PlatformExtensionDef {
-                name: code_execution::EXTENSION_NAME,
-                display_name: "Code Mode",
-                description:
-                    "Goose will make extension calls through code execution, saving tokens",
-                default_enabled: false,
-                unprefixed_tools: true,
-                hidden: false,
-                client_factory: |ctx| {
-                    Some(Box::new(
-                        code_execution::CodeExecutionClient::new(
-                            ctx,
-                            code_execution::get_tool_disclosure(),
-                        )
-                        .unwrap(),
-                    ))
-                },
             },
         );
 

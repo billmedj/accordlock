@@ -451,6 +451,25 @@ try {
         }
     }
 
+    $dmgOutputDirectory = Join-Path $outputRoot "make/dmg/darwin/$Architecture"
+    New-Item -ItemType Directory -Force -Path $dmgOutputDirectory | Out-Null
+    $dmgPath = Join-Path $dmgOutputDirectory "AccordLock-darwin-$Architecture.dmg"
+    $appContainer = Split-Path -Parent $appRoot
+    $applicationsLink = Join-Path $appContainer 'Applications'
+    if (Test-Path -LiteralPath $applicationsLink) {
+        throw "The DMG staging path already exists: '$applicationsLink'."
+    }
+    New-Item -ItemType SymbolicLink -Path $applicationsLink -Target '/Applications' | Out-Null
+    try {
+        Invoke-Checked -Program '/usr/bin/hdiutil' -Arguments @(
+            'create', '-volname', 'AccordLock', '-srcfolder', $appContainer,
+            '-format', 'UDZO', $dmgPath
+        ) -Failure 'The native macOS disk image could not be created.'
+    }
+    finally {
+        Remove-Item -LiteralPath $applicationsLink -Force
+    }
+
     $dmgFiles = @(Get-ChildItem -LiteralPath (Join-Path $outputRoot 'make') -Filter '*.dmg' -File -Recurse)
     $zipFiles = @(Get-ChildItem -LiteralPath (Join-Path $outputRoot 'make') -Filter '*.zip' -File -Recurse)
     if ($dmgFiles.Count -ne 1 -or $zipFiles.Count -ne 1) {
@@ -462,6 +481,7 @@ try {
         application_code_signature_verified = $false
         gatekeeper_assessment_passed = $false
         application_ticket_stapled = $false
+        disk_image_code_signature_verified = $false
         disk_image_notarized_and_stapled = $false
     }
     if ($Release) {
@@ -472,13 +492,55 @@ try {
         $assurance.gatekeeper_assessment_passed = $true
         $assurance.application_ticket_stapled = $true
 
+        Invoke-Checked -Program '/usr/bin/codesign' -Arguments @(
+            '--force', '--timestamp', '--sign', $env:APPLE_SIGNING_IDENTITY,
+            $dmgFiles[0].FullName
+        ) -Failure 'Could not sign the DMG with the Developer ID identity.'
+        Invoke-Checked -Program '/usr/bin/codesign' -Arguments @(
+            '--verify', '--strict', '--verbose=4', $dmgFiles[0].FullName
+        ) -Failure 'The DMG code signature is invalid.'
+
         Invoke-NotarySubmit -Artifact $dmgFiles[0].FullName
         Invoke-Checked -Program '/usr/bin/xcrun' -Arguments @('stapler', 'staple', '-v', $dmgFiles[0].FullName) -Failure 'Could not staple the DMG notarization ticket.'
         Invoke-Checked -Program '/usr/bin/xcrun' -Arguments @('stapler', 'validate', '-v', $dmgFiles[0].FullName) -Failure 'The DMG has no valid stapled notarization ticket.'
+        Invoke-Checked -Program '/usr/bin/codesign' -Arguments @(
+            '--verify', '--strict', '--verbose=4', $dmgFiles[0].FullName
+        ) -Failure 'The final DMG code signature is invalid after stapling.'
         Invoke-Checked -Program '/usr/sbin/spctl' -Arguments @('--assess', '--type', 'open', '--context', 'context:primary-signature', '--verbose=4', $dmgFiles[0].FullName) -Failure 'Gatekeeper rejected the notarized DMG.'
+        $assurance.disk_image_code_signature_verified = $true
         $assurance.disk_image_notarized_and_stapled = $true
     }
     Invoke-Checked -Program '/usr/bin/hdiutil' -Arguments @('verify', $dmgFiles[0].FullName) -Failure 'The DMG structure is invalid.'
+    $dmgMountPoint = Join-Path $outputRoot ".dmg-verify-$Architecture"
+    New-Item -ItemType Directory -Force -Path $dmgMountPoint | Out-Null
+    $dmgAttached = $false
+    try {
+        Invoke-Checked -Program '/usr/bin/hdiutil' -Arguments @(
+            'attach', '-readonly', '-nobrowse', '-mountpoint', $dmgMountPoint,
+            $dmgFiles[0].FullName
+        ) -Failure 'The DMG could not be mounted for content verification.'
+        $dmgAttached = $true
+
+        $mountedApplication = Join-Path $dmgMountPoint 'AccordLock.app'
+        if (-not (Test-Path -LiteralPath $mountedApplication -PathType Container)) {
+            throw "The DMG does not contain AccordLock.app at its root."
+        }
+        $mountedApplicationsLink = Get-Item -LiteralPath (Join-Path $dmgMountPoint 'Applications') -Force
+        if ([string]::IsNullOrEmpty($mountedApplicationsLink.LinkType) -or
+            [string]$mountedApplicationsLink.Target -cne '/Applications') {
+            throw "The DMG Applications entry is not a link to /Applications."
+        }
+    }
+    finally {
+        if ($dmgAttached) {
+            Invoke-Checked -Program '/usr/bin/hdiutil' -Arguments @(
+                'detach', $dmgMountPoint
+            ) -Failure 'The verified DMG could not be detached.'
+        }
+        if (Test-Path -LiteralPath $dmgMountPoint) {
+            Remove-Item -LiteralPath $dmgMountPoint -Recurse -Force
+        }
+    }
     Invoke-Checked -Program '/usr/bin/unzip' -Arguments @('-tq', $zipFiles[0].FullName) -Failure 'The ZIP structure is invalid.'
 
     $generatedSboms = @()

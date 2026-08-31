@@ -84,7 +84,6 @@ libc = { version = "0.2.182", default-features = false, features = ["std"] }
 
 [features]
 default = [
-    "code-mode",
     "local-inference",
     "tui",
     "aws-providers",
@@ -95,7 +94,6 @@ default = [
     "system-keyring",
     "update",
 ]
-code-mode = ["goose/code-mode"]
 accordlock-distribution = ["goose/accordlock-distribution", "disable-update"]
 local-inference = ["goose/local-inference"]
 aws-providers = ["goose/aws-providers"]

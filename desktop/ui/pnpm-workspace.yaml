@@ -1,3 +1,4 @@
+# Modified by AccordLock contributors; see UPSTREAM.md.
 packages:
   - 'sdk'
   - 'desktop'
@@ -10,8 +11,33 @@ supportedArchitectures:
   os: [current, linux, darwin, win32]
   cpu: [current, x64, arm64]
 overrides:
+  '@babel/core': 7.29.7
+  '@electron/rebuild': 4.2.0
+  extract-zip: npm:@electron-internal/extract-zip@1.0.5
+  '@hono/node-server': 1.19.17
+  '@xmldom/xmldom': 0.8.15
+  body-parser: 2.3.0
+  'brace-expansion@<2': 1.1.18
+  'brace-expansion@>=2 <3': 2.1.4
+  'brace-expansion@>=4': 5.0.9
+  builder-util-runtime: 9.7.0
+  esbuild: 0.28.1
+  fast-uri: 3.1.6
+  flatted: 3.4.2
+  hono: 4.13.5
+  ip-address: 10.3.1
+  js-yaml: 4.3.2
+  nanoid: 3.3.18
+  path-to-regexp: 8.4.2
+  picomatch: 4.0.7
+  qs: 6.16.0
   react: ^19.2.8
   react-dom: ^19.2.8
+  smol-toml: 1.8.0
+  tmp: 0.2.7
+  undici: 7.29.0
+  'yaml@<2': 1.10.3
+  'yaml@>=2': 2.9.0
 allowBuilds:
   '@modelcontextprotocol/ext-apps': true
   electron: true

@@ -168,7 +168,6 @@ impl TestPipeline {
         let inference = Arc::new(InferenceRunner::new(
             provider,
             self.model_config.clone(),
-            self.extension_manager.clone(),
             &self.goose_mode,
             &self.prompt_manager,
             &self.tool_inspection_manager,

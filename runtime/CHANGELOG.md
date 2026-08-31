@@ -9,9 +9,7 @@ must still be called out explicitly.
 
 ## [Unreleased]
 
-No changes yet.
-
-## [0.1.0-alpha.1] - 2026-08-31
+## [0.1.0-alpha.1] - 2026-09-01
 
 Initial public engineering alpha, published as part of the source-only
 AccordLock monorepo prerelease.
@@ -41,6 +39,8 @@ AccordLock monorepo prerelease.
 
 ### Changed
 
+- Refreshed the pinned RustSec advisory database revision used by reproducible
+  security checks.
 - Adopted the AccordLock product name across packages, commands, protocol
   identifiers, database objects, schemas, infrastructure, and documentation.
 - Introduced v2 authorization, approval, policy-evaluation, and execution-record

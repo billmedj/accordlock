@@ -11,6 +11,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::sync::Arc;
 
+#[cfg(test)]
+use super::accordlock_authorization::ToolExecutionRequestParams;
 use super::accordlock_authorization::{
     canonical_json_bytes, sha256_digest, validate_authorization_id, validate_digest,
     validate_reason_code, PolicyEnforcementError, RuntimePolicyEnforcementPoint,
@@ -737,17 +739,17 @@ mod tests {
             1_800_000_000,
         )
         .unwrap();
-        let request = ToolExecutionRequest::new(
-            "session",
-            &run_id,
-            Some("call"),
-            Some(workspace.path()),
-            "developer",
+        let request = ToolExecutionRequest::new(ToolExecutionRequestParams {
+            session_id: "session",
+            run_id: &run_id,
+            request_id: Some("call"),
+            working_dir: Some(workspace.path()),
+            extension_id: "developer",
             tool_name,
-            tool_name,
+            plan_tool_name: tool_name,
             arguments,
-            Some(&plan),
-        )
+            plan_checkpoint_input: Some(&plan),
+        })
         .unwrap();
         (workspace, request)
     }

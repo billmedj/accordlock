@@ -34,6 +34,7 @@ use tracing::{error, warn};
 use super::accordlock_authorization::{
     default_policy_enforcement_point, ExecutionOutcome, PolicyEnforcementError,
     PolicyEnforcementPoint, ToolExecutionObservation, ToolExecutionRequest,
+    ToolExecutionRequestParams,
 };
 use super::accordlock_filesystem::{
     classify as classify_filesystem_tool, default_filesystem_broker, FilesystemBroker,
@@ -515,14 +516,6 @@ fn is_unprefixed_extension(config: &ExtensionConfig) -> bool {
         }
         _ => false,
     }
-}
-
-/// Returns true if the named extension is a first-class platform extension
-/// whose tools are exposed unprefixed and remain visible during code execution mode.
-pub fn is_first_class_extension(name: &str) -> bool {
-    PLATFORM_EXTENSIONS
-        .get(name_to_key(name).as_str())
-        .is_some_and(|def| def.unprefixed_tools)
 }
 
 pub fn is_hidden_extension(name: &str) -> bool {
@@ -2131,17 +2124,17 @@ impl ExtensionManager {
                 .terminal_broker
                 .derive_run_id(&ctx.session_id)
                 .map_err(policy_enforcement_error_data)?;
-            let request = ToolExecutionRequest::new(
-                &ctx.session_id,
-                &run_id,
-                ctx.tool_call_request_id.as_deref(),
-                ctx.working_dir.as_deref(),
-                &resolved.extension_name,
-                &resolved.actual_tool_name,
-                &tool_name_str,
+            let request = ToolExecutionRequest::new(ToolExecutionRequestParams {
+                session_id: &ctx.session_id,
+                run_id: &run_id,
+                request_id: ctx.tool_call_request_id.as_deref(),
+                working_dir: ctx.working_dir.as_deref(),
+                extension_id: &resolved.extension_name,
+                tool_name: &resolved.actual_tool_name,
+                plan_tool_name: &tool_name_str,
                 arguments,
-                ctx.agent_plan_checkpoint.as_ref(),
-            )
+                plan_checkpoint_input: ctx.agent_plan_checkpoint.as_ref(),
+            })
             .map_err(policy_enforcement_error_data)?;
             let terminal_broker = self.terminal_broker.clone();
             let effect_task = tokio::spawn(async move {
@@ -2186,17 +2179,17 @@ impl ExtensionManager {
                 .network_broker
                 .derive_run_id(&ctx.session_id)
                 .map_err(policy_enforcement_error_data)?;
-            let request = ToolExecutionRequest::new(
-                &ctx.session_id,
-                &run_id,
-                ctx.tool_call_request_id.as_deref(),
-                ctx.working_dir.as_deref(),
-                "accordlock_network",
-                "https_request",
-                &tool_name_str,
+            let request = ToolExecutionRequest::new(ToolExecutionRequestParams {
+                session_id: &ctx.session_id,
+                run_id: &run_id,
+                request_id: ctx.tool_call_request_id.as_deref(),
+                working_dir: ctx.working_dir.as_deref(),
+                extension_id: "accordlock_network",
+                tool_name: "https_request",
+                plan_tool_name: &tool_name_str,
                 arguments,
-                ctx.agent_plan_checkpoint.as_ref(),
-            )
+                plan_checkpoint_input: ctx.agent_plan_checkpoint.as_ref(),
+            })
             .map_err(policy_enforcement_error_data)?;
             let network_broker = self.network_broker.clone();
             let effect_task = tokio::spawn(async move {
@@ -2236,17 +2229,17 @@ impl ExtensionManager {
                         .filesystem_broker
                         .derive_run_id(&ctx.session_id)
                         .map_err(policy_enforcement_error_data)?;
-                    let request = ToolExecutionRequest::new(
-                        &ctx.session_id,
-                        &run_id,
-                        ctx.tool_call_request_id.as_deref(),
-                        ctx.working_dir.as_deref(),
-                        &resolved.extension_name,
-                        &resolved.actual_tool_name,
-                        &tool_name_str,
+                    let request = ToolExecutionRequest::new(ToolExecutionRequestParams {
+                        session_id: &ctx.session_id,
+                        run_id: &run_id,
+                        request_id: ctx.tool_call_request_id.as_deref(),
+                        working_dir: ctx.working_dir.as_deref(),
+                        extension_id: &resolved.extension_name,
+                        tool_name: &resolved.actual_tool_name,
+                        plan_tool_name: &tool_name_str,
                         arguments,
-                        ctx.agent_plan_checkpoint.as_ref(),
-                    )
+                        plan_checkpoint_input: ctx.agent_plan_checkpoint.as_ref(),
+                    })
                     .map_err(policy_enforcement_error_data)?;
                     let filesystem_broker = self.filesystem_broker.clone();
                     let effect_task = tokio::spawn(async move {
@@ -2292,17 +2285,17 @@ impl ExtensionManager {
                 .policy_enforcement_point
                 .derive_run_id(&ctx.session_id)
                 .map_err(policy_enforcement_error_data)?;
-            let request = ToolExecutionRequest::new(
-                &ctx.session_id,
-                &run_id,
-                ctx.tool_call_request_id.as_deref(),
-                ctx.working_dir.as_deref(),
-                &resolved.extension_name,
-                &resolved.actual_tool_name,
-                &tool_name_str,
+            let request = ToolExecutionRequest::new(ToolExecutionRequestParams {
+                session_id: &ctx.session_id,
+                run_id: &run_id,
+                request_id: ctx.tool_call_request_id.as_deref(),
+                working_dir: ctx.working_dir.as_deref(),
+                extension_id: &resolved.extension_name,
+                tool_name: &resolved.actual_tool_name,
+                plan_tool_name: &tool_name_str,
                 arguments,
-                ctx.agent_plan_checkpoint.as_ref(),
-            )
+                plan_checkpoint_input: ctx.agent_plan_checkpoint.as_ref(),
+            })
             .map_err(policy_enforcement_error_data)?;
             Some(
                 self.policy_enforcement_point
@@ -4295,7 +4288,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_mcp_app_tools_identified_for_code_mode_exclusion() {
+    async fn test_mcp_app_tools_keep_resource_metadata_when_an_extension_is_excluded() {
         let temp_dir = tempfile::tempdir().unwrap();
         let extension_manager =
             ExtensionManager::new_without_provider(temp_dir.path().to_path_buf());
@@ -4305,7 +4298,7 @@ mod tests {
             .await;
 
         let tools = extension_manager
-            .get_prefixed_tools_excluding("test-session-id", "code_execution")
+            .get_prefixed_tools_excluding("test-session-id", "excluded_extension")
             .await
             .unwrap();
 

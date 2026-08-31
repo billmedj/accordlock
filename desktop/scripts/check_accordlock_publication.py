@@ -3,9 +3,11 @@
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 
@@ -320,6 +322,118 @@ def check_extension_helper_supply_chain(errors: list[str]) -> None:
         )
 
 
+def check_macos_packaging_supply_chain(errors: list[str]) -> None:
+    package_path = "ui/desktop/package.json"
+    package = json.loads(read(package_path))
+    if "@electron-forge/maker-dmg" in package.get("devDependencies", {}):
+        errors.append(
+            f"{package_path}: vulnerable JavaScript DMG maker must not be restored"
+        )
+
+    forge_config_path = "ui/desktop/forge.config.ts"
+    if "@electron-forge/maker-dmg" in read(forge_config_path):
+        errors.append(
+            f"{forge_config_path}: vulnerable JavaScript DMG maker must not be restored"
+        )
+
+    workspace_path = "ui/pnpm-workspace.yaml"
+    workspace = read(workspace_path)
+    if re.search(r"(?m)^  ['\"]?@electron/packager['\"]?:", workspace):
+        errors.append(
+            f"{workspace_path}: Electron Packager must stay within Forge's supported range"
+        )
+    if "extract-zip: npm:@electron-internal/extract-zip@1.0.5" not in workspace:
+        errors.append(
+            f"{workspace_path}: the audited Electron extract-zip replacement is missing"
+        )
+
+    build_script_path = "scripts/build-macos.ps1"
+    build_script = read(build_script_path)
+    for required in (
+        "'/usr/bin/hdiutil'",
+        "'create', '-volname', 'AccordLock', '-srcfolder', $appContainer",
+        "'-format', 'UDZO', $dmgPath",
+        "New-Item -ItemType SymbolicLink -Path $applicationsLink -Target '/Applications'",
+        "'--force', '--timestamp', '--sign', $env:APPLE_SIGNING_IDENTITY",
+        "'--verify', '--strict', '--verbose=4', $dmgFiles[0].FullName",
+        "Invoke-NotarySubmit -Artifact $dmgFiles[0].FullName",
+        "The final DMG code signature is invalid after stapling.",
+        "@('verify', $dmgFiles[0].FullName)",
+        "'attach', '-readonly', '-nobrowse', '-mountpoint', $dmgMountPoint",
+        "$mountedApplication = Join-Path $dmgMountPoint 'AccordLock.app'",
+        "[string]$mountedApplicationsLink.Target -cne '/Applications'",
+    ):
+        if required not in build_script:
+            errors.append(
+                f"{build_script_path}: native DMG pipeline is missing {required}"
+            )
+
+    staple_position = build_script.find("@('stapler', 'staple', '-v', $dmgFiles[0].FullName)")
+    final_signature_position = build_script.find(
+        "The final DMG code signature is invalid after stapling."
+    )
+    if staple_position < 0 or final_signature_position < staple_position:
+        errors.append(
+            f"{build_script_path}: final DMG signature verification must run after stapling"
+        )
+
+    lockfile_path = "ui/pnpm-lock.yaml"
+    lockfile = read(lockfile_path)
+    if "@electron-internal/extract-zip@1.0.5" not in lockfile:
+        errors.append(
+            f"{lockfile_path}: the audited Electron extract-zip replacement is missing"
+        )
+    forbidden_lockfile_packages = (
+        "  '@electron-forge/maker-dmg@",
+        "  appdmg@",
+        "  electron-installer-dmg@",
+        "  extract-zip@",
+        "  image-size@",
+    )
+    for forbidden in forbidden_lockfile_packages:
+        if forbidden in lockfile:
+            errors.append(
+                f"{lockfile_path}: forbidden vulnerable packaging dependency: {forbidden.strip()}"
+            )
+
+
+def check_retired_code_mode_surface(errors: list[str]) -> None:
+    """Prevent the removed PCTX execution subsystem from returning unnoticed."""
+    cargo_manifests = (
+        "Cargo.toml",
+        "crates/goose/Cargo.toml",
+        "crates/goose-cli/Cargo.toml",
+    )
+    feature_pattern = re.compile(r"(?m)^\s*code-mode\s*=")
+    for relative_path in cargo_manifests:
+        if feature_pattern.search(read(relative_path)):
+            errors.append(
+                f"{relative_path}: the retired code-mode feature must not be restored"
+            )
+
+    lock_path = "Cargo.lock"
+    lock = tomllib.loads(read(lock_path))
+    retired_packages = sorted(
+        {
+            package.get("name", "")
+            for package in lock.get("package", [])
+            if isinstance(package, dict)
+            and isinstance(package.get("name"), str)
+            and package["name"].lower().startswith("pctx")
+        }
+    )
+    for package in retired_packages:
+        errors.append(f"{lock_path}: retired PCTX package is forbidden: {package}")
+
+    retired_paths = (
+        "crates/goose/src/agents/platform_extensions/code_execution.rs",
+        "ui/desktop/tests/integration/test_providers_code_exec.test.ts",
+    )
+    for relative_path in retired_paths:
+        if (ROOT / relative_path).exists():
+            errors.append(f"{relative_path}: retired code-mode surface must remain absent")
+
+
 def workflow_triggers(content: str) -> set[str]:
     """Return the top-level events nested under the workflow's ``on`` key."""
     lines = content.splitlines()
@@ -530,6 +644,8 @@ def main() -> int:
         check_artifact_boundaries(errors)
         check_public_surfaces(errors)
         check_extension_helper_supply_chain(errors)
+        check_macos_packaging_supply_chain(errors)
+        check_retired_code_mode_surface(errors)
         check_upstream_modification_notices(errors)
         check_repository_hygiene(errors)
     except (OSError, UnicodeError, AssertionError, subprocess.SubprocessError) as error:

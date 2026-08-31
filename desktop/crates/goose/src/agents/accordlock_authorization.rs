@@ -92,6 +92,18 @@ pub struct ToolExecutionRequest {
     pub agent_plan_checkpoint: AgentPlanCheckpoint,
 }
 
+pub(super) struct ToolExecutionRequestParams<'a> {
+    pub(super) session_id: &'a str,
+    pub(super) run_id: &'a str,
+    pub(super) request_id: Option<&'a str>,
+    pub(super) working_dir: Option<&'a Path>,
+    pub(super) extension_id: &'a str,
+    pub(super) tool_name: &'a str,
+    pub(super) plan_tool_name: &'a str,
+    pub(super) arguments: Value,
+    pub(super) plan_checkpoint_input: Option<&'a AgentPlanCheckpointInput>,
+}
+
 /// Sanitized plan material captured from the assistant message that proposed
 /// the tool call. This is internal dispatch state, not a runtime wire object.
 #[derive(Debug, Clone, PartialEq)]
@@ -173,17 +185,20 @@ impl AgentPlanCheckpointInput {
 }
 
 impl ToolExecutionRequest {
-    pub fn new(
-        session_id: &str,
-        run_id: &str,
-        request_id: Option<&str>,
-        working_dir: Option<&Path>,
-        extension_id: &str,
-        tool_name: &str,
-        plan_tool_name: &str,
-        arguments: Value,
-        plan_checkpoint_input: Option<&AgentPlanCheckpointInput>,
+    pub(super) fn new(
+        params: ToolExecutionRequestParams<'_>,
     ) -> Result<Self, PolicyEnforcementError> {
+        let ToolExecutionRequestParams {
+            session_id,
+            run_id,
+            request_id,
+            working_dir,
+            extension_id,
+            tool_name,
+            plan_tool_name,
+            arguments,
+            plan_checkpoint_input,
+        } = params;
         validate_identifier(session_id, "session_id")?;
         validate_digest(run_id).map_err(|_| PolicyEnforcementError::InvalidField("run_id"))?;
         let tool_call_id = request_id.ok_or(PolicyEnforcementError::MissingRequestId)?;
@@ -985,39 +1000,39 @@ mod tests {
     fn canonical_argument_hash_is_key_order_independent() {
         let dir = tempfile::tempdir().unwrap();
         let run_id = test_run_id("session");
-        let first = ToolExecutionRequest::new(
-            "session",
-            &run_id,
-            Some("run"),
-            Some(dir.path()),
-            "developer",
-            "write",
-            "write",
-            json!({"b": 2, "a": {"d": 4, "c": 3}}),
-            Some(&test_plan(
+        let first = ToolExecutionRequest::new(ToolExecutionRequestParams {
+            session_id: "session",
+            run_id: &run_id,
+            request_id: Some("run"),
+            working_dir: Some(dir.path()),
+            extension_id: "developer",
+            tool_name: "write",
+            plan_tool_name: "write",
+            arguments: json!({"b": 2, "a": {"d": 4, "c": 3}}),
+            plan_checkpoint_input: Some(&test_plan(
                 "session",
                 "run",
                 "write",
                 json!({"b": 2, "a": {"d": 4, "c": 3}}),
             )),
-        )
+        })
         .unwrap();
-        let second = ToolExecutionRequest::new(
-            "session",
-            &run_id,
-            Some("run"),
-            Some(dir.path()),
-            "developer",
-            "write",
-            "write",
-            json!({"a": {"c": 3, "d": 4}, "b": 2}),
-            Some(&test_plan(
+        let second = ToolExecutionRequest::new(ToolExecutionRequestParams {
+            session_id: "session",
+            run_id: &run_id,
+            request_id: Some("run"),
+            working_dir: Some(dir.path()),
+            extension_id: "developer",
+            tool_name: "write",
+            plan_tool_name: "write",
+            arguments: json!({"a": {"c": 3, "d": 4}, "b": 2}),
+            plan_checkpoint_input: Some(&test_plan(
                 "session",
                 "run",
                 "write",
                 json!({"a": {"c": 3, "d": 4}, "b": 2}),
             )),
-        )
+        })
         .unwrap();
         assert_eq!(first.arguments_sha256, second.arguments_sha256);
         assert_eq!(first.digest().unwrap(), second.digest().unwrap());
@@ -1027,39 +1042,39 @@ mod tests {
     fn argument_mutation_changes_exact_binding() {
         let dir = tempfile::tempdir().unwrap();
         let run_id = test_run_id("session");
-        let first = ToolExecutionRequest::new(
-            "session",
-            &run_id,
-            Some("run"),
-            Some(dir.path()),
-            "developer",
-            "write",
-            "write",
-            json!({"path": "a.txt", "content": "one"}),
-            Some(&test_plan(
+        let first = ToolExecutionRequest::new(ToolExecutionRequestParams {
+            session_id: "session",
+            run_id: &run_id,
+            request_id: Some("run"),
+            working_dir: Some(dir.path()),
+            extension_id: "developer",
+            tool_name: "write",
+            plan_tool_name: "write",
+            arguments: json!({"path": "a.txt", "content": "one"}),
+            plan_checkpoint_input: Some(&test_plan(
                 "session",
                 "run",
                 "write",
                 json!({"path": "a.txt", "content": "one"}),
             )),
-        )
+        })
         .unwrap();
-        let second = ToolExecutionRequest::new(
-            "session",
-            &run_id,
-            Some("run"),
-            Some(dir.path()),
-            "developer",
-            "write",
-            "write",
-            json!({"path": "a.txt", "content": "two"}),
-            Some(&test_plan(
+        let second = ToolExecutionRequest::new(ToolExecutionRequestParams {
+            session_id: "session",
+            run_id: &run_id,
+            request_id: Some("run"),
+            working_dir: Some(dir.path()),
+            extension_id: "developer",
+            tool_name: "write",
+            plan_tool_name: "write",
+            arguments: json!({"path": "a.txt", "content": "two"}),
+            plan_checkpoint_input: Some(&test_plan(
                 "session",
                 "run",
                 "write",
                 json!({"path": "a.txt", "content": "two"}),
             )),
-        )
+        })
         .unwrap();
         assert_ne!(first.arguments_sha256, second.arguments_sha256);
         assert_ne!(first.digest().unwrap(), second.digest().unwrap());
@@ -1070,32 +1085,32 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let run_id = test_run_id("session");
         assert_eq!(
-            ToolExecutionRequest::new(
-                "session",
-                &run_id,
-                None,
-                Some(dir.path()),
-                "ext",
-                "tool",
-                "tool",
-                json!({}),
-                Some(&test_plan("session", "unused", "tool", json!({}))),
-            )
+            ToolExecutionRequest::new(ToolExecutionRequestParams {
+                session_id: "session",
+                run_id: &run_id,
+                request_id: None,
+                working_dir: Some(dir.path()),
+                extension_id: "ext",
+                tool_name: "tool",
+                plan_tool_name: "tool",
+                arguments: json!({}),
+                plan_checkpoint_input: Some(&test_plan("session", "unused", "tool", json!({}))),
+            })
             .unwrap_err(),
             PolicyEnforcementError::MissingRequestId
         );
         assert_eq!(
-            ToolExecutionRequest::new(
-                "session",
-                &run_id,
-                Some("run"),
-                None,
-                "ext",
-                "tool",
-                "tool",
-                json!({}),
-                Some(&test_plan("session", "run", "tool", json!({}))),
-            )
+            ToolExecutionRequest::new(ToolExecutionRequestParams {
+                session_id: "session",
+                run_id: &run_id,
+                request_id: Some("run"),
+                working_dir: None,
+                extension_id: "ext",
+                tool_name: "tool",
+                plan_tool_name: "tool",
+                arguments: json!({}),
+                plan_checkpoint_input: Some(&test_plan("session", "run", "tool", json!({}))),
+            })
             .unwrap_err(),
             PolicyEnforcementError::InvalidWorkspace
         );

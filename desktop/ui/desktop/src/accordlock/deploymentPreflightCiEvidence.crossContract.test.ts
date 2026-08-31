@@ -21,7 +21,7 @@ const EXPIRES_AT = ISSUED_AT + 900;
 const ACTION_MODULE_URL = pathToFileURL(
   path.resolve(
     process.cwd(),
-    '../../../../../accordlock/integrations/github-actions/deployment-preflight-evidence/src/evidence.mjs'
+    '../../../runtime/integrations/github-actions/deployment-preflight-evidence/src/evidence.mjs'
   )
 );
 const temporaryDirectories: string[] = [];

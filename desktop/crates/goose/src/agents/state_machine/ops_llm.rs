@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 //! Builds a provider request and streams the next assistant response.
 
 use std::sync::Arc;
@@ -8,7 +9,7 @@ use crate::agents::state_machine::{
     ConversationEffect, Emitter, GooseEffect, Inference, InferenceInput, Operation,
     OperationResult, SlashCommand,
 };
-use crate::agents::{ExtensionManager, PromptManager};
+use crate::agents::PromptManager;
 use crate::config::GooseMode;
 use crate::conversation::message::{InferenceMetadata, Message, MessageContent};
 use crate::conversation::{effective_role, Conversation, EffectiveRole};
@@ -114,8 +115,6 @@ pub(super) fn record_chat_usage(span: &tracing::Span, usage: &ProviderUsage) {
 pub struct InferenceRunner<'a> {
     provider: Arc<dyn Provider>,
     model_config: ModelConfig,
-    #[cfg(feature = "code-mode")]
-    extension_manager: Arc<ExtensionManager>,
     goose_mode: &'a Mutex<GooseMode>,
     prompt_manager: &'a Mutex<PromptManager>,
     tool_inspection_manager: &'a ToolInspectionManager,
@@ -164,8 +163,6 @@ impl<'a> InferenceRunner<'a> {
     pub fn new(
         provider: Arc<dyn Provider>,
         model_config: ModelConfig,
-        #[cfg(feature = "code-mode")] extension_manager: Arc<ExtensionManager>,
-        #[cfg(not(feature = "code-mode"))] _extension_manager: Arc<ExtensionManager>,
         goose_mode: &'a Mutex<GooseMode>,
         prompt_manager: &'a Mutex<PromptManager>,
         tool_inspection_manager: &'a ToolInspectionManager,
@@ -174,8 +171,6 @@ impl<'a> InferenceRunner<'a> {
         Self {
             provider,
             model_config,
-            #[cfg(feature = "code-mode")]
-            extension_manager,
             goose_mode,
             prompt_manager,
             tool_inspection_manager,
@@ -369,25 +364,12 @@ impl Inference<Session, GooseEffect> for InferenceRunner<'_> {
         );
 
         async {
-            #[cfg(feature = "code-mode")]
-            let code_execution_mode = self
-                .extension_manager
-                .is_extension_enabled(
-                    crate::agents::platform_extensions::code_execution::EXTENSION_NAME,
-                )
-                .await;
-            #[cfg(not(feature = "code-mode"))]
-            let code_execution_mode = false;
-
             let goose_mode = *self.goose_mode.lock().await;
             if goose_mode == GooseMode::SmartApprove {
                 self.tool_inspection_manager
                     .apply_tool_annotations(&input.tools);
             }
-            let tools = crate::agents::reply_parts::prepare_inference_tools(
-                input.tools,
-                code_execution_mode,
-            );
+            let tools = crate::agents::reply_parts::prepare_inference_tools(input.tools);
             if let Some(frontend_instructions) = self.frontend_instructions.lock().await.clone() {
                 input
                     .prompt_parts

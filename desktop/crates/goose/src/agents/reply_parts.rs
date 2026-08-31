@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use anyhow::Result;
 use goose_providers::errors::ProviderError;
 use regex::Regex;
@@ -10,8 +11,6 @@ use tracing::debug;
 
 use super::super::agents::Agent;
 use super::gen_ai_telemetry;
-#[cfg(feature = "code-mode")]
-use crate::agents::platform_extensions::code_execution;
 use crate::config::{Config, GooseMode};
 use crate::conversation::message::{Message, MessageContent, MessageUsage, ToolRequest};
 use crate::conversation::{fix_conversation, merge_consecutive_messages_for_request, Conversation};
@@ -190,15 +189,7 @@ impl Agent {
     ) -> Result<(Vec<Tool>, Vec<Tool>, String, ModelConfig)> {
         let tools = self.list_tools(session_id, None).await;
 
-        #[cfg(feature = "code-mode")]
-        let code_execution_active = self
-            .extension_manager
-            .is_extension_enabled(code_execution::EXTENSION_NAME)
-            .await;
-        #[cfg(not(feature = "code-mode"))]
-        let code_execution_active = false;
-
-        let tools = prepare_inference_tools(tools, code_execution_active);
+        let tools = prepare_inference_tools(tools);
 
         // Prepare system prompt
         let extensions_info = self
@@ -218,7 +209,6 @@ impl Agent {
             .builder()
             .with_extensions(extensions_info.into_iter())
             .with_frontend_instructions(self.frontend_instructions.lock().await.clone())
-            .with_code_execution_mode(code_execution_active)
             .with_hints(working_dir)
             .with_goose_mode(goose_mode)
             .build();
@@ -230,59 +220,7 @@ impl Agent {
     }
 }
 
-pub(crate) fn prepare_inference_tools(
-    mut tools: Vec<Tool>,
-    code_execution_active: bool,
-) -> Vec<Tool> {
-    #[cfg(feature = "code-mode")]
-    if code_execution_active {
-        let disclosure_style =
-            crate::agents::platform_extensions::code_execution::get_tool_disclosure();
-
-        tools = tools
-            .into_iter()
-            .filter_map(|mut tool| match disclosure_style {
-                pctx_code_mode::config::ToolDisclosure::Catalog
-                | pctx_code_mode::config::ToolDisclosure::Filesystem => {
-                    // in catalog & filesystem styles, progressive search is handled
-                    // by pctx, so we want to omit all non-first-class extensions
-                    // from the standard tool list
-                    if crate::agents::extension_manager::get_tool_owner(&tool).is_some_and(
-                        |owner| crate::agents::extension_manager::is_first_class_extension(&owner),
-                    ) || crate::agents::extension_manager::get_tool_resource_uri(&tool).is_some()
-                    {
-                        Some(tool)
-                    } else {
-                        None
-                    }
-                }
-                pctx_code_mode::config::ToolDisclosure::Sidecar => {
-                    // in sidecar style there is no progressive search, just a way to chain tools
-                    // together with typescript
-                    // add output schema to description since many model providers drop the
-                    // output schema when presenting tools to the model
-                    let output_schema = tool
-                        .output_schema
-                        .as_ref()
-                        .map(|schema| serde_json::json!(schema).to_string())
-                        .unwrap_or("unknown".to_string());
-                    let description =
-                        format!("The successful return schema of this tool is:\n{output_schema}");
-                    tool.description = Some(
-                        tool.description
-                            .map(|current| format!("{current}\n{description}"))
-                            .unwrap_or(description)
-                            .into(),
-                    );
-                    Some(tool)
-                }
-            })
-            .collect();
-    }
-
-    #[cfg(not(feature = "code-mode"))]
-    let _ = code_execution_active;
-
+pub(crate) fn prepare_inference_tools(mut tools: Vec<Tool>) -> Vec<Tool> {
     // Filter out tools not visible to the model per MCP Apps visibility spec.
     // Tools with `_meta.ui.visibility` that doesn't include "model" are app-only.
     tools.retain(is_tool_visible_to_model);

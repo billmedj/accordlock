@@ -54,6 +54,10 @@ NOTICE_EXCEPTIONS = {
         "Strict message-catalog JSON; an extra key changes the compiled catalog "
         "rather than recording inert metadata."
     ),
+    "crates/goose/src/agents/snapshots/goose__agents__prompt_manager__tests__all_platform_extensions.snap": (
+        "Insta-generated prompt snapshot; an in-file comment would change the "
+        "asserted prompt or invalidate the snapshot metadata header."
+    ),
     "ui/desktop/src/images/icon-512.png": "Binary PNG application asset.",
     "ui/desktop/src/images/icon-light.icns": "Binary Apple icon asset.",
     "ui/desktop/src/images/icon-light.png": "Binary PNG application asset.",
@@ -78,16 +82,16 @@ NOTICE_EXCEPTIONS = {
 EXPECTED_UPSTREAM_FILES = 2369
 EXPECTED_INCLUDED_UPSTREAM_FILES = 1514
 EXPECTED_EXCLUDED_UPSTREAM_FILES = 855
-EXPECTED_MODIFIED_FILES = 357
-EXPECTED_UNCHANGED_FILES = 1126
-EXPECTED_REMOVED_FILES = 31
+EXPECTED_MODIFIED_FILES = 368
+EXPECTED_UNCHANGED_FILES = 1109
+EXPECTED_REMOVED_FILES = 37
 EXPECTED_ADDED_FILES = 214
 EXPECTED_MANIFEST_SHA256 = "92274f915d061559f6f42a067bfbfe2ff49eedb5d453afd6900ca8c5220220d8"
 EXPECTED_PATH_SET_SHA256 = {
-    "modified": "f4d8b995064906a8d4af50259036fb22fcee6b7ebc01bababdb238d25da12af3",
-    "unchanged": "1c4686b12705f8bad66fa9b46a1d782c37f2e0e6248236a68c7a4c2615d1acd1",
+    "modified": "6667f78e9ea506dc8d3caf18ec712cb48e5e5eb76d7d40dde49d50a168e2b1ff",
+    "unchanged": "2a267d6ba28bc8b7c53523180d7a8eb0f7c3a48e1fa2d3610e0f3a3c39af4282",
     "added": "22d3036da31c39f0f08cd3bdcec472b61a174114bb7f723b92b1be751a5336b3",
-    "removed": "c7227aa5935c4d6ec219577c75f62e4ba81184812895889edd56dbf6c2a34b3e",
+    "removed": "fdb0c15a2cbf18f484b3c71f72ab9698374ac174d902a0a3e2d9f8d9274bf739",
     "excluded": "e151bf44b2acf79b34a680f7173a7fed91d9f532ff8897d3f931cda27822eb83",
 }
 
@@ -308,6 +312,12 @@ def _check_notices(inventory: Inventory) -> list[str]:
             errors.append(f"{relative_path}: missing prominent modification notice")
 
         lines = content.splitlines()
+        if Path(relative_path).suffix in {".cjs", ".js", ".mjs", ".ts", ".tsx"} and (
+            f"// {NOTICE_TEXT}" not in lines[:12]
+        ):
+            errors.append(
+                f"{relative_path}: JavaScript-family notices must use an inert // comment"
+            )
         if inventory.current[relative_path].mode == "100755" and (
             not lines or not lines[0].startswith("#!")
         ):

@@ -9,9 +9,7 @@ must still be called out explicitly.
 
 ## [Unreleased]
 
-No changes yet.
-
-## [0.1.0-alpha.1] - 2026-08-31
+## [0.1.0-alpha.1] - 2026-09-01
 
 Initial public engineering alpha, published as a source-only prerelease.
 
@@ -40,6 +38,13 @@ Initial public engineering alpha, published as a source-only prerelease.
 
 ### Changed
 
+- Hardened the desktop dependency graph and packaging toolchain; the checked
+  pnpm lockfile now reports no known vulnerabilities.
+- Replaced the JavaScript DMG builder with a native macOS packaging flow that
+  verifies the application, final stapled disk-image signature, Gatekeeper
+  assessment, disk-image structure, and mounted contents.
+- Refreshed the pinned RustSec advisory database revision used by reproducible
+  security checks.
 - Adopted the AccordLock product name across packages, commands, protocol
   identifiers, database objects, schemas, infrastructure, and documentation.
 - Introduced v2 authorization, approval, policy-evaluation, and execution-record
@@ -53,4 +58,6 @@ Initial public engineering alpha, published as a source-only prerelease.
 
 ### Removed
 
+- Removed the optional upstream PCTX-based code-execution mode and its stale
+  telemetry dependency graph from the AccordLock desktop source distribution.
 - Historical fixtures that depended on files outside the repository.

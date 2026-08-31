@@ -17,12 +17,12 @@ without placing invalid comments inside strict data formats or binary assets.
 
 - 2369 files in the pinned upstream tree
 - 855 upstream files under the two explicit exclusions
-- 357 inherited files modified and distributed
-- 341 modified text/source files with an in-file notice
-- 16 modified generated, strict-data, or binary files documented as exceptions
-- 1126 inherited files distributed unchanged
+- 368 inherited files modified and distributed
+- 351 modified text/source files with an in-file notice
+- 17 modified generated, strict-data, or binary files documented as exceptions
+- 1109 inherited files distributed unchanged
 - 214 AccordLock-only files
-- 31 other upstream files omitted from this distribution
+- 37 other upstream files omitted from this distribution
 
 The standard in-file notice is:
 
@@ -87,6 +87,7 @@ uses a schema-neutral top-level metadata field.
 - `Cargo.toml`
 - `Dockerfile`
 - `GOVERNANCE.md`
+- `Justfile`
 - `README.md`
 - `RELEASE.md`
 - `RELEASE_CHECKLIST.md`
@@ -118,11 +119,14 @@ uses a schema-neutral top-level metadata field.
 - `crates/goose/src/agents/platform_extensions/developer/mod.rs`
 - `crates/goose/src/agents/platform_extensions/developer/shell.rs`
 - `crates/goose/src/agents/platform_extensions/developer/tree.rs`
+- `crates/goose/src/agents/platform_extensions/mod.rs`
 - `crates/goose/src/agents/platform_extensions/summarize.rs`
 - `crates/goose/src/agents/prompt_manager.rs`
+- `crates/goose/src/agents/reply_parts.rs`
 - `crates/goose/src/agents/retry.rs`
 - `crates/goose/src/agents/state_machine/ops_compaction.rs`
 - `crates/goose/src/agents/state_machine/ops_doctor.rs`
+- `crates/goose/src/agents/state_machine/ops_llm.rs`
 - `crates/goose/src/agents/state_machine/ops_recipe.rs`
 - `crates/goose/src/agents/state_machine/ops_retry.rs`
 - `crates/goose/src/agents/state_machine/ops_toolcalling.rs`
@@ -155,6 +159,9 @@ uses a schema-neutral top-level metadata field.
 - `crates/goose/src/providers/toolshim.rs`
 - `crates/goose/src/providers/xai_oauth.rs`
 - `crates/goose/src/subprocess.rs`
+- `crates/goose/tests/acp_common_tests/mod.rs`
+- `crates/goose/tests/acp_provider_test.rs`
+- `crates/goose/tests/acp_server_test.rs`
 - `download_cli.ps1`
 - `download_cli.sh`
 - `recipe-scanner/Dockerfile`
@@ -196,6 +203,7 @@ uses a schema-neutral top-level metadata field.
 - `ui/desktop/src/bin/uvx`
 - `ui/desktop/src/components/BaseChat.tsx`
 - `ui/desktop/src/components/ChatInput.tsx`
+- `ui/desktop/src/components/ConfigContext.tsx`
 - `ui/desktop/src/components/ElicitationRequest.tsx`
 - `ui/desktop/src/components/ErrorBoundary.tsx`
 - `ui/desktop/src/components/ExtensionInstallModal.test.tsx`
@@ -376,6 +384,8 @@ uses a schema-neutral top-level metadata field.
 - `ui/desktop/vite.preload.config.mts`
 - `ui/desktop/vitest.config.ts`
 - `ui/package.json`
+- `ui/pnpm-workspace.yaml`
+- `ui/sdk/package.json`
 
 ## Modified inherited files documented out of band
 
@@ -387,6 +397,7 @@ recorded by the manifest and the repository history.
 | File | Why an in-file notice is unsafe |
 | --- | --- |
 | `Cargo.lock` | Cargo-generated lockfile; manual comments are not stable under regeneration. |
+| `crates/goose/src/agents/snapshots/goose__agents__prompt_manager__tests__all_platform_extensions.snap` | Insta-generated prompt snapshot; an in-file comment would change the asserted prompt or invalidate the snapshot metadata header. |
 | `ui/desktop/src/built-in-extensions.json` | Strict JSON array consumed as extension data; no schema-neutral comment or metadata location exists. |
 | `ui/desktop/src/components/settings/extensions/bundled-extensions.json` | Strict JSON array consumed as extension data; no schema-neutral comment or metadata location exists. |
 | `ui/desktop/src/i18n/messages/en.json` | Strict message-catalog JSON; an extra key changes the compiled catalog rather than recording inert metadata. |
@@ -636,6 +647,11 @@ repeated here. The following additional upstream files are not distributed:
 
 - `.github/CODEOWNERS`
 - `MAINTAINERS.md`
+- `MERGE_FIXES.md`
+- `crates/goose/src/agents/platform_extensions/code_execution.rs`
+- `crates/goose/tests/acp_test_data/openai_builtin_execute.txt`
+- `crates/goose/tests/acp_test_data/openai_builtin_final.txt`
+- `crates/goose/tests/acp_test_data/openai_builtin_search.txt`
 - `ui/desktop/.env`
 - `ui/desktop/scripts/i18n-validate-locale.js`
 - `ui/desktop/scripts/unregister-deeplink-protocols.js`
@@ -665,6 +681,7 @@ repeated here. The following additional upstream files are not distributed:
 - `ui/desktop/src/images/loading-goose/6.svg`
 - `ui/desktop/src/images/loading-goose/7.svg`
 - `ui/desktop/src/images/prepare.sh`
+- `ui/desktop/tests/integration/test_providers_code_exec.test.ts`
 
 ## Reproduce the audit
 

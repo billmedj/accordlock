@@ -161,7 +161,7 @@ impl From<ToolResult<rmcp::model::CallToolResult>> for ToolCallResult {
 use crate::agents::Agent;
 use crate::conversation::message::ToolRequest;
 use crate::session::Session;
-use crate::tool_inspection::get_security_finding_id_from_results;
+use crate::tool_inspection::{get_security_finding_id_from_results, InspectionResult};
 
 pub(super) enum ToolStreamItem<T> {
     ActionRequired(Message),
@@ -171,6 +171,16 @@ pub(super) enum ToolStreamItem<T> {
 
 pub(super) type ToolStream =
     Pin<Box<dyn Stream<Item = ToolStreamItem<ToolResult<CallToolResult>>> + Send>>;
+
+pub(super) struct PendingToolApprovals<'a> {
+    pub(super) tool_requests: &'a [ToolRequest],
+    pub(super) tool_futures: &'a mut Vec<(String, ToolStream)>,
+    pub(super) request_to_response_map: &'a mut HashMap<String, Message>,
+    pub(super) cancellation_token: Option<CancellationToken>,
+    pub(super) session: &'a Session,
+    pub(super) inspection_results: &'a [InspectionResult],
+    pub(super) assistant_message: &'a Message,
+}
 
 pub(super) fn tool_stream<S, A, F>(rx: S, action_required_rx: A, done: F) -> ToolStream
 where
@@ -216,14 +226,17 @@ pub const CHAT_MODE_TOOL_SKIPPED_RESPONSE: &str = "Let the user know the tool ca
 impl Agent {
     pub(super) fn handle_approval_tool_requests<'a>(
         &'a self,
-        tool_requests: &'a [ToolRequest],
-        tool_futures: &'a mut Vec<(String, ToolStream)>,
-        request_to_response_map: &'a mut HashMap<String, Message>,
-        cancellation_token: Option<CancellationToken>,
-        session: &'a Session,
-        inspection_results: &'a [crate::tool_inspection::InspectionResult],
-        assistant_message: &'a Message,
+        pending: PendingToolApprovals<'a>,
     ) -> BoxStream<'a, anyhow::Result<Message>> {
+        let PendingToolApprovals {
+            tool_requests,
+            tool_futures,
+            request_to_response_map,
+            cancellation_token,
+            session,
+            inspection_results,
+            assistant_message,
+        } = pending;
         try_stream! {
         for request in tool_requests.iter() {
             if let Ok(tool_call) = request.tool_call.clone() {

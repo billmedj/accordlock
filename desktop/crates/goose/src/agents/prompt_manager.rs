@@ -41,7 +41,6 @@ struct SystemPromptContext {
     goose_mode: GooseMode,
     is_autonomous: bool,
     enable_subagents: bool,
-    code_execution_mode: bool,
     include_extensions: bool,
     accordlock_distribution: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -56,7 +55,6 @@ pub struct SystemPromptBuilder<'a, M> {
     prompt_extras: IndexMap<String, String>,
     subagents_enabled: bool,
     hints: Option<String>,
-    code_execution_mode: bool,
     include_extensions: bool,
     goose_mode: Option<GooseMode>,
 }
@@ -84,11 +82,6 @@ impl<'a> SystemPromptBuilder<'a, PromptManager> {
         extras: impl IntoIterator<Item = (String, String)>,
     ) -> Self {
         self.prompt_extras.extend(extras);
-        self
-    }
-
-    pub fn with_code_execution_mode(mut self, enabled: bool) -> Self {
-        self.code_execution_mode = enabled;
         self
     }
 
@@ -151,7 +144,6 @@ impl<'a> SystemPromptBuilder<'a, PromptManager> {
             goose_mode,
             is_autonomous: goose_mode == GooseMode::Auto,
             enable_subagents: self.subagents_enabled,
-            code_execution_mode: self.code_execution_mode,
             include_extensions: self.include_extensions,
             accordlock_distribution: cfg!(feature = "accordlock-distribution"),
             moim_system_prompt_block: moim::system_prompt_block(),
@@ -200,15 +192,17 @@ impl<'a> SystemPromptBuilder<'a, PromptManager> {
 
         #[cfg(feature = "accordlock-distribution")]
         {
-            return format!(
+            format!(
                 "{}\n\n{}",
                 composed_prompt,
                 ACCORDLOCK_DISTRIBUTION_BOUNDARY.trim()
-            );
+            )
         }
 
         #[cfg(not(feature = "accordlock-distribution"))]
-        composed_prompt
+        {
+            composed_prompt
+        }
     }
 }
 
@@ -295,7 +289,6 @@ impl PromptManager {
             prompt_extras: IndexMap::new(),
             subagents_enabled: false,
             hints: None,
-            code_execution_mode: false,
             include_extensions: true,
             goose_mode: None,
         }
