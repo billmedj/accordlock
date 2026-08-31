@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:schema:intent-evidence-request:2",
+  "title": "AccordLock Intent Evidence Request",
+  "description": "A hash-only control-plane request for one bounded evidence-provider evaluation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "evaluation_profile",
+    "task_hash",
+    "trace_id",
+    "requirement_hash",
+    "stage",
+    "request_hash",
+    "proposal_hash",
+    "context_hash",
+    "profile_hash",
+    "resolver_policy_hash",
+    "disclosure_policy",
+    "challenge_hash",
+    "requested_at"
+  ],
+  "properties": {
+    "schema_version": { "const": 2 },
+    "request_id": { "$ref": "#/$defs/uuid" },
+    "evaluation_profile": { "$ref": "#/$defs/profile" },
+    "task_hash": { "$ref": "#/$defs/digest" },
+    "trace_id": { "$ref": "#/$defs/uuid" },
+    "requirement_hash": { "$ref": "#/$defs/digest" },
+    "stage": { "$ref": "#/$defs/stage" },
+    "request_hash": { "$ref": "#/$defs/digest" },
+    "proposal_hash": { "$ref": "#/$defs/digest" },
+    "context_hash": { "$ref": "#/$defs/digest" },
+    "profile_hash": { "$ref": "#/$defs/digest" },
+    "resolver_policy_hash": { "$ref": "#/$defs/digest" },
+    "disclosure_policy": { "$ref": "#/$defs/disclosurePolicy" },
+    "challenge_hash": { "$ref": "#/$defs/digest" },
+    "requested_at": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["evaluation_profile"],
+        "properties": { "evaluation_profile": { "const": "PRE_EXECUTION" } }
+      },
+      "then": {
+        "properties": { "stage": { "enum": ["REQUEST", "PLAN", "ACTION"] } }
+      }
+    }
+  ],
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "not": { "const": "sha256:0000000000000000000000000000000000000000000000000000000000000000" }
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "not": { "const": "00000000-0000-0000-0000-000000000000" }
+    },
+    "profile": { "enum": ["PRE_EXECUTION", "COMPLETE_TRACE"] },
+    "stage": { "enum": ["REQUEST", "PLAN", "ACTION", "RESULT"] },
+    "disclosurePolicy": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": { "mode": { "const": "LOCAL_ONLY" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "provider_id_hash", "egress_policy_hash", "provider_trust_root", "egress_authority_root"],
+          "properties": {
+            "mode": { "const": "ALLOWLISTED_EXTERNAL" },
+            "provider_id_hash": { "$ref": "#/$defs/digest" },
+            "egress_policy_hash": { "$ref": "#/$defs/digest" },
+            "provider_trust_root": { "$ref": "#/$defs/digest" },
+            "egress_authority_root": { "$ref": "#/$defs/digest" }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": 2,
+  "request_id": "00000000-0000-0000-0000-000000000003",
+  "evaluation_profile": "PRE_EXECUTION",
+  "task_hash": "sha256:0101010101010101010101010101010101010101010101010101010101010101",
+  "trace_id": "00000000-0000-0000-0000-000000000002",
+  "requirement_hash": "sha256:0303030303030303030303030303030303030303030303030303030303030303",
+  "stage": "REQUEST",
+  "request_hash": "sha256:b5add6ca493172ed46db502a3d36bee31059e655d324a7b4ce0560ca7891246b",
+  "proposal_hash": "sha256:bfc4f2cf581d199a87b91bf1b63b6c8ff029e07568a8356a575e7d1a10c6f3a7",
+  "context_hash": "sha256:fa1c559a2502444e71733de03af4a709a0edcc46737a6d18a18582fc1a0cf4a8",
+  "profile_hash": "sha256:5f65c4ed8bac43c655330da63775bf56972c0b184dd66e1528eab6bd58d47166",
+  "resolver_policy_hash": "sha256:0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+  "disclosure_policy": { "mode": "LOCAL_ONLY" },
+  "challenge_hash": "sha256:0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+  "requested_at": 1000
+}

@@ -1,0 +1,200 @@
+{
+  "schema_version": "accordlock.conformance.scenario.v0.1",
+  "id": "DP-103R",
+  "title": "Repaired admission case: no mutation outside the exact authorized paths",
+  "classification": "synthetic_repaired_twin",
+  "status": "preimplementation_oracle",
+  "g0_evidence": false,
+  "repairs": "DP-103",
+  "fixture_ref": "../common-fixture.json#DEPLOY_FIXTURE_001",
+  "repair": {
+    "removed_mutator": "synthetic-add-debug-sidecar-v1",
+    "authorized_post_mutation_paths": [
+      "/spec/template/spec/containers/0/image",
+      "/metadata/annotations/accordlock.io~1transaction-id",
+      "/metadata/annotations/accordlock.io~1authorization-id",
+      "/metadata/annotations/accordlock.io~1operation-hash"
+    ],
+    "unauthorized_post_mutation_path_count": 0,
+    "all_other_security_inputs_unchanged": true
+  },
+  "requirements": [
+    "FR-018",
+    "FR-035",
+    "FR-041",
+    "SEC-002",
+    "SEC-024",
+    "SEC-031"
+  ],
+  "assumptions": [
+    "All common-fixture lineage, authority, freshness, mediation, target, time, and trusted-path assumptions hold.",
+    "The fully mutated proposed Deployment differs from oldObject only at the selected image and three reserved annotation paths.",
+    "Kubernetes admission and persistence implement the declared local profile."
+  ],
+  "residual_limits": [
+    "Admission success establishes the declared object delta, not payload safety of the deployed image.",
+    "The fixture is synthetic and is not customer or G0 evidence."
+  ],
+  "action_proposal": {
+    "tenant_id": "example-org",
+    "environment_id": "prod",
+    "client_request_id": "synthetic-dp-103r",
+    "api_idempotency_key": "idem-dp-103r",
+    "grant_selector": "grant-example-org-prod-deploy-001",
+    "action_class": "deploy.release",
+    "operation": "DEPLOY_EKS_IMAGE_V1",
+    "repository": "example-org/payments",
+    "commit": "1111111111111111111111111111111111111111",
+    "image": "111122223333.dkr.ecr.us-east-1.amazonaws.com/example-org/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "cluster": "eks:us-east-1:111122223333:cluster/prod-1",
+    "namespace": "payments-prod",
+    "deployment_name": "payments",
+    "deployment_uid": "11111111-2222-4333-8444-555555555555",
+    "container_name": "app"
+  },
+  "timeline": [
+    {
+      "sequence": 1,
+      "at_ms": 1786752000000,
+      "barrier": "INITIAL_STATE",
+      "event": "Load the valid common fixture without the unauthorized mutator."
+    },
+    {
+      "sequence": 2,
+      "at_ms": 1786752001000,
+      "barrier": "ACTION_PROPOSED",
+      "event": "Submit commit A and digest A."
+    },
+    {
+      "sequence": 3,
+      "at_ms": 1786752011000,
+      "barrier": "VALIDATING_ADMISSION",
+      "event": "Validate a complete post-mutation projection containing only four authorized path changes."
+    },
+    {
+      "sequence": 4,
+      "at_ms": 1786752015000,
+      "barrier": "PROVIDER_RESULT",
+      "event": "Kubernetes persists the exact authorized update and rollout reaches the declared success state."
+    },
+    {
+      "sequence": 5,
+      "at_ms": 1786752140000,
+      "barrier": "CREDENTIAL_RETIRED",
+      "event": "Retire the credential and finalize the transaction."
+    }
+  ],
+  "expected": {
+    "plain_policy": {
+      "decision": "ALLOW",
+      "state_sequence": [
+        "RECEIVED",
+        "AUTHENTICATED",
+        "POLICY_EVALUATED_ALLOW",
+        "PROVIDER_PATCH_SUBMITTED",
+        "PROVIDER_ACCEPTED"
+      ],
+      "terminal_state": "PROVIDER_ACCEPTED",
+      "reason_codes": [
+        "ALLOW"
+      ],
+      "counts": {
+        "evaluations": 1,
+        "allow_decisions": 1,
+        "deny_decisions": 0,
+        "deny_receipts": 0,
+        "execution_authorizations_issued": 0,
+        "successful_authorization_consumptions": 0,
+        "rejected_authorization_consumptions": 0,
+        "bound_objects_created": 0,
+        "credentials_issued": 0,
+        "effect_releases": 0,
+        "credential_handoffs": 0,
+        "provider_patch_attempts": 1,
+        "stored_protected_effects": 1,
+        "automatic_patch_retries": 0,
+        "credential_retirements": 0,
+        "transactions_final": 1
+      },
+      "final_resource": {
+        "image_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "container_names": [
+          "app"
+        ],
+        "service_account_name": "payments-runtime",
+        "unauthorized_projected_delta_count": 0
+      }
+    },
+    "accordlock": {
+      "decision": "ALLOW",
+      "state_sequence": [
+        "PROPOSED",
+        "EVALUATING",
+        "EVALUATED_ALLOW",
+        "EVIDENCE_DURABLE",
+        "SIGNING",
+        "AUTHORIZATION_ISSUED",
+        "CONSUMING",
+        "AUTHORIZATION_CONSUMED",
+        "CONSUMPTION_WITNESSING",
+        "CONSUMPTION_WITNESSED",
+        "DISPATCH_CHECKING",
+        "BOUND_OBJECT_CREATE_PENDING",
+        "CREDENTIAL_PREPARED",
+        "CREDENTIAL_ISSUING",
+        "CREDENTIAL_READY",
+        "RELEASE_CHECKING",
+        "EFFECT_RELEASED",
+        "EXECUTING",
+        "EXECUTED",
+        "TRANSACTION_FINAL"
+      ],
+      "provider_terminal_state": "EXECUTED",
+      "transaction_terminal_state": "TRANSACTION_FINAL",
+      "reason_codes": [
+        "ALLOW"
+      ],
+      "counts": {
+        "evaluations": 1,
+        "allow_decisions": 1,
+        "deny_decisions": 0,
+        "deny_receipts": 0,
+        "execution_authorizations_issued": 1,
+        "successful_authorization_consumptions": 1,
+        "rejected_authorization_consumptions": 0,
+        "bound_objects_created": 1,
+        "credentials_issued": 1,
+        "effect_releases": 1,
+        "credential_handoffs": 1,
+        "provider_patch_attempts": 1,
+        "stored_protected_effects": 1,
+        "automatic_patch_retries": 0,
+        "credential_retirements": 1,
+        "transactions_final": 1
+      },
+      "final_resource": {
+        "deployment_uid": "11111111-2222-4333-8444-555555555555",
+        "image_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "container_names": [
+          "app"
+        ],
+        "service_account_name": "payments-runtime",
+        "reserved_annotation_count": 3,
+        "unauthorized_projected_delta_count": 0,
+        "rollout_condition": "AVAILABLE"
+      },
+      "replay": {
+        "required": true,
+        "model_invocations": 0,
+        "historical_policy_decision": "ALLOW",
+        "historical_provider_terminal_state": "EXECUTED",
+        "agreement": true,
+        "missing_object_count": 0
+      }
+    }
+  },
+  "forbidden_outputs": [
+    "Any field delta outside the selected image and three reserved annotations.",
+    "Any second authorization consumption, credential lifecycle, or provider patch attempt."
+  ]
+}

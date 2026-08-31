@@ -1,0 +1,22 @@
+[package]
+name = "accordlock-executor"
+autotests = false
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+accordlock-dispatch = { path = "../accordlock-dispatch" }
+accordlock-eks-profile = { path = "../accordlock-eks-profile" }
+accordlock-k8s = { path = "../accordlock-k8s" }
+accordlock-protocol = { path = "../accordlock-protocol" }
+
+[lints]
+workspace = true

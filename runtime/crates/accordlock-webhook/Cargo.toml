@@ -1,0 +1,30 @@
+[package]
+name = "accordlock-webhook"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[dependencies]
+axum.workspace = true
+axum-server.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+accordlock-admission = { path = "../accordlock-admission" }
+accordlock-state = { path = "../accordlock-state" }
+thiserror.workspace = true
+tokio.workspace = true
+tower-http.workspace = true
+
+[dev-dependencies]
+accordlock-dispatch = { path = "../accordlock-dispatch" }
+accordlock-k8s = { path = "../accordlock-k8s" }
+accordlock-protocol = { path = "../accordlock-protocol" }
+rcgen.workspace = true
+tower.workspace = true
+uuid.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,42 @@
+[package]
+name = "accordlock-preflight-runner"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[dependencies]
+accordlock-connectors = { path = "../accordlock-connectors" }
+accordlock-evaluation = { path = "../accordlock-evaluation" }
+accordlock-ingress = { path = "../accordlock-ingress" }
+accordlock-kernel = { path = "../accordlock-kernel" }
+accordlock-protocol = { path = "../accordlock-protocol" }
+accordlock-provider-adapters = { path = "../accordlock-provider-adapters" }
+accordlock-runner-engine = { path = "../accordlock-runner-engine" }
+accordlock-runner-protocol = { path = "../accordlock-runner-protocol" }
+base64.workspace = true
+clap.workspace = true
+ed25519-dalek.workspace = true
+hex.workspace = true
+hmac.workspace = true
+httparse.workspace = true
+rand.workspace = true
+rustls.workspace = true
+rustls-pki-types.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+subtle.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+webpki-roots.workspace = true
+zeroize.workspace = true
+
+[dev-dependencies]
+rcgen.workspace = true
+tempfile = "3.23.0"
+
+[lints]
+workspace = true

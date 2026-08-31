@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "capture_id": "urn:uuid:00000000-0000-4000-8000-000000000000",
+  "generated_at": "2026-08-16T00:00:00Z",
+  "activation_context": {
+    "tenant": "REPLACE_WITH_TENANT",
+    "environment": "REPLACE_WITH_ENVIRONMENT",
+    "cluster_identity": "REPLACE_WITH_EXACT_EKS_CLUSTER_ARN",
+    "release_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "route_commitment": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "activation_context_commitment": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "workload_zones": [
+    "replace-with-every-workload-zone"
+  ],
+  "evidence": []
+}

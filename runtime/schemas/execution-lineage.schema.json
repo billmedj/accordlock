@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:schema:execution-lineage:2",
+  "title": "AccordLock Execution Lineage",
+  "description": "A content-minimized commitment chain from one approved task to one completed execution record. It retains workspace, session, and run metadata and must be handled as sensitive local state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_id",
+    "session_id",
+    "run_id",
+    "workspace_root",
+    "policy_epoch",
+    "task_objective_hash",
+    "task_policy_hash",
+    "tool_proposal_hash",
+    "execution_request_hash",
+    "intent_evaluation_hash",
+    "authorization_decision_hash",
+    "execution_authorization_hash",
+    "execution_record_hash",
+    "started_at",
+    "completed_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "not": {
+        "const": "00000000-0000-0000-0000-000000000000"
+      }
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "workspace_root": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "policy_epoch": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9223372036854775807
+    },
+    "task_objective_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "task_policy_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "tool_proposal_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "execution_request_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "intent_evaluation_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "authorization_decision_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "execution_authorization_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "execution_record_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "started_at": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9223372036854775807
+    },
+    "completed_at": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9223372036854775807
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

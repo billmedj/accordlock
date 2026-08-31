@@ -1,0 +1,50 @@
+{
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "name": "payments",
+    "namespace": "accordlock-demo",
+    "uid": "11111111-2222-4333-8444-555555555555",
+    "resourceVersion": "1234",
+    "generation": 1,
+    "labels": {
+      "accordlock.io/profile": "deploy-eks-image-v1"
+    },
+    "annotations": {
+      "accordlock.io/transaction-id": "unset",
+      "accordlock.io/authorization-id": "unset",
+      "accordlock.io/operation-hash": "unset",
+      "deployment.kubernetes.io/revision": "1"
+    },
+    "managedFields": []
+  },
+  "spec": {
+    "replicas": 1,
+    "selector": {
+      "matchLabels": {
+        "app": "payments"
+      }
+    },
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "payments"
+        }
+      },
+      "spec": {
+        "serviceAccountName": "payments-runtime",
+        "automountServiceAccountToken": false,
+        "containers": [
+          {
+            "name": "app",
+            "image": "docker.io/library/nginx@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ]
+      }
+    }
+  },
+  "status": {
+    "availableReplicas": 1
+  }
+}

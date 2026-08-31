@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use AccordLock in research, please cite the software using this metadata."
+title: "AccordLock"
+type: software
+authors:
+  - family-names: "Medjani"
+    given-names: "Bilal"
+license: "Apache-2.0"
+version: "0.1.0-alpha.1"
+abstract: >-
+  AccordLock is an execution-integrity system for binding an authorized
+  operation to verified evidence, current authority state, a specific target,
+  and a bounded effect.
+keywords:
+  - execution integrity
+  - authorization
+  - Kubernetes
+  - cloud security
+  - AI agents
+  - provenance

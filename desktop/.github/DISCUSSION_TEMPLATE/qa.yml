@@ -1,0 +1,27 @@
+title: "Question: [Brief summary]"
+labels:
+  - help
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search existing issues and discussions first. If diagnostics are useful,
+        remove credentials, personal data, and local paths before attaching them.
+        Security vulnerabilities must be reported privately through the Security tab.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the question, expected outcome, and relevant context.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Tell us how to reproduce the issue — commands, steps, or context.
+  - type: textarea
+    id: version
+    attributes:
+      label: AccordLock version and environment
+      description: Include the version or commit, operating system, and interface if known.

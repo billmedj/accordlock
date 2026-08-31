@@ -1,0 +1,5255 @@
+{
+  "accordLock.networkAccess.boundary": {
+    "defaultMessage": "Redirects, proxies, credentials and local addresses are blocked."
+  },
+  "accordLock.networkAccess.description": {
+    "defaultMessage": "Allow GET and HEAD requests to specific HTTPS domains. Each request needs approval."
+  },
+  "accordLock.networkAccess.hint": {
+    "defaultMessage": "One lowercase domain per line. No wildcards, URLs, ports, local addresses or credentials."
+  },
+  "accordLock.networkAccess.invalid": {
+    "defaultMessage": "Use exact lowercase public domains, one per line."
+  },
+  "accordLock.networkAccess.label": {
+    "defaultMessage": "Allowed domains"
+  },
+  "accordLock.networkAccess.loadError": {
+    "defaultMessage": "Network access couldn't be loaded. Web requests remain unavailable."
+  },
+  "accordLock.networkAccess.loading": {
+    "defaultMessage": "Loading…"
+  },
+  "accordLock.networkAccess.off": {
+    "defaultMessage": "Off"
+  },
+  "accordLock.networkAccess.placeholder": {
+    "defaultMessage": "api.example.com status.example.com"
+  },
+  "accordLock.networkAccess.ready": {
+    "defaultMessage": "{count} allowed"
+  },
+  "accordLock.networkAccess.restart": {
+    "defaultMessage": "Restart now"
+  },
+  "accordLock.networkAccess.restartRequired": {
+    "defaultMessage": "Restart AccordLock to apply these changes."
+  },
+  "accordLock.networkAccess.save": {
+    "defaultMessage": "Save domains"
+  },
+  "accordLock.networkAccess.saveError": {
+    "defaultMessage": "Network access wasn't changed."
+  },
+  "accordLock.networkAccess.saving": {
+    "defaultMessage": "Saving…"
+  },
+  "accordLock.networkAccess.title": {
+    "defaultMessage": "Network access"
+  },
+  "accordLock.taskAuthorization.cancel": {
+    "defaultMessage": "Cancel task"
+  },
+  "accordLock.taskAuthorization.cancellingDescription": {
+    "defaultMessage": "No task access will be granted."
+  },
+  "accordLock.taskAuthorization.cancellingTitle": {
+    "defaultMessage": "Cancelling task…"
+  },
+  "accordLock.taskAuthorization.errorDescription": {
+    "defaultMessage": "Try again or cancel the task."
+  },
+  "accordLock.taskAuthorization.errorTitle": {
+    "defaultMessage": "Couldn’t open confirmation"
+  },
+  "accordLock.taskAuthorization.keepLocked": {
+    "defaultMessage": "Close"
+  },
+  "accordLock.taskAuthorization.openingDescription": {
+    "defaultMessage": "Review the folder and allowed actions."
+  },
+  "accordLock.taskAuthorization.openingTitle": {
+    "defaultMessage": "Opening task review…"
+  },
+  "accordLock.taskAuthorization.protocolDescription": {
+    "defaultMessage": "AccordLock could not verify this task. No actions can run. Restart AccordLock and try again."
+  },
+  "accordLock.taskAuthorization.protocolTitle": {
+    "defaultMessage": "Task blocked"
+  },
+  "accordLock.taskAuthorization.retry": {
+    "defaultMessage": "Try again"
+  },
+  "accordLock.terminalPrograms.addError": {
+    "defaultMessage": "The program was not added. Choose a native executable and a safe alias."
+  },
+  "accordLock.terminalPrograms.aliasError": {
+    "defaultMessage": "Use 1–64 lowercase letters, numbers, hyphens or underscores. Shell aliases are not accepted."
+  },
+  "accordLock.terminalPrograms.aliasLabel": {
+    "defaultMessage": "Program alias"
+  },
+  "accordLock.terminalPrograms.aliasPlaceholder": {
+    "defaultMessage": "Alias, for example cargo"
+  },
+  "accordLock.terminalPrograms.choose": {
+    "defaultMessage": "Choose executable…"
+  },
+  "accordLock.terminalPrograms.description": {
+    "defaultMessage": "Add a short name for one specific native program. Choose the program in the system file picker; typed paths are not accepted."
+  },
+  "accordLock.terminalPrograms.empty": {
+    "defaultMessage": "No program is allowed by default."
+  },
+  "accordLock.terminalPrograms.loadError": {
+    "defaultMessage": "Allowed programs could not be loaded. No terminal program was added."
+  },
+  "accordLock.terminalPrograms.loading": {
+    "defaultMessage": "Loading allowed programs…"
+  },
+  "accordLock.terminalPrograms.optIn": {
+    "defaultMessage": "None by default"
+  },
+  "accordLock.terminalPrograms.remove": {
+    "defaultMessage": "Remove {alias}"
+  },
+  "accordLock.terminalPrograms.removeError": {
+    "defaultMessage": "The allowed program could not be removed safely."
+  },
+  "accordLock.terminalPrograms.restart": {
+    "defaultMessage": "Restart now"
+  },
+  "accordLock.terminalPrograms.restartRequired": {
+    "defaultMessage": "Restart AccordLock to activate the updated allowed-program set."
+  },
+  "accordLock.terminalPrograms.title": {
+    "defaultMessage": "Allowed programs"
+  },
+  "accordLock.terminalPrograms.warning": {
+    "defaultMessage": "An allowed program can change files or settings anywhere your account can access. AccordLock shows its full path and SHA-256 before each run requires approval."
+  },
+  "accordLock.terminalPrograms.warningTitle": {
+    "defaultMessage": "Runs outside the workspace."
+  },
+  "acpReadinessPanel.adapterFound": {
+    "defaultMessage": "Provider available"
+  },
+  "acpReadinessPanel.adapterNotFound": {
+    "defaultMessage": "Provider setup required"
+  },
+  "acpReadinessPanel.authenticationHelp": {
+    "defaultMessage": "Sign in to your provider, then check again."
+  },
+  "acpReadinessPanel.checkAgain": {
+    "defaultMessage": "Check again"
+  },
+  "acpReadinessPanel.checking": {
+    "defaultMessage": "Checking..."
+  },
+  "acpReadinessPanel.connected": {
+    "defaultMessage": "Account connected"
+  },
+  "acpReadinessPanel.connectionFailed": {
+    "defaultMessage": "Could not verify this provider. Check its setup and try again."
+  },
+  "acpReadinessPanel.connectionNotChecked": {
+    "defaultMessage": "Check the connection to continue."
+  },
+  "acpReadinessPanel.refreshFailed": {
+    "defaultMessage": "Could not refresh provider status."
+  },
+  "alertBox.autoCompactAt": {
+    "defaultMessage": "Auto compact at"
+  },
+  "alertBox.compactNow": {
+    "defaultMessage": "Compact now"
+  },
+  "alertBox.failedToSaveThreshold": {
+    "defaultMessage": "Failed to save threshold: {error}"
+  },
+  "announcementModal.gotIt": {
+    "defaultMessage": "Got it!"
+  },
+  "appLayout.collapseNavigation": {
+    "defaultMessage": "Collapse navigation"
+  },
+  "appLayout.openNavigation": {
+    "defaultMessage": "Open navigation"
+  },
+  "appsView.customApp": {
+    "defaultMessage": "Custom app"
+  },
+  "appsView.deleteApp": {
+    "defaultMessage": "Delete app"
+  },
+  "appsView.deleteConfirm": {
+    "defaultMessage": "Delete \"{name}\"? This cannot be undone."
+  },
+  "appsView.description": {
+    "defaultMessage": "Applications from your MCP servers and apps built during AccordLock tasks."
+  },
+  "appsView.errorLoading": {
+    "defaultMessage": "Error loading apps: {error}"
+  },
+  "appsView.errorPrefix": {
+    "defaultMessage": "Error: {error}"
+  },
+  "appsView.importApp": {
+    "defaultMessage": "Import App"
+  },
+  "appsView.launch": {
+    "defaultMessage": "Launch"
+  },
+  "appsView.loading": {
+    "defaultMessage": "Loading apps..."
+  },
+  "appsView.noAppsDescription": {
+    "defaultMessage": "Start a task and describe the app you need, or import an app that someone shared with you."
+  },
+  "appsView.noAppsTitle": {
+    "defaultMessage": "No apps available"
+  },
+  "appsView.retiredChatApp": {
+    "defaultMessage": "Chat app retired"
+  },
+  "appsView.retiredChatAppDetail": {
+    "defaultMessage": "We removed this feature because MCP sampling is no longer supported."
+  },
+  "appsView.retry": {
+    "defaultMessage": "Retry"
+  },
+  "appsView.title": {
+    "defaultMessage": "Apps"
+  },
+  "authSettings.activeProviderWarning": {
+    "defaultMessage": "This provider may stop working until another credential is configured."
+  },
+  "authSettings.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "authSettings.connectProvider": {
+    "defaultMessage": "Connect provider"
+  },
+  "authSettings.credential": {
+    "defaultMessage": "Credential"
+  },
+  "authSettings.delete": {
+    "defaultMessage": "Remove"
+  },
+  "authSettings.deleteCredential": {
+    "defaultMessage": "Remove credential"
+  },
+  "authSettings.deleteMessage": {
+    "defaultMessage": "Remove the credential for {provider}?"
+  },
+  "authSettings.deleteTitle": {
+    "defaultMessage": "Remove credential"
+  },
+  "authSettings.deleted": {
+    "defaultMessage": "Credential removed"
+  },
+  "authSettings.description": {
+    "defaultMessage": "Saved on this device."
+  },
+  "authSettings.empty": {
+    "defaultMessage": "No credentials saved."
+  },
+  "authSettings.expiresAt": {
+    "defaultMessage": "Expires {date}"
+  },
+  "authSettings.failedToConfigure": {
+    "defaultMessage": "Failed to configure credential: {error}"
+  },
+  "authSettings.failedToDelete": {
+    "defaultMessage": "Failed to delete credential: {error}"
+  },
+  "authSettings.failedToLoad": {
+    "defaultMessage": "Failed to load provider credentials"
+  },
+  "authSettings.loading": {
+    "defaultMessage": "Loading credentials..."
+  },
+  "authSettings.notConnected": {
+    "defaultMessage": "Not connected"
+  },
+  "authSettings.reauthorize": {
+    "defaultMessage": "Reauthorize"
+  },
+  "authSettings.saved": {
+    "defaultMessage": "Saved"
+  },
+  "authSettings.signIn": {
+    "defaultMessage": "Sign in"
+  },
+  "authSettings.signedIn": {
+    "defaultMessage": "Credential saved"
+  },
+  "authSettings.title": {
+    "defaultMessage": "Provider credentials"
+  },
+  "backButton.back": {
+    "defaultMessage": "Back"
+  },
+  "baseChat.endTaskFailed": {
+    "defaultMessage": "Work stopped, but AccordLock could not confirm that Task access ended. Wait for the security runtime before continuing."
+  },
+  "baseChat.failedToLoadSession": {
+    "defaultMessage": "Could not load task"
+  },
+  "baseChat.goHome": {
+    "defaultMessage": "Go home"
+  },
+  "baseChat.reconnecting": {
+    "defaultMessage": "Connection lost. Reconnecting…"
+  },
+  "baseChat.retry": {
+    "defaultMessage": "Retry"
+  },
+  "baseChat.taskInputRequired": {
+    "defaultMessage": "Start a new task with a text goal and no attachments. You can add context after approval."
+  },
+  "bottomMenuExtensionSelection.extensionUpdated": {
+    "defaultMessage": "Extension Updated"
+  },
+  "bottomMenuExtensionSelection.extensionWillBeDisabled": {
+    "defaultMessage": "{name} will be disabled in new tasks"
+  },
+  "bottomMenuExtensionSelection.extensionWillBeEnabled": {
+    "defaultMessage": "{name} will be enabled in new tasks"
+  },
+  "bottomMenuExtensionSelection.extensionsForNewChats": {
+    "defaultMessage": "Tools for new tasks"
+  },
+  "bottomMenuExtensionSelection.extensionsForThisSession": {
+    "defaultMessage": "Tools for this task"
+  },
+  "bottomMenuExtensionSelection.manageExtensions": {
+    "defaultMessage": "manage extensions"
+  },
+  "bottomMenuExtensionSelection.noExtensionsAvailable": {
+    "defaultMessage": "no extensions available"
+  },
+  "bottomMenuExtensionSelection.noExtensionsFound": {
+    "defaultMessage": "no extensions found"
+  },
+  "bottomMenuExtensionSelection.searchExtensions": {
+    "defaultMessage": "search extensions..."
+  },
+  "cardButtons.configure": {
+    "defaultMessage": "Configure"
+  },
+  "cardButtons.launch": {
+    "defaultMessage": "Launch"
+  },
+  "chatInput.contextWindow": {
+    "defaultMessage": "Context window"
+  },
+  "chatInput.dictationError": {
+    "defaultMessage": "Dictation Error"
+  },
+  "chatInput.failedToReadImage": {
+    "defaultMessage": "Failed to read image file"
+  },
+  "chatInput.navigationShortcut": {
+    "defaultMessage": "{prefix}↑/{prefix}↓ to navigate messages"
+  },
+  "chatInput.processingDroppedFiles": {
+    "defaultMessage": "Processing dropped files..."
+  },
+  "chatInput.recording": {
+    "defaultMessage": "Recording..."
+  },
+  "chatInput.removeFile": {
+    "defaultMessage": "Remove file"
+  },
+  "chatInput.removeImage": {
+    "defaultMessage": "Remove image"
+  },
+  "chatInput.restartingSession": {
+    "defaultMessage": "Restarting task…"
+  },
+  "chatInput.send": {
+    "defaultMessage": "Send"
+  },
+  "chatInput.starting": {
+    "defaultMessage": "Starting…"
+  },
+  "chatInput.transcribing": {
+    "defaultMessage": "Transcribing..."
+  },
+  "chatInput.typeMessage": {
+    "defaultMessage": "Type a message to send"
+  },
+  "chatInput.unknownType": {
+    "defaultMessage": "Unknown type"
+  },
+  "chatInput.viewEditRecipe": {
+    "defaultMessage": "Edit playbook"
+  },
+  "chatInput.waitingForCancellation": {
+    "defaultMessage": "Waiting for cancellation to finish"
+  },
+  "chatInput.waitingForImages": {
+    "defaultMessage": "Waiting for images to save..."
+  },
+  "chatSettings.inputDescription": {
+    "defaultMessage": "Choose how you speak and type task instructions."
+  },
+  "chatSettings.inputTitle": {
+    "defaultMessage": "Input"
+  },
+  "chatSettings.responseStylesDescription": {
+    "defaultMessage": "Choose how much action detail AccordLock shows."
+  },
+  "chatSettings.responseStylesTitle": {
+    "defaultMessage": "Responses"
+  },
+  "configSettings.configReset": {
+    "defaultMessage": "Configuration Reset"
+  },
+  "configSettings.configResetMsg": {
+    "defaultMessage": "All changes have been reverted"
+  },
+  "configSettings.configUpdated": {
+    "defaultMessage": "Configuration Updated"
+  },
+  "configSettings.configUpdatedMsg": {
+    "defaultMessage": "Saved \"{name}\""
+  },
+  "configSettings.configurationEditor": {
+    "defaultMessage": "Configuration Editor"
+  },
+  "configSettings.description": {
+    "defaultMessage": "Edit your AccordLock configuration settings"
+  },
+  "configSettings.descriptionWithProvider": {
+    "defaultMessage": "Edit your AccordLock configuration settings (current settings for {provider})"
+  },
+  "configSettings.done": {
+    "defaultMessage": "Done"
+  },
+  "configSettings.editConfiguration": {
+    "defaultMessage": "Edit Configuration"
+  },
+  "configSettings.enterValue": {
+    "defaultMessage": "Enter {name}"
+  },
+  "configSettings.noSettings": {
+    "defaultMessage": "No configuration settings found."
+  },
+  "configSettings.resetChanges": {
+    "defaultMessage": "Reset Changes"
+  },
+  "configSettings.saveFailed": {
+    "defaultMessage": "Save Failed"
+  },
+  "configSettings.saveFailedMsg": {
+    "defaultMessage": "Failed to save \"{name}\""
+  },
+  "configSettings.saving": {
+    "defaultMessage": "Saving..."
+  },
+  "configSettings.title": {
+    "defaultMessage": "Configuration"
+  },
+  "configureApproveMode.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "configureApproveMode.description": {
+    "defaultMessage": "Approve requests can either be given to all tool requests or determine which actions may need integration"
+  },
+  "configureApproveMode.manualApproval": {
+    "defaultMessage": "Manual approval"
+  },
+  "configureApproveMode.manualApprovalDescription": {
+    "defaultMessage": "All tools, extensions and file modifications will require human approval"
+  },
+  "configureApproveMode.save": {
+    "defaultMessage": "Save"
+  },
+  "configureApproveMode.saving": {
+    "defaultMessage": "Saving..."
+  },
+  "configureApproveMode.smartApproval": {
+    "defaultMessage": "Smart approval"
+  },
+  "configureApproveMode.smartApprovalDescription": {
+    "defaultMessage": "Intelligently determine which actions need approval based on risk level"
+  },
+  "configureApproveMode.title": {
+    "defaultMessage": "Configure approve mode"
+  },
+  "confirmationModal.defaultCancel": {
+    "defaultMessage": "No"
+  },
+  "confirmationModal.defaultConfirm": {
+    "defaultMessage": "Yes"
+  },
+  "confirmationModal.processing": {
+    "defaultMessage": "Processing..."
+  },
+  "conversationLimitsDropdown.conversationLimits": {
+    "defaultMessage": "Conversation Limits"
+  },
+  "conversationLimitsDropdown.maxTurns": {
+    "defaultMessage": "Max Turns"
+  },
+  "conversationLimitsDropdown.maxTurnsDescription": {
+    "defaultMessage": "Maximum agent turns before AccordLock asks for your input"
+  },
+  "costTracker.costUnavailable": {
+    "defaultMessage": "Cost data not available for {model} ({inputTokens} input, {outputTokens} output tokens)"
+  },
+  "costTracker.inputOutputTooltip": {
+    "defaultMessage": "Input: {inputTokens} tokens ({inputCost}) | Output: {outputTokens} tokens ({outputCost})"
+  },
+  "costTracker.pricingUnavailable": {
+    "defaultMessage": "Pricing data unavailable for {model}"
+  },
+  "costTracker.totalSessionCost": {
+    "defaultMessage": "Total task cost: {cost}"
+  },
+  "createEditRecipe.clickToGenerateDeeplink": {
+    "defaultMessage": "Create share link"
+  },
+  "createEditRecipe.close": {
+    "defaultMessage": "Close"
+  },
+  "createEditRecipe.copied": {
+    "defaultMessage": "Copied"
+  },
+  "createEditRecipe.copy": {
+    "defaultMessage": "Copy"
+  },
+  "createEditRecipe.copyLinkDescription": {
+    "defaultMessage": "Anyone with this link can import the playbook."
+  },
+  "createEditRecipe.createRecipeTitle": {
+    "defaultMessage": "New playbook"
+  },
+  "createEditRecipe.createSubtitle": {
+    "defaultMessage": "Run recurring work from a saved setup."
+  },
+  "createEditRecipe.editSubtitle": {
+    "defaultMessage": "Changes apply the next time this playbook runs."
+  },
+  "createEditRecipe.generatingDeeplink": {
+    "defaultMessage": "Creating share link..."
+  },
+  "createEditRecipe.recipeSavedAndLaunchedMsg": {
+    "defaultMessage": "Playbook started"
+  },
+  "createEditRecipe.recipeSavedMsg": {
+    "defaultMessage": "Playbook saved"
+  },
+  "createEditRecipe.saveAndRunFailed": {
+    "defaultMessage": "Could not start playbook"
+  },
+  "createEditRecipe.saveAndRunFailedMsg": {
+    "defaultMessage": "{error}"
+  },
+  "createEditRecipe.saveAndRunRecipe": {
+    "defaultMessage": "Save and run"
+  },
+  "createEditRecipe.saveFailed": {
+    "defaultMessage": "Could not save playbook"
+  },
+  "createEditRecipe.saveFailedMsg": {
+    "defaultMessage": "{error}"
+  },
+  "createEditRecipe.saveRecipe": {
+    "defaultMessage": "Save playbook"
+  },
+  "createEditRecipe.saving": {
+    "defaultMessage": "Saving..."
+  },
+  "createEditRecipe.validationFailed": {
+    "defaultMessage": "Check required fields"
+  },
+  "createEditRecipe.validationMsg": {
+    "defaultMessage": "Complete the required fields and check the JSON schema."
+  },
+  "createEditRecipe.viewEditRecipeTitle": {
+    "defaultMessage": "Edit playbook"
+  },
+  "createSubRecipeInline.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "createSubRecipeInline.closeModal": {
+    "defaultMessage": "Close new nested playbook"
+  },
+  "createSubRecipeInline.createAndAdd": {
+    "defaultMessage": "Create and add"
+  },
+  "createSubRecipeInline.createdSuccess": {
+    "defaultMessage": "Nested playbook created"
+  },
+  "createSubRecipeInline.creating": {
+    "defaultMessage": "Creating..."
+  },
+  "createSubRecipeInline.duplicateName": {
+    "defaultMessage": "Name already used"
+  },
+  "createSubRecipeInline.duplicateNameMsg": {
+    "defaultMessage": "A nested playbook named \"{name}\" already exists."
+  },
+  "createSubRecipeInline.instructionsLabel": {
+    "defaultMessage": "Instructions"
+  },
+  "createSubRecipeInline.instructionsPlaceholder": {
+    "defaultMessage": "Instructions for the nested playbook…"
+  },
+  "createSubRecipeInline.nameHint": {
+    "defaultMessage": "Unique identifier used to generate the tool name"
+  },
+  "createSubRecipeInline.nameLabel": {
+    "defaultMessage": "Name"
+  },
+  "createSubRecipeInline.namePlaceholder": {
+    "defaultMessage": "e.g., security_scan"
+  },
+  "createSubRecipeInline.preconfiguredValues": {
+    "defaultMessage": "Preconfigured values"
+  },
+  "createSubRecipeInline.preconfiguredValuesHint": {
+    "defaultMessage": "Values passed to every run"
+  },
+  "createSubRecipeInline.recipeDescriptionLabel": {
+    "defaultMessage": "Playbook description"
+  },
+  "createSubRecipeInline.recipeDescriptionPlaceholder": {
+    "defaultMessage": "What this playbook does"
+  },
+  "createSubRecipeInline.recipeTitleLabel": {
+    "defaultMessage": "Playbook title"
+  },
+  "createSubRecipeInline.recipeTitlePlaceholder": {
+    "defaultMessage": "e.g., Security Analysis Tool"
+  },
+  "createSubRecipeInline.saveFailed": {
+    "defaultMessage": "Could not save nested playbook"
+  },
+  "createSubRecipeInline.saveFailedMsg": {
+    "defaultMessage": "{error}"
+  },
+  "createSubRecipeInline.sequentialHint": {
+    "defaultMessage": "(Forces sequential execution of multiple instances)"
+  },
+  "createSubRecipeInline.sequentialLabel": {
+    "defaultMessage": "Sequential when repeated"
+  },
+  "createSubRecipeInline.subtitle": {
+    "defaultMessage": "Use one playbook as a tool inside another."
+  },
+  "createSubRecipeInline.title": {
+    "defaultMessage": "New nested playbook"
+  },
+  "createSubRecipeInline.toolDescriptionLabel": {
+    "defaultMessage": "Tool description"
+  },
+  "createSubRecipeInline.toolDescriptionPlaceholder": {
+    "defaultMessage": "Optional description shown when this is called as a tool"
+  },
+  "createSubRecipeInline.validationFailed": {
+    "defaultMessage": "Check required fields"
+  },
+  "createSubRecipeInline.validationMsg": {
+    "defaultMessage": "Add a name, title, description, and instructions."
+  },
+  "creditsExhaustedNotification.addCredits": {
+    "defaultMessage": "Add credits"
+  },
+  "creditsExhaustedNotification.insufficientCredits": {
+    "defaultMessage": "Insufficient Credits"
+  },
+  "cronPicker.april": {
+    "defaultMessage": "April"
+  },
+  "cronPicker.at": {
+    "defaultMessage": "at"
+  },
+  "cronPicker.atMinute": {
+    "defaultMessage": "at minute"
+  },
+  "cronPicker.atSecond": {
+    "defaultMessage": "at second"
+  },
+  "cronPicker.august": {
+    "defaultMessage": "August"
+  },
+  "cronPicker.cronExpression": {
+    "defaultMessage": "Cron expression"
+  },
+  "cronPicker.custom": {
+    "defaultMessage": "Custom cron"
+  },
+  "cronPicker.day": {
+    "defaultMessage": "Day"
+  },
+  "cronPicker.december": {
+    "defaultMessage": "December"
+  },
+  "cronPicker.emptyCronError": {
+    "defaultMessage": "Cron expression cannot be empty"
+  },
+  "cronPicker.every": {
+    "defaultMessage": "Every"
+  },
+  "cronPicker.february": {
+    "defaultMessage": "February"
+  },
+  "cronPicker.friday": {
+    "defaultMessage": "Friday"
+  },
+  "cronPicker.hour": {
+    "defaultMessage": "Hour"
+  },
+  "cronPicker.inMonth": {
+    "defaultMessage": "in"
+  },
+  "cronPicker.invalidDayOfMonth": {
+    "defaultMessage": "Day must be between 1 and {max}"
+  },
+  "cronPicker.january": {
+    "defaultMessage": "January"
+  },
+  "cronPicker.july": {
+    "defaultMessage": "July"
+  },
+  "cronPicker.june": {
+    "defaultMessage": "June"
+  },
+  "cronPicker.march": {
+    "defaultMessage": "March"
+  },
+  "cronPicker.may": {
+    "defaultMessage": "May"
+  },
+  "cronPicker.minute": {
+    "defaultMessage": "Minute"
+  },
+  "cronPicker.mode": {
+    "defaultMessage": "Mode"
+  },
+  "cronPicker.monday": {
+    "defaultMessage": "Monday"
+  },
+  "cronPicker.month": {
+    "defaultMessage": "Month"
+  },
+  "cronPicker.november": {
+    "defaultMessage": "November"
+  },
+  "cronPicker.october": {
+    "defaultMessage": "October"
+  },
+  "cronPicker.on": {
+    "defaultMessage": "on"
+  },
+  "cronPicker.onDay": {
+    "defaultMessage": "on day"
+  },
+  "cronPicker.quarter": {
+    "defaultMessage": "Quarter"
+  },
+  "cronPicker.saturday": {
+    "defaultMessage": "Saturday"
+  },
+  "cronPicker.september": {
+    "defaultMessage": "September"
+  },
+  "cronPicker.startingMonth": {
+    "defaultMessage": "starting month"
+  },
+  "cronPicker.sunday": {
+    "defaultMessage": "Sunday"
+  },
+  "cronPicker.thursday": {
+    "defaultMessage": "Thursday"
+  },
+  "cronPicker.tuesday": {
+    "defaultMessage": "Tuesday"
+  },
+  "cronPicker.wednesday": {
+    "defaultMessage": "Wednesday"
+  },
+  "cronPicker.week": {
+    "defaultMessage": "Week"
+  },
+  "cronPicker.year": {
+    "defaultMessage": "Year"
+  },
+  "customProviderForm.add": {
+    "defaultMessage": "Add"
+  },
+  "customProviderForm.anthropicCompatible": {
+    "defaultMessage": "Anthropic Compatible"
+  },
+  "customProviderForm.apiBasePath": {
+    "defaultMessage": "API Base Path (optional)"
+  },
+  "customProviderForm.apiBasePathHint": {
+    "defaultMessage": "Override the default API path. Leave blank to use the provider's default path."
+  },
+  "customProviderForm.apiBasePathPlaceholder": {
+    "defaultMessage": "e.g., v1/chat/completions or project_id/v1"
+  },
+  "customProviderForm.apiKey": {
+    "defaultMessage": "API Key"
+  },
+  "customProviderForm.apiKeyPlaceholderExisting": {
+    "defaultMessage": "Leave blank to keep existing key"
+  },
+  "customProviderForm.apiKeyPlaceholderNew": {
+    "defaultMessage": "Your API key"
+  },
+  "customProviderForm.apiKeyRequired": {
+    "defaultMessage": "API key is required"
+  },
+  "customProviderForm.apiUrl": {
+    "defaultMessage": "API URL"
+  },
+  "customProviderForm.apiUrlPlaceholder": {
+    "defaultMessage": "https://api.example.com"
+  },
+  "customProviderForm.apiUrlRequired": {
+    "defaultMessage": "API URL is required"
+  },
+  "customProviderForm.attachments": {
+    "defaultMessage": "Attachments"
+  },
+  "customProviderForm.authHint": {
+    "defaultMessage": "Local LLMs like Ollama typically don't require an API key."
+  },
+  "customProviderForm.authentication": {
+    "defaultMessage": "Authentication"
+  },
+  "customProviderForm.availableModels": {
+    "defaultMessage": "Available Models (comma-separated)"
+  },
+  "customProviderForm.back": {
+    "defaultMessage": "← Back"
+  },
+  "customProviderForm.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "customProviderForm.cannotDeleteActive": {
+    "defaultMessage": "You cannot delete this provider while it's currently in use. Please switch to a different model first."
+  },
+  "customProviderForm.chooseSetup": {
+    "defaultMessage": "Choose how you'd like to set up your provider."
+  },
+  "customProviderForm.clear": {
+    "defaultMessage": "Clear"
+  },
+  "customProviderForm.configureManually": {
+    "defaultMessage": "Configure manually"
+  },
+  "customProviderForm.configureManuallyDesc": {
+    "defaultMessage": "Enter all provider details yourself"
+  },
+  "customProviderForm.confirmDelete": {
+    "defaultMessage": "Confirm Delete"
+  },
+  "customProviderForm.createProvider": {
+    "defaultMessage": "Create Provider"
+  },
+  "customProviderForm.customHeaders": {
+    "defaultMessage": "Custom Headers"
+  },
+  "customProviderForm.customHeadersHint": {
+    "defaultMessage": "Add custom HTTP headers to include in requests to the provider. Click the \"+\" button to add after filling both fields."
+  },
+  "customProviderForm.deleteConfirmation": {
+    "defaultMessage": "Are you sure you want to delete this custom provider? This will permanently remove the provider and its stored API key. This action cannot be undone."
+  },
+  "customProviderForm.deleteProvider": {
+    "defaultMessage": "Delete Provider"
+  },
+  "customProviderForm.displayName": {
+    "defaultMessage": "Display Name"
+  },
+  "customProviderForm.displayNamePlaceholder": {
+    "defaultMessage": "Your Provider Name"
+  },
+  "customProviderForm.displayNameRequired": {
+    "defaultMessage": "Display name is required"
+  },
+  "customProviderForm.docs": {
+    "defaultMessage": "Docs"
+  },
+  "customProviderForm.headerBothRequired": {
+    "defaultMessage": "Both header name and value must be entered"
+  },
+  "customProviderForm.headerDuplicate": {
+    "defaultMessage": "A header with this name already exists"
+  },
+  "customProviderForm.headerNamePlaceholder": {
+    "defaultMessage": "Header name"
+  },
+  "customProviderForm.headerNoSpaces": {
+    "defaultMessage": "Header name cannot contain spaces"
+  },
+  "customProviderForm.modelsPlaceholder": {
+    "defaultMessage": "model-a, model-b, model-c"
+  },
+  "customProviderForm.modelsRequired": {
+    "defaultMessage": "At least one model is required"
+  },
+  "customProviderForm.ollamaCompatible": {
+    "defaultMessage": "Ollama Compatible"
+  },
+  "customProviderForm.openaiCompatible": {
+    "defaultMessage": "OpenAI Compatible"
+  },
+  "customProviderForm.providerType": {
+    "defaultMessage": "Provider Type"
+  },
+  "customProviderForm.reasoning": {
+    "defaultMessage": "Reasoning"
+  },
+  "customProviderForm.requiresApiKey": {
+    "defaultMessage": "This provider requires an API key"
+  },
+  "customProviderForm.startFromTemplate": {
+    "defaultMessage": "Start from a provider template"
+  },
+  "customProviderForm.startFromTemplateDesc": {
+    "defaultMessage": "Pick a known provider and we'll auto-fill the configuration"
+  },
+  "customProviderForm.submitError": {
+    "defaultMessage": "Could not save provider. Check the details and try again."
+  },
+  "customProviderForm.supportsStreaming": {
+    "defaultMessage": "Provider supports streaming responses"
+  },
+  "customProviderForm.toolCalling": {
+    "defaultMessage": "Tool calling"
+  },
+  "customProviderForm.updateProvider": {
+    "defaultMessage": "Update Provider"
+  },
+  "customProviderForm.usingTemplate": {
+    "defaultMessage": "Using template: {name}"
+  },
+  "customProviderForm.valuePlaceholder": {
+    "defaultMessage": "Value"
+  },
+  "defaultCardButtons.configureSettings": {
+    "defaultMessage": "Configure {name} settings"
+  },
+  "defaultCardButtons.deleteSettings": {
+    "defaultMessage": "Delete {name} settings"
+  },
+  "defaultCardButtons.editSettings": {
+    "defaultMessage": "Edit {name} settings"
+  },
+  "defaultCardButtons.getStarted": {
+    "defaultMessage": "Get started with AccordLock"
+  },
+  "defaultProviderSetupForm.apiHostLabel": {
+    "defaultMessage": "API Host"
+  },
+  "defaultProviderSetupForm.apiHostPlaceholder": {
+    "defaultMessage": "https://api.example.com"
+  },
+  "defaultProviderSetupForm.apiKeyLabel": {
+    "defaultMessage": "API Key"
+  },
+  "defaultProviderSetupForm.apiKeyPlaceholder": {
+    "defaultMessage": "Your API key"
+  },
+  "defaultProviderSetupForm.hideOptions": {
+    "defaultMessage": "Hide {count} options"
+  },
+  "defaultProviderSetupForm.loadingConfig": {
+    "defaultMessage": "Loading configuration values..."
+  },
+  "defaultProviderSetupForm.modelsLabel": {
+    "defaultMessage": "Models"
+  },
+  "defaultProviderSetupForm.modelsPlaceholder": {
+    "defaultMessage": "model-a, model-b"
+  },
+  "defaultProviderSetupForm.noConfigParameters": {
+    "defaultMessage": "No configuration parameters for this provider."
+  },
+  "defaultProviderSetupForm.showOptions": {
+    "defaultMessage": "Show {count} options"
+  },
+  "diagnosticsModal.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "diagnosticsModal.configSettings": {
+    "defaultMessage": "Configuration settings"
+  },
+  "diagnosticsModal.diagnosticsErrorMsg": {
+    "defaultMessage": "Failed to download diagnostics report"
+  },
+  "diagnosticsModal.diagnosticsErrorTitle": {
+    "defaultMessage": "Diagnostics Error"
+  },
+  "diagnosticsModal.download": {
+    "defaultMessage": "Download"
+  },
+  "diagnosticsModal.downloading": {
+    "defaultMessage": "Downloading..."
+  },
+  "diagnosticsModal.localDescription": {
+    "defaultMessage": "You can download a diagnostics JSON report for review through your organization's approved support channel. It contains:"
+  },
+  "diagnosticsModal.localShareHint": {
+    "defaultMessage": "AccordLock does not upload this report or open an external support site."
+  },
+  "diagnosticsModal.logFiles": {
+    "defaultMessage": "Recent log files"
+  },
+  "diagnosticsModal.reportProblem": {
+    "defaultMessage": "Report a Problem"
+  },
+  "diagnosticsModal.sensitiveWarning": {
+    "defaultMessage": "If your session contains sensitive information, do not share the diagnostics file publicly."
+  },
+  "diagnosticsModal.sessionMessages": {
+    "defaultMessage": "Your current session messages"
+  },
+  "diagnosticsModal.systemInfo": {
+    "defaultMessage": "Basic system info"
+  },
+  "dialog.close": {
+    "defaultMessage": "Close"
+  },
+  "dictationSettings.addApiKey": {
+    "defaultMessage": "Add API Key"
+  },
+  "dictationSettings.apiKey": {
+    "defaultMessage": "API Key"
+  },
+  "dictationSettings.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "dictationSettings.chooseVoiceConversion": {
+    "defaultMessage": "Choose how AccordLock converts speech to text."
+  },
+  "dictationSettings.configureApiKey": {
+    "defaultMessage": "Configure the API key in <b>{settingsPath}</b>"
+  },
+  "dictationSettings.configured": {
+    "defaultMessage": "(Configured)"
+  },
+  "dictationSettings.configuredIn": {
+    "defaultMessage": "✓ Configured in {settingsPath}"
+  },
+  "dictationSettings.disabled": {
+    "defaultMessage": "Disabled"
+  },
+  "dictationSettings.enterApiKey": {
+    "defaultMessage": "Enter your API key"
+  },
+  "dictationSettings.notConfigured": {
+    "defaultMessage": "(not configured)"
+  },
+  "dictationSettings.removeApiKey": {
+    "defaultMessage": "Remove API Key"
+  },
+  "dictationSettings.requiredForTranscription": {
+    "defaultMessage": "Required for transcription"
+  },
+  "dictationSettings.save": {
+    "defaultMessage": "Save"
+  },
+  "dictationSettings.updateApiKey": {
+    "defaultMessage": "Update API Key"
+  },
+  "dictationSettings.voiceDictationProvider": {
+    "defaultMessage": "Voice input"
+  },
+  "dirSwitcher.currentDirectory": {
+    "defaultMessage": "Current directory"
+  },
+  "dirSwitcher.failedToOpenSecureWorkspace": {
+    "defaultMessage": "Failed to open the workspace in a new window"
+  },
+  "dirSwitcher.openInFinder": {
+    "defaultMessage": "Open in file manager"
+  },
+  "dirSwitcher.openWorkspaceInNewWindow": {
+    "defaultMessage": "Open workspace in a new window…"
+  },
+  "elicitationRequest.accept": {
+    "defaultMessage": "Accept"
+  },
+  "elicitationRequest.cancelled": {
+    "defaultMessage": "Information request was cancelled."
+  },
+  "elicitationRequest.defaultMessage": {
+    "defaultMessage": "AccordLock needs some information from you."
+  },
+  "elicitationRequest.expired": {
+    "defaultMessage": "This request has expired. The extension will need to ask again."
+  },
+  "elicitationRequest.submit": {
+    "defaultMessage": "Submit"
+  },
+  "elicitationRequest.submitError": {
+    "defaultMessage": "This request is no longer active. The extension will need to ask again."
+  },
+  "elicitationRequest.submitted": {
+    "defaultMessage": "Information submitted"
+  },
+  "elicitationRequest.waitingForResponse": {
+    "defaultMessage": "Waiting for your response ({timeRemaining} remaining)"
+  },
+  "envVarsSection.add": {
+    "defaultMessage": "Add"
+  },
+  "envVarsSection.bothRequired": {
+    "defaultMessage": "Both variable name and value must be entered"
+  },
+  "envVarsSection.envVarsDescription": {
+    "defaultMessage": "Add key-value pairs for environment variables. Click the \"+\" button to add after filling both fields. For existing secret values, click the edit button to modify."
+  },
+  "envVarsSection.environmentVariables": {
+    "defaultMessage": "Environment Variables"
+  },
+  "envVarsSection.noSpaces": {
+    "defaultMessage": "Variable name cannot contain spaces"
+  },
+  "envVarsSection.value": {
+    "defaultMessage": "Value"
+  },
+  "envVarsSection.variableName": {
+    "defaultMessage": "Variable name"
+  },
+  "environmentBadge.dev": {
+    "defaultMessage": "Dev"
+  },
+  "errorBoundary.errorGeneric": {
+    "defaultMessage": "An error occurred."
+  },
+  "errorBoundary.errorWithVersion": {
+    "defaultMessage": "An error occurred in AccordLock v{version}."
+  },
+  "errorBoundary.heading": {
+    "defaultMessage": "AccordLock needs to restart"
+  },
+  "errorBoundary.recovery": {
+    "defaultMessage": "Your work is saved. Reload the app to continue."
+  },
+  "errorBoundary.reload": {
+    "defaultMessage": "Reload"
+  },
+  "extensionConfigFields.commandLabel": {
+    "defaultMessage": "Command"
+  },
+  "extensionConfigFields.commandPlaceholder": {
+    "defaultMessage": "e.g. npx -y @modelcontextprotocol/my-extension [filepath]"
+  },
+  "extensionConfigFields.commandRequired": {
+    "defaultMessage": "Command is required"
+  },
+  "extensionConfigFields.endpointLabel": {
+    "defaultMessage": "Endpoint"
+  },
+  "extensionConfigFields.endpointPlaceholder": {
+    "defaultMessage": "Enter endpoint URL..."
+  },
+  "extensionConfigFields.endpointRequired": {
+    "defaultMessage": "Endpoint URL is required"
+  },
+  "extensionInfoFields.descriptionLabel": {
+    "defaultMessage": "Description"
+  },
+  "extensionInfoFields.descriptionPlaceholder": {
+    "defaultMessage": "Optional description..."
+  },
+  "extensionInfoFields.extensionName": {
+    "defaultMessage": "Extension Name"
+  },
+  "extensionInfoFields.extensionNamePlaceholder": {
+    "defaultMessage": "Enter extension name..."
+  },
+  "extensionInfoFields.nameRequired": {
+    "defaultMessage": "Name is required"
+  },
+  "extensionInfoFields.typeHttp": {
+    "defaultMessage": "HTTP"
+  },
+  "extensionInfoFields.typeLabel": {
+    "defaultMessage": "Type"
+  },
+  "extensionInfoFields.typeSseUnsupported": {
+    "defaultMessage": "SSE (unsupported)"
+  },
+  "extensionInfoFields.typeStandardIo": {
+    "defaultMessage": "Standard IO (STDIO)"
+  },
+  "extensionInfoFields.typeStdio": {
+    "defaultMessage": "STDIO"
+  },
+  "extensionInfoFields.typeStreamableHttp": {
+    "defaultMessage": "Streamable HTTP"
+  },
+  "extensionInstallModal.alreadyInstalledMessage": {
+    "defaultMessage": "''{name}'' extension has already been installed successfully. Start a new chat session to use it."
+  },
+  "extensionInstallModal.alreadyInstalledTitle": {
+    "defaultMessage": "Extension ''{name}'' Already Installed"
+  },
+  "extensionInstallModal.blockedMessage": {
+    "defaultMessage": "This extension command is not in the allowed list and its installation is blocked. Extension: {name} Command: {command} Contact your administrator to request approval for this extension."
+  },
+  "extensionInstallModal.blockedTitle": {
+    "defaultMessage": "Extension Installation Blocked"
+  },
+  "extensionInstallModal.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "extensionInstallModal.installAnyway": {
+    "defaultMessage": "Install Anyway"
+  },
+  "extensionInstallModal.installing": {
+    "defaultMessage": "Installing..."
+  },
+  "extensionInstallModal.no": {
+    "defaultMessage": "No"
+  },
+  "extensionInstallModal.ok": {
+    "defaultMessage": "OK"
+  },
+  "extensionInstallModal.trustedMessage": {
+    "defaultMessage": "Are you sure you want to install the {name} extension? Command: {command}"
+  },
+  "extensionInstallModal.trustedTitle": {
+    "defaultMessage": "Confirm Extension Installation"
+  },
+  "extensionInstallModal.unknownCommand": {
+    "defaultMessage": "Unknown Command"
+  },
+  "extensionInstallModal.untrustedMessageWithCommand": {
+    "defaultMessage": "{securityMessage} Extension: {name} Command: {command} Contact your administrator if you are unsure about this."
+  },
+  "extensionInstallModal.untrustedMessageWithUrl": {
+    "defaultMessage": "{securityMessage} Extension: {name} URL: {url} Contact your administrator if you are unsure about this."
+  },
+  "extensionInstallModal.untrustedSecurityMessage": {
+    "defaultMessage": "This extension command is not in the allowed list and will be able to access your conversations and provide additional functionality. Installing extensions from untrusted sources may pose security risks."
+  },
+  "extensionInstallModal.untrustedTitle": {
+    "defaultMessage": "Install Untrusted Extension?"
+  },
+  "extensionInstallModal.yes": {
+    "defaultMessage": "Yes"
+  },
+  "extensionItem.configureExtension": {
+    "defaultMessage": "Configure {name} Extension"
+  },
+  "extensionItem.toggleExtension": {
+    "defaultMessage": "Toggle {name} extension On or Off"
+  },
+  "extensionList.availableExtensions": {
+    "defaultMessage": "Available Extensions ({count})"
+  },
+  "extensionList.builtInExtension": {
+    "defaultMessage": "Built-in extension"
+  },
+  "extensionList.defaultExtensions": {
+    "defaultMessage": "Default Extensions ({count})"
+  },
+  "extensionList.noExtensions": {
+    "defaultMessage": "No extensions available"
+  },
+  "extensionModal.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "extensionModal.closeWithoutSaving": {
+    "defaultMessage": "Close Without Saving"
+  },
+  "extensionModal.confirmRemoval": {
+    "defaultMessage": "Confirm removal"
+  },
+  "extensionModal.deleteDescription": {
+    "defaultMessage": "This will permanently remove this extension and all of its settings."
+  },
+  "extensionModal.deleteExtensionTitle": {
+    "defaultMessage": "Delete Extension \"{name}\""
+  },
+  "extensionModal.installationNotes": {
+    "defaultMessage": "Installation Notes"
+  },
+  "extensionModal.removeExtension": {
+    "defaultMessage": "Remove extension"
+  },
+  "extensionModal.unsavedChangesMessage": {
+    "defaultMessage": "You have unsaved changes to the extension configuration. Are you sure you want to close without saving?"
+  },
+  "extensionModal.unsavedChangesTitle": {
+    "defaultMessage": "Unsaved Changes"
+  },
+  "extensionTimeoutField.timeoutLabel": {
+    "defaultMessage": "Timeout"
+  },
+  "extensionsSection.addCustomExtension": {
+    "defaultMessage": "Add custom extension"
+  },
+  "extensionsSection.addExtension": {
+    "defaultMessage": "Add Extension"
+  },
+  "extensionsSection.saveChanges": {
+    "defaultMessage": "Save Changes"
+  },
+  "extensionsSection.updateExtension": {
+    "defaultMessage": "Update Extension"
+  },
+  "extensionsView.addCustomExtension": {
+    "defaultMessage": "Add custom extension"
+  },
+  "extensionsView.addExtension": {
+    "defaultMessage": "Add Extension"
+  },
+  "extensionsView.defaultNote": {
+    "defaultMessage": "Extensions enabled here are the default for new tasks. You can change active extensions during a task."
+  },
+  "extensionsView.description": {
+    "defaultMessage": "Extensions use the Model Context Protocol (MCP) to add prompts, resources, and tools to AccordLock. {searchShortcut} to search."
+  },
+  "extensionsView.heading": {
+    "defaultMessage": "Extensions"
+  },
+  "extensionsView.searchPlaceholder": {
+    "defaultMessage": "Search extensions..."
+  },
+  "externalBackendSection.certFingerprint": {
+    "defaultMessage": "Certificate Fingerprint (optional)"
+  },
+  "externalBackendSection.certFingerprintHelp": {
+    "defaultMessage": "Pin a specific TLS certificate fingerprint. If omitted, the certificate is trusted on first use (TOFU)."
+  },
+  "externalBackendSection.certFingerprintPlaceholder": {
+    "defaultMessage": "AA:BB:CC:... or sha256/base64"
+  },
+  "externalBackendSection.description": {
+    "defaultMessage": "By default AccordLock starts its verified local engine. Advanced deployments can connect an ACP-compatible backend."
+  },
+  "externalBackendSection.fingerprintRequiresHttps": {
+    "defaultMessage": "Certificate fingerprint requires an https URL"
+  },
+  "externalBackendSection.restartNote": {
+    "defaultMessage": "Changes apply to new task windows. Restart AccordLock to update existing windows."
+  },
+  "externalBackendSection.secretKey": {
+    "defaultMessage": "Secret Key"
+  },
+  "externalBackendSection.secretKeyHelp": {
+    "defaultMessage": "The secret key configured on the external backend (GOOSE_SERVER__SECRET_KEY)."
+  },
+  "externalBackendSection.secretKeyPlaceholder": {
+    "defaultMessage": "Enter the server's secret key"
+  },
+  "externalBackendSection.serverUrl": {
+    "defaultMessage": "Backend Base URL"
+  },
+  "externalBackendSection.serverUrlHelp": {
+    "defaultMessage": "Enter the HTTP(S) base URL. AccordLock checks /status and connects to /acp under this base."
+  },
+  "externalBackendSection.title": {
+    "defaultMessage": "External Backend (ACP)"
+  },
+  "externalBackendSection.urlBaseError": {
+    "defaultMessage": "URL must be the backend base URL before /acp, without query parameters or fragments"
+  },
+  "externalBackendSection.urlFormatError": {
+    "defaultMessage": "Invalid URL format"
+  },
+  "externalBackendSection.urlProtocolError": {
+    "defaultMessage": "URL must use http or https protocol"
+  },
+  "externalBackendSection.useExternalServer": {
+    "defaultMessage": "Use external backend"
+  },
+  "externalBackendSection.useExternalServerDescription": {
+    "defaultMessage": "Connect to an ACP-compatible backend running elsewhere."
+  },
+  "externalBackendSection.workingDir": {
+    "defaultMessage": "Remote Working Directory (optional)"
+  },
+  "externalBackendSection.workingDirHelp": {
+    "defaultMessage": "Absolute path on the external backend. Leave blank to send the local working directory."
+  },
+  "externalBackendSection.workingDirPlaceholder": {
+    "defaultMessage": "Workspace folder"
+  },
+  "gitBranchIndicator.failedToSwitch": {
+    "defaultMessage": "Failed to switch to {branch}"
+  },
+  "gitBranchIndicator.noBranchesFound": {
+    "defaultMessage": "No branches found"
+  },
+  "gitBranchIndicator.searchBranches": {
+    "defaultMessage": "Search branches…"
+  },
+  "gitBranchIndicator.uncommittedChanges": {
+    "defaultMessage": "You may have uncommitted changes."
+  },
+  "goosehintsModal.close": {
+    "defaultMessage": "Close"
+  },
+  "goosehintsModal.dialogDescription": {
+    "defaultMessage": "Add rules and context for this folder."
+  },
+  "goosehintsModal.dialogTitle": {
+    "defaultMessage": "Folder instructions"
+  },
+  "goosehintsModal.errorReading": {
+    "defaultMessage": "Could not load folder instructions: {error}"
+  },
+  "goosehintsModal.failedToAccess": {
+    "defaultMessage": "Could not load folder instructions"
+  },
+  "goosehintsModal.failedToSave": {
+    "defaultMessage": "Could not save folder instructions"
+  },
+  "goosehintsModal.fileCreating": {
+    "defaultMessage": "Created when you save."
+  },
+  "goosehintsModal.fileFound": {
+    "defaultMessage": "Saved in this folder"
+  },
+  "goosehintsModal.helpText1": {
+    "defaultMessage": "Saved locally. Applies to new tasks in this folder."
+  },
+  "goosehintsModal.placeholder": {
+    "defaultMessage": "Add rules or context for tasks in this folder…"
+  },
+  "goosehintsModal.save": {
+    "defaultMessage": "Save"
+  },
+  "goosehintsModal.savedSuccessfully": {
+    "defaultMessage": "Instructions saved"
+  },
+  "goosehintsModal.saving": {
+    "defaultMessage": "Saving..."
+  },
+  "goosehintsSection.configure": {
+    "defaultMessage": "Edit"
+  },
+  "goosehintsSection.description": {
+    "defaultMessage": "Applied to every task in this folder."
+  },
+  "goosehintsSection.title": {
+    "defaultMessage": "Folder instructions"
+  },
+  "groupedExtensionLoadingToast.askGoose": {
+    "defaultMessage": "Ask AccordLock"
+  },
+  "groupedExtensionLoadingToast.collapseDetails": {
+    "defaultMessage": "Collapse details"
+  },
+  "groupedExtensionLoadingToast.copied": {
+    "defaultMessage": "Copied!"
+  },
+  "groupedExtensionLoadingToast.copyError": {
+    "defaultMessage": "Copy error"
+  },
+  "groupedExtensionLoadingToast.expandDetails": {
+    "defaultMessage": "Expand details"
+  },
+  "groupedExtensionLoadingToast.failedToAddExtension": {
+    "defaultMessage": "Failed to add extension"
+  },
+  "groupedExtensionLoadingToast.failedToLoad": {
+    "defaultMessage": "{count,plural,one{# extension failed to load} other{# extensions failed to load}}"
+  },
+  "groupedExtensionLoadingToast.loadingExtensions": {
+    "defaultMessage": "{count,plural,one{Loading # extension...} other{Loading # extensions...}}"
+  },
+  "groupedExtensionLoadingToast.partiallyLoaded": {
+    "defaultMessage": "{totalCount,plural,one{Loaded {successCount}/# extension} other{Loaded {successCount}/# extensions}}"
+  },
+  "groupedExtensionLoadingToast.showDetails": {
+    "defaultMessage": "Show details"
+  },
+  "groupedExtensionLoadingToast.showLess": {
+    "defaultMessage": "Show less"
+  },
+  "groupedExtensionLoadingToast.successfullyLoaded": {
+    "defaultMessage": "{count,plural,one{Loaded # extension} other{Loaded # extensions}}"
+  },
+  "headersSection.add": {
+    "defaultMessage": "Add"
+  },
+  "headersSection.bothRequired": {
+    "defaultMessage": "Both header name and value must be entered"
+  },
+  "headersSection.duplicateHeader": {
+    "defaultMessage": "A header with this name already exists"
+  },
+  "headersSection.headerName": {
+    "defaultMessage": "Header name"
+  },
+  "headersSection.headersDescription": {
+    "defaultMessage": "Add custom HTTP headers to include in requests to the MCP server. Click the \"+\" button to add after filling both fields."
+  },
+  "headersSection.noSpaces": {
+    "defaultMessage": "Header name cannot contain spaces"
+  },
+  "headersSection.requestHeaders": {
+    "defaultMessage": "Request Headers"
+  },
+  "headersSection.value": {
+    "defaultMessage": "Value"
+  },
+  "hub.addBuildProof": {
+    "defaultMessage": "Add build proof"
+  },
+  "hub.attachmentsUnsupported": {
+    "defaultMessage": "Remove the images and start with text. You can add them after the task starts."
+  },
+  "hub.buildProofFailure": {
+    "defaultMessage": "Couldn't import build proof"
+  },
+  "hub.buildProofFailureDetail": {
+    "defaultMessage": "Choose the JSON package created by the protected release workflow."
+  },
+  "hub.connectEnvironment": {
+    "defaultMessage": "Connect environment"
+  },
+  "hub.goalRequired": {
+    "defaultMessage": "Describe what you want done."
+  },
+  "hub.goalTooLarge": {
+    "defaultMessage": "Shorten the task description."
+  },
+  "hub.goalUnsafe": {
+    "defaultMessage": "The task contains hidden characters. Paste it as plain text and try again."
+  },
+  "hub.invalidTask": {
+    "defaultMessage": "Check the task"
+  },
+  "hub.protectionSummary": {
+    "defaultMessage": "Can read “{workspace}”. Asks before changes and commands."
+  },
+  "hub.secureToolsUnavailable": {
+    "defaultMessage": "File access couldn't start. Restart AccordLock and try again."
+  },
+  "hub.startFailure": {
+    "defaultMessage": "Couldn't start task"
+  },
+  "hub.startTask": {
+    "defaultMessage": "Start task"
+  },
+  "hub.taskPlaceholder": {
+    "defaultMessage": "Describe the outcome…"
+  },
+  "hub.thisFolder": {
+    "defaultMessage": "this folder"
+  },
+  "hub.title": {
+    "defaultMessage": "What would you like to get done?"
+  },
+  "hub.verifyDeployment": {
+    "defaultMessage": "Verify deployment"
+  },
+  "huggingFaceModelSearch.download": {
+    "defaultMessage": "Download"
+  },
+  "huggingFaceModelSearch.downloaded": {
+    "defaultMessage": "Downloaded"
+  },
+  "huggingFaceModelSearch.downloading": {
+    "defaultMessage": "Downloading…"
+  },
+  "huggingFaceModelSearch.loadingVariants": {
+    "defaultMessage": "Loading variants..."
+  },
+  "huggingFaceModelSearch.noGgufModels": {
+    "defaultMessage": "No compatible local models found for this query."
+  },
+  "huggingFaceModelSearch.recommended": {
+    "defaultMessage": "Recommended"
+  },
+  "huggingFaceModelSearch.searchError": {
+    "defaultMessage": "Search error: {details}"
+  },
+  "huggingFaceModelSearch.searchFailed": {
+    "defaultMessage": "Search failed. Try again."
+  },
+  "huggingFaceModelSearch.searchHuggingFace": {
+    "defaultMessage": "Search HuggingFace"
+  },
+  "huggingFaceModelSearch.searchNoData": {
+    "defaultMessage": "Search returned no data."
+  },
+  "huggingFaceModelSearch.searchPlaceholder": {
+    "defaultMessage": "Search for local models..."
+  },
+  "huggingFaceModelSearch.tooLarge": {
+    "defaultMessage": "May not fit in memory ({size} model, {available} available)"
+  },
+  "huggingFaceSignInPrompt.failedToConfigure": {
+    "defaultMessage": "Failed to sign in to Hugging Face: {error}"
+  },
+  "huggingFaceSignInPrompt.signIn": {
+    "defaultMessage": "Sign in"
+  },
+  "huggingFaceSignInPrompt.signedIn": {
+    "defaultMessage": "Hugging Face signed in"
+  },
+  "huggingFaceSignInPrompt.signingIn": {
+    "defaultMessage": "Signing in..."
+  },
+  "huggingFaceSignInPrompt.title": {
+    "defaultMessage": "Hugging Face"
+  },
+  "imagePreview.altText": {
+    "defaultMessage": "AccordLock image"
+  },
+  "imagePreview.clickToCollapse": {
+    "defaultMessage": "Click to collapse"
+  },
+  "imagePreview.clickToExpand": {
+    "defaultMessage": "Click to expand"
+  },
+  "imagePreview.unableToLoad": {
+    "defaultMessage": "Unable to load image"
+  },
+  "importRecipeForm.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "importRecipeForm.deeplinkHint": {
+    "defaultMessage": "Links begin with \"accordlock://recipe?config=\""
+  },
+  "importRecipeForm.deeplinkPlaceholder": {
+    "defaultMessage": "Paste an accordlock://recipe?config=... link"
+  },
+  "importRecipeForm.example": {
+    "defaultMessage": "example"
+  },
+  "importRecipeForm.expectedRecipeStructure": {
+    "defaultMessage": "File structure"
+  },
+  "importRecipeForm.importRecipeButton": {
+    "defaultMessage": "Import playbook"
+  },
+  "importRecipeForm.importRecipeTitle": {
+    "defaultMessage": "Import playbook"
+  },
+  "importRecipeForm.importing": {
+    "defaultMessage": "Importing..."
+  },
+  "importRecipeForm.or": {
+    "defaultMessage": "or"
+  },
+  "importRecipeForm.recipeDeeplinkLabel": {
+    "defaultMessage": "Share link"
+  },
+  "importRecipeForm.recipeFileHint": {
+    "defaultMessage": "Choose a YAML or JSON playbook"
+  },
+  "importRecipeForm.recipeFileLabel": {
+    "defaultMessage": "Playbook file"
+  },
+  "importRecipeForm.reviewWarning": {
+    "defaultMessage": "Review imported playbooks before running them."
+  },
+  "importRecipeForm.schemaDescription": {
+    "defaultMessage": "Required: title, description, and instructions or prompt."
+  },
+  "inlineEditText.clickToEdit": {
+    "defaultMessage": "Click to edit"
+  },
+  "inlineEditText.doubleClickToEdit": {
+    "defaultMessage": "Double-click to edit"
+  },
+  "inlineEditText.enterText": {
+    "defaultMessage": "Enter text"
+  },
+  "inlineEditText.failedToSave": {
+    "defaultMessage": "Failed to save"
+  },
+  "instructionsEditor.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "instructionsEditor.insertExample": {
+    "defaultMessage": "Insert Example"
+  },
+  "instructionsEditor.label": {
+    "defaultMessage": "Instructions"
+  },
+  "instructionsEditor.placeholder": {
+    "defaultMessage": "Detailed instructions for the AI, hidden from the user"
+  },
+  "instructionsEditor.save": {
+    "defaultMessage": "Save Instructions"
+  },
+  "instructionsEditor.syntaxHelp": {
+    "defaultMessage": "Use {code} syntax to define parameters that users can fill in"
+  },
+  "instructionsEditor.title": {
+    "defaultMessage": "Instructions Editor"
+  },
+  "jsonSchemaEditor.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "jsonSchemaEditor.description": {
+    "defaultMessage": "Define the expected structure of the AI's response using JSON Schema format"
+  },
+  "jsonSchemaEditor.insertExample": {
+    "defaultMessage": "Insert Example"
+  },
+  "jsonSchemaEditor.invalidJson": {
+    "defaultMessage": "Invalid JSON format"
+  },
+  "jsonSchemaEditor.label": {
+    "defaultMessage": "Response JSON Schema"
+  },
+  "jsonSchemaEditor.save": {
+    "defaultMessage": "Save Schema"
+  },
+  "jsonSchemaEditor.title": {
+    "defaultMessage": "JSON Schema Editor"
+  },
+  "jsonSchemaForm.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "jsonSchemaForm.fieldRequired": {
+    "defaultMessage": "This field is required"
+  },
+  "jsonSchemaForm.maxLength": {
+    "defaultMessage": "Maximum length is {maxLength}"
+  },
+  "jsonSchemaForm.maxValue": {
+    "defaultMessage": "Maximum value is {maximum}"
+  },
+  "jsonSchemaForm.minLength": {
+    "defaultMessage": "Minimum length is {minLength}"
+  },
+  "jsonSchemaForm.minValue": {
+    "defaultMessage": "Minimum value is {minimum}"
+  },
+  "jsonSchemaForm.noFields": {
+    "defaultMessage": "No fields to display"
+  },
+  "jsonSchemaForm.selectPlaceholder": {
+    "defaultMessage": "Select..."
+  },
+  "jsonSchemaForm.submit": {
+    "defaultMessage": "Submit"
+  },
+  "keyValueEditor.addValue": {
+    "defaultMessage": "Add pre-configured value"
+  },
+  "keyValueEditor.defaultKeyPlaceholder": {
+    "defaultMessage": "Parameter name..."
+  },
+  "keyValueEditor.defaultValuePlaceholder": {
+    "defaultMessage": "Parameter value..."
+  },
+  "keyValueEditor.removeValue": {
+    "defaultMessage": "Remove pre-configured value {key}"
+  },
+  "keyboardShortcuts.alwaysOnTopDescription": {
+    "defaultMessage": "Toggle window always on top"
+  },
+  "keyboardShortcuts.alwaysOnTopLabel": {
+    "defaultMessage": "Always on Top"
+  },
+  "keyboardShortcuts.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "keyboardShortcuts.categoryApplication": {
+    "defaultMessage": "Application Shortcuts"
+  },
+  "keyboardShortcuts.categoryApplicationDescription": {
+    "defaultMessage": "These shortcuts work when AccordLock is the active application"
+  },
+  "keyboardShortcuts.categoryGlobal": {
+    "defaultMessage": "Global Shortcuts"
+  },
+  "keyboardShortcuts.categoryGlobalDescription": {
+    "defaultMessage": "These shortcuts work system-wide, even when AccordLock is not focused"
+  },
+  "keyboardShortcuts.categorySearch": {
+    "defaultMessage": "Search Shortcuts"
+  },
+  "keyboardShortcuts.categorySearchDescription": {
+    "defaultMessage": "These shortcuts work when searching in a conversation"
+  },
+  "keyboardShortcuts.categoryWindow": {
+    "defaultMessage": "Window Shortcuts"
+  },
+  "keyboardShortcuts.categoryWindowDescription": {
+    "defaultMessage": "These shortcuts control window behavior"
+  },
+  "keyboardShortcuts.change": {
+    "defaultMessage": "Change"
+  },
+  "keyboardShortcuts.disabled": {
+    "defaultMessage": "Disabled"
+  },
+  "keyboardShortcuts.dismiss": {
+    "defaultMessage": "Dismiss"
+  },
+  "keyboardShortcuts.findDescription": {
+    "defaultMessage": "Open search in conversation"
+  },
+  "keyboardShortcuts.findLabel": {
+    "defaultMessage": "Find"
+  },
+  "keyboardShortcuts.findNextDescription": {
+    "defaultMessage": "Jump to next search result"
+  },
+  "keyboardShortcuts.findNextLabel": {
+    "defaultMessage": "Find Next"
+  },
+  "keyboardShortcuts.findPreviousDescription": {
+    "defaultMessage": "Jump to previous search result"
+  },
+  "keyboardShortcuts.findPreviousLabel": {
+    "defaultMessage": "Find Previous"
+  },
+  "keyboardShortcuts.focusWindowDescription": {
+    "defaultMessage": "Bring AccordLock to the front from anywhere"
+  },
+  "keyboardShortcuts.focusWindowLabel": {
+    "defaultMessage": "Focus AccordLock Window"
+  },
+  "keyboardShortcuts.loading": {
+    "defaultMessage": "Loading..."
+  },
+  "keyboardShortcuts.newChatDescription": {
+    "defaultMessage": "Start a new task in the current window"
+  },
+  "keyboardShortcuts.newChatLabel": {
+    "defaultMessage": "New Task"
+  },
+  "keyboardShortcuts.newChatWindowDescription": {
+    "defaultMessage": "Open a new AccordLock window"
+  },
+  "keyboardShortcuts.newChatWindowLabel": {
+    "defaultMessage": "New Task Window"
+  },
+  "keyboardShortcuts.openDirectoryDescription": {
+    "defaultMessage": "Open directory selection dialog"
+  },
+  "keyboardShortcuts.openDirectoryLabel": {
+    "defaultMessage": "Open Directory"
+  },
+  "keyboardShortcuts.quickLauncherDescription": {
+    "defaultMessage": "Open the quick launcher overlay"
+  },
+  "keyboardShortcuts.quickLauncherLabel": {
+    "defaultMessage": "Quick Launcher"
+  },
+  "keyboardShortcuts.reassignShortcut": {
+    "defaultMessage": "Reassign Shortcut"
+  },
+  "keyboardShortcuts.resetAllShortcuts": {
+    "defaultMessage": "Reset All Shortcuts"
+  },
+  "keyboardShortcuts.resetShortcutsDetail": {
+    "defaultMessage": "This will restore all shortcuts to their original configuration."
+  },
+  "keyboardShortcuts.resetShortcutsMessage": {
+    "defaultMessage": "Reset all keyboard shortcuts to their default values?"
+  },
+  "keyboardShortcuts.resetShortcutsTitle": {
+    "defaultMessage": "Reset Keyboard Shortcuts"
+  },
+  "keyboardShortcuts.resetToDefaultsDescription": {
+    "defaultMessage": "Restore all keyboard shortcuts to their original configuration"
+  },
+  "keyboardShortcuts.resetToDefaultsHeading": {
+    "defaultMessage": "Reset to Defaults"
+  },
+  "keyboardShortcuts.restartDescription": {
+    "defaultMessage": "Changes to application shortcuts (such as New Task and Settings) require restarting AccordLock. Global shortcuts work immediately."
+  },
+  "keyboardShortcuts.restartRequired": {
+    "defaultMessage": "Restart Required"
+  },
+  "keyboardShortcuts.settingsDescription": {
+    "defaultMessage": "Open settings panel"
+  },
+  "keyboardShortcuts.settingsLabel": {
+    "defaultMessage": "Settings"
+  },
+  "keyboardShortcuts.shortcutConflictSaveDetail": {
+    "defaultMessage": "Saving this will remove the shortcut from \"{conflictLabel}\" and assign it to \"{targetLabel}\". Do you want to continue?"
+  },
+  "keyboardShortcuts.shortcutConflictTitle": {
+    "defaultMessage": "Shortcut Conflict"
+  },
+  "keyboardShortcuts.shortcutConflictToggleDetail": {
+    "defaultMessage": "Enabling this will remove the shortcut from \"{conflictLabel}\" and assign it to \"{targetLabel}\". Do you want to continue?"
+  },
+  "keyboardShortcuts.shortcutConflictToggleMessage": {
+    "defaultMessage": "The shortcut {shortcut} is already assigned to \"{conflictLabel}\"."
+  },
+  "keyboardShortcuts.toggleNavigationDescription": {
+    "defaultMessage": "Show or hide the navigation menu"
+  },
+  "keyboardShortcuts.toggleNavigationLabel": {
+    "defaultMessage": "Toggle Navigation"
+  },
+  "launcher.label": {
+    "defaultMessage": "New task"
+  },
+  "launcher.objectiveRequired": {
+    "defaultMessage": "Describe a task in text."
+  },
+  "launcher.objectiveTooLarge": {
+    "defaultMessage": "Shorten the task description."
+  },
+  "launcher.objectiveUnsafe": {
+    "defaultMessage": "Paste the task again as plain text."
+  },
+  "launcher.placeholder": {
+    "defaultMessage": "What should AccordLock accomplish?"
+  },
+  "launcher.reviewRequired": {
+    "defaultMessage": "Review access before it starts."
+  },
+  "launcher.workspace": {
+    "defaultMessage": "Folder: {name}"
+  },
+  "loadingGoose.compacting": {
+    "defaultMessage": "Organizing context…"
+  },
+  "loadingGoose.idle": {
+    "defaultMessage": "Ready"
+  },
+  "loadingGoose.loadingConversation": {
+    "defaultMessage": "Preparing your task…"
+  },
+  "loadingGoose.restartingAgent": {
+    "defaultMessage": "Reconnecting…"
+  },
+  "loadingGoose.streaming": {
+    "defaultMessage": "Working…"
+  },
+  "loadingGoose.thinking": {
+    "defaultMessage": "Thinking…"
+  },
+  "loadingGoose.waiting": {
+    "defaultMessage": "Waiting for you…"
+  },
+  "localInferenceSettings.deleteConfirm": {
+    "defaultMessage": "Delete this model? You can re-download it later."
+  },
+  "localInferenceSettings.description": {
+    "defaultMessage": "Download and manage local LLM models for inference without API keys. Search HuggingFace for GGUF or MLX models, or use the featured picks below."
+  },
+  "localInferenceSettings.dismiss": {
+    "defaultMessage": "Dismiss"
+  },
+  "localInferenceSettings.download": {
+    "defaultMessage": "Download"
+  },
+  "localInferenceSettings.downloadCancelled": {
+    "defaultMessage": "Download cancelled"
+  },
+  "localInferenceSettings.downloadFailed": {
+    "defaultMessage": "Download failed"
+  },
+  "localInferenceSettings.downloadProgress": {
+    "defaultMessage": "{downloaded} / {total} ({percent}%)"
+  },
+  "localInferenceSettings.downloadedModels": {
+    "defaultMessage": "Downloaded Models"
+  },
+  "localInferenceSettings.downloading": {
+    "defaultMessage": "Downloading"
+  },
+  "localInferenceSettings.evictFromMemory": {
+    "defaultMessage": "Evict from memory"
+  },
+  "localInferenceSettings.featuredModels": {
+    "defaultMessage": "Featured Models"
+  },
+  "localInferenceSettings.huggingFaceSignInNote": {
+    "defaultMessage": "Sign in to increase rate limits when searching and downloading models, and to access private or gated Hugging Face repositories."
+  },
+  "localInferenceSettings.loadedInMemory": {
+    "defaultMessage": "Loaded in memory"
+  },
+  "localInferenceSettings.modelSettings": {
+    "defaultMessage": "Model Settings"
+  },
+  "localInferenceSettings.modelSettingsTitle": {
+    "defaultMessage": "Model settings"
+  },
+  "localInferenceSettings.noModels": {
+    "defaultMessage": "No models available"
+  },
+  "localInferenceSettings.recommended": {
+    "defaultMessage": "Recommended"
+  },
+  "localInferenceSettings.remaining": {
+    "defaultMessage": "{time} remaining"
+  },
+  "localInferenceSettings.retry": {
+    "defaultMessage": "Retry"
+  },
+  "localInferenceSettings.showAllFeatured": {
+    "defaultMessage": "Show all featured ({count} more)"
+  },
+  "localInferenceSettings.showRecommendedOnly": {
+    "defaultMessage": "Show recommended only"
+  },
+  "localInferenceSettings.title": {
+    "defaultMessage": "Local Inference Models"
+  },
+  "localInferenceSettings.vision": {
+    "defaultMessage": "Vision"
+  },
+  "localInferenceSettings.visionEncoderDownloading": {
+    "defaultMessage": "Vision encoder downloading…"
+  },
+  "localInferenceSettings.visionEncoderNotDownloaded": {
+    "defaultMessage": "Vision encoder not downloaded"
+  },
+  "localModelManager.active": {
+    "defaultMessage": "Active"
+  },
+  "localModelManager.deleteConfirm": {
+    "defaultMessage": "Delete this model? You can re-download it later."
+  },
+  "localModelManager.download": {
+    "defaultMessage": "Download"
+  },
+  "localModelManager.downloaded": {
+    "defaultMessage": "Downloaded"
+  },
+  "localModelManager.gpuAcceleration": {
+    "defaultMessage": "Supports GPU acceleration (CUDA for NVIDIA, Metal for Apple Silicon). GPU features must be enabled at build time for hardware acceleration."
+  },
+  "localModelManager.noModels": {
+    "defaultMessage": "No models available"
+  },
+  "localModelManager.recommended": {
+    "defaultMessage": "Recommended"
+  },
+  "localModelManager.recommendedForHardware": {
+    "defaultMessage": "Recommended for your hardware"
+  },
+  "localModelManager.showAllModels": {
+    "defaultMessage": "Show all models ({count} more)"
+  },
+  "localModelManager.showRecommendedOnly": {
+    "defaultMessage": "Show recommended only"
+  },
+  "localModelPicker.bestForMachine": {
+    "defaultMessage": "Best for your machine"
+  },
+  "localModelPicker.cancelDownload": {
+    "defaultMessage": "Cancel Download"
+  },
+  "localModelPicker.checkingModels": {
+    "defaultMessage": "Checking available models..."
+  },
+  "localModelPicker.downloadModel": {
+    "defaultMessage": "Download {modelId} ({size})"
+  },
+  "localModelPicker.downloading": {
+    "defaultMessage": "Downloading {modelId}"
+  },
+  "localModelPicker.failedToLoad": {
+    "defaultMessage": "Could not load models. Try again."
+  },
+  "localModelPicker.failedToStartDownload": {
+    "defaultMessage": "Could not start the download. Try again."
+  },
+  "localModelPicker.hideOtherSizes": {
+    "defaultMessage": "Hide other sizes"
+  },
+  "localModelPicker.localModelsNote": {
+    "defaultMessage": "Local models keep everything on your machine for full privacy. Performance and context window size may vary compared to cloud providers depending on your hardware and model size."
+  },
+  "localModelPicker.lostConnection": {
+    "defaultMessage": "Download interrupted. Try again."
+  },
+  "localModelPicker.modelNotFound": {
+    "defaultMessage": "Model not found"
+  },
+  "localModelPicker.ready": {
+    "defaultMessage": "Ready"
+  },
+  "localModelPicker.selectModel": {
+    "defaultMessage": "Select a model"
+  },
+  "localModelPicker.showOtherSizes": {
+    "defaultMessage": "Show {count} other sizes"
+  },
+  "localModelPicker.startingDownload": {
+    "defaultMessage": "Starting download..."
+  },
+  "localModelPicker.tryAgain": {
+    "defaultMessage": "Try Again"
+  },
+  "localModelPicker.useModel": {
+    "defaultMessage": "Use {modelId}"
+  },
+  "markdownContent.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "markdownContent.copyCode": {
+    "defaultMessage": "Copy code"
+  },
+  "markdownContent.failedToOpenLink": {
+    "defaultMessage": "Failed to Open Link"
+  },
+  "markdownContent.noApplicationFound": {
+    "defaultMessage": "No application found to open this link."
+  },
+  "markdownContent.open": {
+    "defaultMessage": "Open"
+  },
+  "markdownContent.openExternalLink": {
+    "defaultMessage": "Open External Link"
+  },
+  "markdownContent.openProtocolLink": {
+    "defaultMessage": "Open {protocol} link?"
+  },
+  "markdownContent.thisWillOpen": {
+    "defaultMessage": "This will open: {href}"
+  },
+  "mcpAppRenderer.appFailed": {
+    "defaultMessage": "This app couldn't continue. Close it and try again."
+  },
+  "mcpAppRenderer.appFallbackTitle": {
+    "defaultMessage": "App"
+  },
+  "mcpAppRenderer.cancelButton": {
+    "defaultMessage": "Cancel"
+  },
+  "mcpAppRenderer.close": {
+    "defaultMessage": "Close"
+  },
+  "mcpAppRenderer.exitFullscreen": {
+    "defaultMessage": "Exit fullscreen"
+  },
+  "mcpAppRenderer.exitFullscreenTitle": {
+    "defaultMessage": "Exit fullscreen (Esc)"
+  },
+  "mcpAppRenderer.failedToInitSandbox": {
+    "defaultMessage": "Failed to initialize sandbox proxy"
+  },
+  "mcpAppRenderer.failedToLoadResource": {
+    "defaultMessage": "This app couldn't load its content. Try again."
+  },
+  "mcpAppRenderer.fullscreen": {
+    "defaultMessage": "Fullscreen"
+  },
+  "mcpAppRenderer.invalidUrl": {
+    "defaultMessage": "Invalid URL"
+  },
+  "mcpAppRenderer.movePipWindow": {
+    "defaultMessage": "Move Picture-in-Picture window (use arrow keys)"
+  },
+  "mcpAppRenderer.openButton": {
+    "defaultMessage": "Open"
+  },
+  "mcpAppRenderer.openExternalLinkTitle": {
+    "defaultMessage": "Open External Link"
+  },
+  "mcpAppRenderer.openLinkDetail": {
+    "defaultMessage": "This will open: {url}"
+  },
+  "mcpAppRenderer.openProtocolLink": {
+    "defaultMessage": "Open {protocol} link?"
+  },
+  "mcpAppRenderer.pictureInPicture": {
+    "defaultMessage": "Picture-in-Picture"
+  },
+  "mcpAppRenderer.playingInPip": {
+    "defaultMessage": "Playing in Picture-in-Picture"
+  },
+  "mentionPopover.itemsFound": {
+    "defaultMessage": "{count,plural,one{# item found} other{# items found}}"
+  },
+  "mentionPopover.loadingCommands": {
+    "defaultMessage": "Loading commands..."
+  },
+  "mentionPopover.noCommandsFound": {
+    "defaultMessage": "No commands found matching \"{query}\""
+  },
+  "mentionPopover.noItemsFound": {
+    "defaultMessage": "No items found matching \"{query}\""
+  },
+  "mentionPopover.scanningFiles": {
+    "defaultMessage": "Scanning files..."
+  },
+  "messageCopyLink.copied": {
+    "defaultMessage": "Copied!"
+  },
+  "messageCopyLink.copy": {
+    "defaultMessage": "Copy"
+  },
+  "messageQueue.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "messageQueue.cannotSendWhileEditing": {
+    "defaultMessage": "Cannot send while editing"
+  },
+  "messageQueue.clearAll": {
+    "defaultMessage": "Clear All"
+  },
+  "messageQueue.clickToEdit": {
+    "defaultMessage": "{content} (Click to edit)"
+  },
+  "messageQueue.collapseQueue": {
+    "defaultMessage": "Collapse queue"
+  },
+  "messageQueue.dragToReorder": {
+    "defaultMessage": "Drag messages to reorder priority"
+  },
+  "messageQueue.expandQueue": {
+    "defaultMessage": "Expand queue"
+  },
+  "messageQueue.messageCount": {
+    "defaultMessage": "{count,plural,one{# message {status}} other{# messages {status}}}"
+  },
+  "messageQueue.messageQueue": {
+    "defaultMessage": "Message Queue"
+  },
+  "messageQueue.next": {
+    "defaultMessage": "Next"
+  },
+  "messageQueue.paused": {
+    "defaultMessage": "Paused"
+  },
+  "messageQueue.queuePaused": {
+    "defaultMessage": "Queue Paused"
+  },
+  "messageQueue.queuePausedCompact": {
+    "defaultMessage": "Queue paused - click \"Send\" or add new message to resume"
+  },
+  "messageQueue.queuePausedExpanded": {
+    "defaultMessage": "Queue paused by interruption. Use \"Send Now\" or add a new message to resume."
+  },
+  "messageQueue.queued": {
+    "defaultMessage": "queued"
+  },
+  "messageQueue.removeFromQueue": {
+    "defaultMessage": "Remove this message from queue"
+  },
+  "messageQueue.save": {
+    "defaultMessage": "Save"
+  },
+  "messageQueue.sendNow": {
+    "defaultMessage": "Send this message now"
+  },
+  "messageQueue.stopAndSend": {
+    "defaultMessage": "Stop current processing and send this message now"
+  },
+  "messageQueue.waiting": {
+    "defaultMessage": "waiting"
+  },
+  "messageUsageStats.cacheHitRate": {
+    "defaultMessage": "({percent}% of input)"
+  },
+  "messageUsageStats.cacheRead": {
+    "defaultMessage": "cache read"
+  },
+  "messageUsageStats.cacheWrite": {
+    "defaultMessage": "cache write"
+  },
+  "messageUsageStats.compaction": {
+    "defaultMessage": "Compaction"
+  },
+  "messageUsageStats.cost": {
+    "defaultMessage": "Cost"
+  },
+  "messageUsageStats.estimated": {
+    "defaultMessage": "(estimated)"
+  },
+  "messageUsageStats.firstToken": {
+    "defaultMessage": "First token"
+  },
+  "messageUsageStats.input": {
+    "defaultMessage": "Input"
+  },
+  "messageUsageStats.output": {
+    "defaultMessage": "Output"
+  },
+  "messageUsageStats.reported": {
+    "defaultMessage": "(reported)"
+  },
+  "messageUsageStats.speed": {
+    "defaultMessage": "Speed"
+  },
+  "messageUsageStats.tokenUnit": {
+    "defaultMessage": "tok"
+  },
+  "messageUsageStats.tokensPerSecondUnit": {
+    "defaultMessage": "tok/s"
+  },
+  "messageUsageStats.total": {
+    "defaultMessage": "Total"
+  },
+  "messageUsageStats.totalTime": {
+    "defaultMessage": "Total time"
+  },
+  "microphoneSelector.chooseDescription": {
+    "defaultMessage": "Choose which microphone to use for dictation"
+  },
+  "microphoneSelector.grantAccess": {
+    "defaultMessage": "Grant Access"
+  },
+  "microphoneSelector.grantAccessDescription": {
+    "defaultMessage": "Grant access to see available microphones"
+  },
+  "microphoneSelector.microphone": {
+    "defaultMessage": "Microphone"
+  },
+  "microphoneSelector.microphoneLabel": {
+    "defaultMessage": "Microphone {index}"
+  },
+  "microphoneSelector.selectedMicrophone": {
+    "defaultMessage": "Selected Microphone"
+  },
+  "microphoneSelector.speakToTest": {
+    "defaultMessage": "Speak to test your microphone ({seconds}s)"
+  },
+  "microphoneSelector.stop": {
+    "defaultMessage": "Stop"
+  },
+  "microphoneSelector.systemDefault": {
+    "defaultMessage": "System Default"
+  },
+  "microphoneSelector.test": {
+    "defaultMessage": "Test"
+  },
+  "modeSelectionItem.autonomousDescription": {
+    "defaultMessage": "Full file modification capabilities, edit, create, and delete files freely."
+  },
+  "modeSelectionItem.autonomousLabel": {
+    "defaultMessage": "Autonomous"
+  },
+  "modeSelectionItem.chatOnlyDescription": {
+    "defaultMessage": "Engage with the selected provider without using tools or extensions."
+  },
+  "modeSelectionItem.chatOnlyLabel": {
+    "defaultMessage": "Chat only"
+  },
+  "modeSelectionItem.manualDescription": {
+    "defaultMessage": "All tools, extensions and file modifications will require human approval"
+  },
+  "modeSelectionItem.manualLabel": {
+    "defaultMessage": "Manual"
+  },
+  "modeSelectionItem.smartDescription": {
+    "defaultMessage": "Intelligently determine which actions need approval based on risk level"
+  },
+  "modeSelectionItem.smartLabel": {
+    "defaultMessage": "Smart"
+  },
+  "modelAndProviderContext.modelChangeFailed": {
+    "defaultMessage": "{provider}/{model} failed"
+  },
+  "modelAndProviderContext.modelChangedTitle": {
+    "defaultMessage": "Model changed"
+  },
+  "modelAndProviderContext.selectModel": {
+    "defaultMessage": "Choose model"
+  },
+  "modelAndProviderContext.switchModelSuccess": {
+    "defaultMessage": "Using {model} from {provider}."
+  },
+  "modelAndProviderContext.unknownProviderMsg": {
+    "defaultMessage": "Unknown provider. Choose one in Settings."
+  },
+  "modelAndProviderContext.unknownProviderTitle": {
+    "defaultMessage": "Provider name lookup"
+  },
+  "modelSettingsButtons.configureProviders": {
+    "defaultMessage": "Configure providers"
+  },
+  "modelSettingsButtons.switchModels": {
+    "defaultMessage": "Switch models"
+  },
+  "modelSettingsPanel.batchSize": {
+    "defaultMessage": "Batch size"
+  },
+  "modelSettingsPanel.batchSizeDescription": {
+    "defaultMessage": "Prompt processing batch"
+  },
+  "modelSettingsPanel.builtinChatTemplate": {
+    "defaultMessage": "Built-in template"
+  },
+  "modelSettingsPanel.builtinChatTemplateDescription": {
+    "defaultMessage": "Select a llama.cpp built-in template name"
+  },
+  "modelSettingsPanel.chatTemplate": {
+    "defaultMessage": "Chat template"
+  },
+  "modelSettingsPanel.chatTemplateBuiltin": {
+    "defaultMessage": "Built-in"
+  },
+  "modelSettingsPanel.chatTemplateCustomInline": {
+    "defaultMessage": "Custom inline"
+  },
+  "modelSettingsPanel.chatTemplateDescription": {
+    "defaultMessage": "Use embedded GGUF metadata, a llama.cpp built-in template, or inline Jinja"
+  },
+  "modelSettingsPanel.chatTemplateEmbedded": {
+    "defaultMessage": "Embedded"
+  },
+  "modelSettingsPanel.contextAndGeneration": {
+    "defaultMessage": "Context & Generation"
+  },
+  "modelSettingsPanel.contextSize": {
+    "defaultMessage": "Context size"
+  },
+  "modelSettingsPanel.contextSizeDescription": {
+    "defaultMessage": "Max context window (0 = model default)"
+  },
+  "modelSettingsPanel.customChatTemplate": {
+    "defaultMessage": "Custom chat template"
+  },
+  "modelSettingsPanel.customChatTemplateDescription": {
+    "defaultMessage": "Paste the full Jinja chat template source"
+  },
+  "modelSettingsPanel.etaLearningRate": {
+    "defaultMessage": "Eta (learning rate)"
+  },
+  "modelSettingsPanel.flashAttention": {
+    "defaultMessage": "Flash attention"
+  },
+  "modelSettingsPanel.flashAttentionDescription": {
+    "defaultMessage": "Enable flash attention optimization"
+  },
+  "modelSettingsPanel.frequencyPenalty": {
+    "defaultMessage": "Frequency penalty"
+  },
+  "modelSettingsPanel.frequencyPenaltyDescription": {
+    "defaultMessage": "0.0 = off"
+  },
+  "modelSettingsPanel.gpuLayers": {
+    "defaultMessage": "GPU layers"
+  },
+  "modelSettingsPanel.gpuLayersDescription": {
+    "defaultMessage": "Layers to offload to GPU"
+  },
+  "modelSettingsPanel.loadingSettings": {
+    "defaultMessage": "Loading settings..."
+  },
+  "modelSettingsPanel.lockModelInRam": {
+    "defaultMessage": "Lock model in RAM (mlock)"
+  },
+  "modelSettingsPanel.lockModelInRamDescription": {
+    "defaultMessage": "Prevent model from being swapped to disk"
+  },
+  "modelSettingsPanel.maxOutputTokens": {
+    "defaultMessage": "Max output tokens"
+  },
+  "modelSettingsPanel.maxOutputTokensDescription": {
+    "defaultMessage": "Cap on generated tokens"
+  },
+  "modelSettingsPanel.minP": {
+    "defaultMessage": "Min P"
+  },
+  "modelSettingsPanel.performance": {
+    "defaultMessage": "Performance"
+  },
+  "modelSettingsPanel.presencePenalty": {
+    "defaultMessage": "Presence penalty"
+  },
+  "modelSettingsPanel.presencePenaltyDescription": {
+    "defaultMessage": "0.0 = off"
+  },
+  "modelSettingsPanel.repeatPenalty": {
+    "defaultMessage": "Repeat penalty"
+  },
+  "modelSettingsPanel.repeatPenaltyDescription": {
+    "defaultMessage": "1.0 = off"
+  },
+  "modelSettingsPanel.repeatWindow": {
+    "defaultMessage": "Repeat window"
+  },
+  "modelSettingsPanel.repeatWindowDescription": {
+    "defaultMessage": "Tokens to look back"
+  },
+  "modelSettingsPanel.repetitionPenalty": {
+    "defaultMessage": "Repetition Penalty"
+  },
+  "modelSettingsPanel.reset": {
+    "defaultMessage": "Reset"
+  },
+  "modelSettingsPanel.resetToDefaults": {
+    "defaultMessage": "Reset to defaults"
+  },
+  "modelSettingsPanel.samplingStrategy": {
+    "defaultMessage": "Sampling Strategy"
+  },
+  "modelSettingsPanel.saving": {
+    "defaultMessage": "Saving..."
+  },
+  "modelSettingsPanel.seed": {
+    "defaultMessage": "Seed"
+  },
+  "modelSettingsPanel.tauTargetEntropy": {
+    "defaultMessage": "Tau (target entropy)"
+  },
+  "modelSettingsPanel.temperature": {
+    "defaultMessage": "Temperature"
+  },
+  "modelSettingsPanel.threads": {
+    "defaultMessage": "Threads"
+  },
+  "modelSettingsPanel.threadsDescription": {
+    "defaultMessage": "CPU threads for generation"
+  },
+  "modelSettingsPanel.toolCalling": {
+    "defaultMessage": "Tool calling"
+  },
+  "modelSettingsPanel.toolCallingAuto": {
+    "defaultMessage": "Auto"
+  },
+  "modelSettingsPanel.toolCallingDescription": {
+    "defaultMessage": "Choose how local models select native or emulated tool calling"
+  },
+  "modelSettingsPanel.toolCallingForceEmulated": {
+    "defaultMessage": "Force emulated"
+  },
+  "modelSettingsPanel.toolCallingForceNative": {
+    "defaultMessage": "Force native"
+  },
+  "modelSettingsPanel.topK": {
+    "defaultMessage": "Top K"
+  },
+  "modelSettingsPanel.topP": {
+    "defaultMessage": "Top P"
+  },
+  "modelsBottomBar.changeModel": {
+    "defaultMessage": "Change Model"
+  },
+  "modelsBottomBar.currentModel": {
+    "defaultMessage": "Current model"
+  },
+  "modelsBottomBar.loadingModel": {
+    "defaultMessage": "Loading model..."
+  },
+  "modelsBottomBar.localModelSettings": {
+    "defaultMessage": "Local Model Settings"
+  },
+  "modelsBottomBar.localModelSettingsTitle": {
+    "defaultMessage": "Local Model Settings — {modelName}"
+  },
+  "modelsBottomBar.recentModels": {
+    "defaultMessage": "Recent"
+  },
+  "modelsBottomBar.resolvedModel": {
+    "defaultMessage": "Resolved model"
+  },
+  "modelsBottomBar.selectModel": {
+    "defaultMessage": "Select Model"
+  },
+  "modelsSection.resetDescription": {
+    "defaultMessage": "Clear the current model and provider, then choose again."
+  },
+  "modelsSection.resetTitle": {
+    "defaultMessage": "Model setup"
+  },
+  "navigation.itemApprovals": {
+    "defaultMessage": "Approvals"
+  },
+  "navigation.itemAudit": {
+    "defaultMessage": "Audit"
+  },
+  "navigation.itemHome": {
+    "defaultMessage": "New task"
+  },
+  "navigation.itemProjects": {
+    "defaultMessage": "Projects"
+  },
+  "navigation.itemRecipes": {
+    "defaultMessage": "Playbooks"
+  },
+  "navigation.itemSessions": {
+    "defaultMessage": "Tasks"
+  },
+  "navigation.itemSettings": {
+    "defaultMessage": "Settings"
+  },
+  "navigationPanel.activity": {
+    "defaultMessage": "Recent"
+  },
+  "navigationPanel.metaCreated": {
+    "defaultMessage": "Created"
+  },
+  "navigationPanel.metaDirectory": {
+    "defaultMessage": "Workspace"
+  },
+  "navigationPanel.metaModel": {
+    "defaultMessage": "Model"
+  },
+  "navigationPanel.metaStatus": {
+    "defaultMessage": "Status"
+  },
+  "navigationPanel.metaUpdated": {
+    "defaultMessage": "Updated"
+  },
+  "navigationPanel.noActivity": {
+    "defaultMessage": "No recent tasks yet"
+  },
+  "navigationPanel.statusError": {
+    "defaultMessage": "Needs attention"
+  },
+  "navigationPanel.statusIdle": {
+    "defaultMessage": "Ready"
+  },
+  "navigationPanel.statusStreaming": {
+    "defaultMessage": "Working"
+  },
+  "navigationPanel.statusUnread": {
+    "defaultMessage": "Ready for review"
+  },
+  "navigationPanel.untitledSession": {
+    "defaultMessage": "Untitled task"
+  },
+  "onboardingGuard.checkProviderErrorDescription": {
+    "defaultMessage": "Check your connection and try again."
+  },
+  "onboardingGuard.checkProviderErrorTitle": {
+    "defaultMessage": "Could not check your provider"
+  },
+  "onboardingGuard.preparingDescription": {
+    "defaultMessage": "Verifying your model connection…"
+  },
+  "onboardingGuard.preparingTitle": {
+    "defaultMessage": "Checking setup"
+  },
+  "onboardingGuard.retry": {
+    "defaultMessage": "Retry"
+  },
+  "onboardingGuard.welcomeDescription": {
+    "defaultMessage": "Choose a model provider to get started."
+  },
+  "onboardingGuard.welcomeTitle": {
+    "defaultMessage": "Welcome to AccordLock"
+  },
+  "onboardingSuccess.allSet": {
+    "defaultMessage": "Choose a folder and describe your first task."
+  },
+  "onboardingSuccess.connectedTo": {
+    "defaultMessage": "Connected to {providerName}"
+  },
+  "onboardingSuccess.getStarted": {
+    "defaultMessage": "Start your first task"
+  },
+  "onboardingSuccess.learnMore": {
+    "defaultMessage": "Learn more"
+  },
+  "onboardingSuccess.localModelReady": {
+    "defaultMessage": "Local model ready"
+  },
+  "onboardingSuccess.privacyDescription": {
+    "defaultMessage": "Help improve AccordLock by sharing product analytics."
+  },
+  "onboardingSuccess.privacyTitle": {
+    "defaultMessage": "Privacy"
+  },
+  "onboardingSuccess.shareUsageData": {
+    "defaultMessage": "Share product analytics"
+  },
+  "parameterInput.defaultValue": {
+    "defaultMessage": "Default Value"
+  },
+  "parameterInput.defaultValuePlaceholder": {
+    "defaultMessage": "Enter default value"
+  },
+  "parameterInput.deleteParameter": {
+    "defaultMessage": "Delete parameter: {key}"
+  },
+  "parameterInput.description": {
+    "defaultMessage": "description"
+  },
+  "parameterInput.descriptionHelp": {
+    "defaultMessage": "This is the message the end-user will see."
+  },
+  "parameterInput.descriptionPlaceholder": {
+    "defaultMessage": "E.g., \"Enter the name for the new component\""
+  },
+  "parameterInput.inputType": {
+    "defaultMessage": "Input Type"
+  },
+  "parameterInput.optional": {
+    "defaultMessage": "Optional"
+  },
+  "parameterInput.optionsHelp": {
+    "defaultMessage": "Enter each option on a new line. These will be shown as dropdown choices."
+  },
+  "parameterInput.optionsLabel": {
+    "defaultMessage": "Options (one per line)"
+  },
+  "parameterInput.optionsPlaceholder": {
+    "defaultMessage": "Option 1 Option 2 Option 3"
+  },
+  "parameterInput.required": {
+    "defaultMessage": "Required"
+  },
+  "parameterInput.requirement": {
+    "defaultMessage": "Requirement"
+  },
+  "parameterInput.typeBoolean": {
+    "defaultMessage": "Boolean"
+  },
+  "parameterInput.typeNumber": {
+    "defaultMessage": "Number"
+  },
+  "parameterInput.typeSelect": {
+    "defaultMessage": "Select"
+  },
+  "parameterInput.typeString": {
+    "defaultMessage": "String"
+  },
+  "parameterInput.unused": {
+    "defaultMessage": "Unused"
+  },
+  "parameterInput.unusedWarningTitle": {
+    "defaultMessage": "This parameter is not used in the instructions or prompt. It will be available for manual input but may not be needed."
+  },
+  "parameterInputModal.backToForm": {
+    "defaultMessage": "Back to setup"
+  },
+  "parameterInputModal.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "parameterInputModal.cancelRecipeSetup": {
+    "defaultMessage": "Cancel playbook setup"
+  },
+  "parameterInputModal.enterValue": {
+    "defaultMessage": "Enter value for {key}..."
+  },
+  "parameterInputModal.false": {
+    "defaultMessage": "False"
+  },
+  "parameterInputModal.recipeParameters": {
+    "defaultMessage": "Playbook inputs"
+  },
+  "parameterInputModal.select": {
+    "defaultMessage": "Select..."
+  },
+  "parameterInputModal.selectOption": {
+    "defaultMessage": "Select an option..."
+  },
+  "parameterInputModal.startNewChat": {
+    "defaultMessage": "Start without playbook"
+  },
+  "parameterInputModal.startRecipe": {
+    "defaultMessage": "Run playbook"
+  },
+  "parameterInputModal.true": {
+    "defaultMessage": "True"
+  },
+  "parameterInputModal.whatToDo": {
+    "defaultMessage": "What would you like to do?"
+  },
+  "permissionModal.alwaysAllow": {
+    "defaultMessage": "Always allow"
+  },
+  "permissionModal.askBefore": {
+    "defaultMessage": "Ask before"
+  },
+  "permissionModal.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "permissionModal.close": {
+    "defaultMessage": "Close"
+  },
+  "permissionModal.failedToLoadTools": {
+    "defaultMessage": "Couldn’t load available actions"
+  },
+  "permissionModal.failedToLoadToolsDescription": {
+    "defaultMessage": "This extension may not be available in the current task."
+  },
+  "permissionModal.neverAllow": {
+    "defaultMessage": "Never allow"
+  },
+  "permissionModal.noActiveSession": {
+    "defaultMessage": "No active task"
+  },
+  "permissionModal.noActiveSessionDescription": {
+    "defaultMessage": "Start a task first to manage access for this extension."
+  },
+  "permissionModal.noToolsAvailable": {
+    "defaultMessage": "No actions are available for this extension."
+  },
+  "permissionModal.saveChanges": {
+    "defaultMessage": "Save changes"
+  },
+  "permissionRulesModal.description": {
+    "defaultMessage": "Configure tool permissions for extensions to control how they interact with your system."
+  },
+  "permissionRulesModal.extensionRules": {
+    "defaultMessage": "Extension rules"
+  },
+  "permissionRulesModal.title": {
+    "defaultMessage": "Permission Rules"
+  },
+  "permissionSetting.extensionRules": {
+    "defaultMessage": "Extension rules"
+  },
+  "permissionSetting.permissionRules": {
+    "defaultMessage": "Permission Rules"
+  },
+  "permissionSetting.permissionRulesDescription": {
+    "defaultMessage": "Choose what each tool may request. AccordLock still checks every action against the active task."
+  },
+  "privacyInfoModal.collectErrors": {
+    "defaultMessage": "Error categories, such as rate limits or sign-in failures"
+  },
+  "privacyInfoModal.collectExtensions": {
+    "defaultMessage": "Built-in extensions and action counts"
+  },
+  "privacyInfoModal.collectOs": {
+    "defaultMessage": "Operating system, version, and architecture"
+  },
+  "privacyInfoModal.collectProvider": {
+    "defaultMessage": "Provider and model used"
+  },
+  "privacyInfoModal.collectSession": {
+    "defaultMessage": "Task duration, interaction count, and token usage"
+  },
+  "privacyInfoModal.collectVersion": {
+    "defaultMessage": "AccordLock version and install method"
+  },
+  "privacyInfoModal.description": {
+    "defaultMessage": "Product analytics are disabled in this release."
+  },
+  "privacyInfoModal.neverCollect": {
+    "defaultMessage": "No product analytics are sent by this release. Future analytics will require opt-in consent and a published data policy."
+  },
+  "privacyInfoModal.title": {
+    "defaultMessage": "Privacy details"
+  },
+  "privacyInfoModal.whatWeCollect": {
+    "defaultMessage": "If enabled in a future release, analytics may include:"
+  },
+  "productTour.allowOnce": {
+    "defaultMessage": "Approve once"
+  },
+  "productTour.allowedDecision": {
+    "defaultMessage": "Approved once"
+  },
+  "productTour.allowedExplanation": {
+    "defaultMessage": "Only the change shown above can run."
+  },
+  "productTour.back": {
+    "defaultMessage": "Back to provider selection"
+  },
+  "productTour.changeLabel": {
+    "defaultMessage": "Change"
+  },
+  "productTour.changeValue": {
+    "defaultMessage": "Insert one heading and one status line"
+  },
+  "productTour.description": {
+    "defaultMessage": "Preview how AccordLock handles a file change."
+  },
+  "productTour.disclaimer": {
+    "defaultMessage": "This demo doesn't use a model or touch your files."
+  },
+  "productTour.exactWriteTitle": {
+    "defaultMessage": "Proposed change"
+  },
+  "productTour.eyebrow": {
+    "defaultMessage": "Product tour"
+  },
+  "productTour.fileLabel": {
+    "defaultMessage": "File"
+  },
+  "productTour.folderLabel": {
+    "defaultMessage": "Folder"
+  },
+  "productTour.folderValue": {
+    "defaultMessage": "Selected folder"
+  },
+  "productTour.goal": {
+    "defaultMessage": "Prepare the README release note for review."
+  },
+  "productTour.goalLabel": {
+    "defaultMessage": "Outcome"
+  },
+  "productTour.keepLocked": {
+    "defaultMessage": "Keep locked"
+  },
+  "productTour.lockedDecision": {
+    "defaultMessage": "Kept locked"
+  },
+  "productTour.lockedExplanation": {
+    "defaultMessage": "The proposed change stays blocked."
+  },
+  "productTour.resetDecision": {
+    "defaultMessage": "Reset choice"
+  },
+  "productTour.resultTitle": {
+    "defaultMessage": "Decision"
+  },
+  "productTour.taskBoundary": {
+    "defaultMessage": "Can read files in this folder. Asks before changes and commands."
+  },
+  "productTour.taskBoundaryTitle": {
+    "defaultMessage": "Task access"
+  },
+  "productTour.title": {
+    "defaultMessage": "Try the approval flow"
+  },
+  "productTour.waitingDecision": {
+    "defaultMessage": "Choose whether this change can run."
+  },
+  "progressiveMessageList.loadingMessages": {
+    "defaultMessage": "Loading messages... ({renderedCount}/{totalCount})"
+  },
+  "progressiveMessageList.modelChanged": {
+    "defaultMessage": "Model changed: {previousModel} → {currentModel}"
+  },
+  "progressiveMessageList.searchHint": {
+    "defaultMessage": "Press Cmd/Ctrl+F to load all messages immediately for search"
+  },
+  "projectPicker.add": {
+    "defaultMessage": "Add to project"
+  },
+  "projectPicker.create": {
+    "defaultMessage": "Create project"
+  },
+  "projectPicker.label": {
+    "defaultMessage": "Project"
+  },
+  "projectPicker.none": {
+    "defaultMessage": "No project"
+  },
+  "projectPicker.selection": {
+    "defaultMessage": "Project: {project}"
+  },
+  "projects.action.archive": {
+    "defaultMessage": "Archive"
+  },
+  "projects.action.edit": {
+    "defaultMessage": "Edit"
+  },
+  "projects.action.failed": {
+    "defaultMessage": "The project could not be updated. Try again."
+  },
+  "projects.action.more": {
+    "defaultMessage": "More actions for {name}"
+  },
+  "projects.action.open": {
+    "defaultMessage": "Open {name}"
+  },
+  "projects.action.restore": {
+    "defaultMessage": "Restore"
+  },
+  "projects.activeProjects": {
+    "defaultMessage": "Active projects"
+  },
+  "projects.archive.description": {
+    "defaultMessage": "“{name}” moves to Archived. Its tasks stay available."
+  },
+  "projects.archive.title": {
+    "defaultMessage": "Archive project?"
+  },
+  "projects.archived.empty.title": {
+    "defaultMessage": "No archived projects"
+  },
+  "projects.archivedProjects": {
+    "defaultMessage": "Archived"
+  },
+  "projects.description": {
+    "defaultMessage": "Keep related tasks and folders together."
+  },
+  "projects.editor.addFolder": {
+    "defaultMessage": "Add folder"
+  },
+  "projects.editor.addInstructions": {
+    "defaultMessage": "Add instructions"
+  },
+  "projects.editor.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "projects.editor.chooseFolder": {
+    "defaultMessage": "Choose folder {number}"
+  },
+  "projects.editor.chooseFolderFailed": {
+    "defaultMessage": "The folder picker could not be opened. Try again."
+  },
+  "projects.editor.color": {
+    "defaultMessage": "Color"
+  },
+  "projects.editor.create": {
+    "defaultMessage": "Create project"
+  },
+  "projects.editor.createTitle": {
+    "defaultMessage": "New project"
+  },
+  "projects.editor.description": {
+    "defaultMessage": "Choose its folders and task guidance."
+  },
+  "projects.editor.editInstructions": {
+    "defaultMessage": "Edit instructions"
+  },
+  "projects.editor.editTitle": {
+    "defaultMessage": "Edit project"
+  },
+  "projects.editor.environment": {
+    "defaultMessage": "Deployment environment"
+  },
+  "projects.editor.environmentHint": {
+    "defaultMessage": "Use this project for deployment checks."
+  },
+  "projects.editor.environmentsUnavailable": {
+    "defaultMessage": "Couldn't load deployment environments."
+  },
+  "projects.editor.folderPlaceholder": {
+    "defaultMessage": "Path to a folder"
+  },
+  "projects.editor.folderRequired": {
+    "defaultMessage": "Add at least one folder."
+  },
+  "projects.editor.folders": {
+    "defaultMessage": "Folders"
+  },
+  "projects.editor.foldersHint": {
+    "defaultMessage": "Add every folder that belongs to this project."
+  },
+  "projects.editor.instructions": {
+    "defaultMessage": "Project instructions"
+  },
+  "projects.editor.instructionsHint": {
+    "defaultMessage": "Guidance used for work in this project."
+  },
+  "projects.editor.instructionsPlaceholder": {
+    "defaultMessage": "Conventions, constraints, and useful context"
+  },
+  "projects.editor.name": {
+    "defaultMessage": "Project name"
+  },
+  "projects.editor.namePlaceholder": {
+    "defaultMessage": "Website launch"
+  },
+  "projects.editor.nameRequired": {
+    "defaultMessage": "Enter a project name."
+  },
+  "projects.editor.noEnvironment": {
+    "defaultMessage": "No deployment environment"
+  },
+  "projects.editor.optional": {
+    "defaultMessage": "Optional"
+  },
+  "projects.editor.removeFolder": {
+    "defaultMessage": "Remove folder {number}"
+  },
+  "projects.editor.save": {
+    "defaultMessage": "Save changes"
+  },
+  "projects.editor.saveFailed": {
+    "defaultMessage": "The project could not be saved. Try again."
+  },
+  "projects.editor.saving": {
+    "defaultMessage": "Saving…"
+  },
+  "projects.editor.summary": {
+    "defaultMessage": "Description"
+  },
+  "projects.editor.summaryPlaceholder": {
+    "defaultMessage": "What this project is for"
+  },
+  "projects.editor.useColor": {
+    "defaultMessage": "Use {name}"
+  },
+  "projects.empty.description": {
+    "defaultMessage": "Create one to keep related work together."
+  },
+  "projects.empty.title": {
+    "defaultMessage": "No projects yet"
+  },
+  "projects.error.description": {
+    "defaultMessage": "Check the connection and try again."
+  },
+  "projects.error.title": {
+    "defaultMessage": "Couldn’t load projects"
+  },
+  "projects.folderCount": {
+    "defaultMessage": "{count,plural,one{# folder} other{# folders}}"
+  },
+  "projects.newProject": {
+    "defaultMessage": "New project"
+  },
+  "projects.taskCount": {
+    "defaultMessage": "{count,plural,one{# task} other{# tasks}}"
+  },
+  "projects.title": {
+    "defaultMessage": "Projects"
+  },
+  "projects.tryAgain": {
+    "defaultMessage": "Try again"
+  },
+  "promptsSettings.allPromptsReset": {
+    "defaultMessage": "All prompts reset to defaults"
+  },
+  "promptsSettings.backToList": {
+    "defaultMessage": "Back to List"
+  },
+  "promptsSettings.confirmReplaceWithDefault": {
+    "defaultMessage": "Replace current content with default? Your changes will be lost."
+  },
+  "promptsSettings.confirmResetAll": {
+    "defaultMessage": "Are you sure you want to reset all prompts to their defaults? This cannot be undone."
+  },
+  "promptsSettings.confirmResetOne": {
+    "defaultMessage": "Are you sure you want to reset this prompt to its default? This cannot be undone."
+  },
+  "promptsSettings.confirmUnsavedBack": {
+    "defaultMessage": "You have unsaved changes. Are you sure you want to go back?"
+  },
+  "promptsSettings.customized": {
+    "defaultMessage": "Customized"
+  },
+  "promptsSettings.edit": {
+    "defaultMessage": "Edit"
+  },
+  "promptsSettings.editPromptTitle": {
+    "defaultMessage": "Edit: {name}"
+  },
+  "promptsSettings.editingLabel": {
+    "defaultMessage": "Editing: {name}"
+  },
+  "promptsSettings.enterPromptContent": {
+    "defaultMessage": "Enter prompt content..."
+  },
+  "promptsSettings.failedToLoadPrompt": {
+    "defaultMessage": "Failed to load prompt"
+  },
+  "promptsSettings.failedToLoadPrompts": {
+    "defaultMessage": "Failed to load prompts"
+  },
+  "promptsSettings.failedToResetPrompt": {
+    "defaultMessage": "Failed to reset prompt"
+  },
+  "promptsSettings.failedToResetPrompts": {
+    "defaultMessage": "Failed to reset prompts"
+  },
+  "promptsSettings.failedToSavePrompt": {
+    "defaultMessage": "Failed to save prompt"
+  },
+  "promptsSettings.promptEditingDescription": {
+    "defaultMessage": "Customize prompts that define AccordLock's behavior in different contexts. They use Jinja2 templates; changing variables incorrectly can break functionality."
+  },
+  "promptsSettings.promptEditingTitle": {
+    "defaultMessage": "Prompt Editing"
+  },
+  "promptsSettings.promptResetToDefault": {
+    "defaultMessage": "Prompt reset to default"
+  },
+  "promptsSettings.promptSaved": {
+    "defaultMessage": "Prompt saved"
+  },
+  "promptsSettings.resetAll": {
+    "defaultMessage": "Reset All"
+  },
+  "promptsSettings.resetToDefault": {
+    "defaultMessage": "Reset to Default"
+  },
+  "promptsSettings.restoreDefault": {
+    "defaultMessage": "Restore Default"
+  },
+  "promptsSettings.save": {
+    "defaultMessage": "Save"
+  },
+  "promptsSettings.templateTip": {
+    "defaultMessage": "Template variables like {extensionsExample} or {forExample} are replaced with actual values at runtime. Be careful not to remove required variables."
+  },
+  "promptsSettings.unsavedChanges": {
+    "defaultMessage": "You have unsaved changes"
+  },
+  "providerCard.deprecatedReplacement": {
+    "defaultMessage": "Deprecated — use {replacement} instead."
+  },
+  "providerCard.noMetadata": {
+    "defaultMessage": "ProviderCard error: No metadata provided"
+  },
+  "providerCard.unknownProvider": {
+    "defaultMessage": "Unknown Provider"
+  },
+  "providerCatalogPicker.anthropicCompatible": {
+    "defaultMessage": "Anthropic Compatible"
+  },
+  "providerCatalogPicker.apiFormat": {
+    "defaultMessage": "API Format"
+  },
+  "providerCatalogPicker.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "providerCatalogPicker.catalogLoadFailed": {
+    "defaultMessage": "AccordLock couldn't load the provider catalog. Check your connection and try again."
+  },
+  "providerCatalogPicker.chooseProvider": {
+    "defaultMessage": "Choose Provider"
+  },
+  "providerCatalogPicker.errorPrefix": {
+    "defaultMessage": "Error: {error}"
+  },
+  "providerCatalogPicker.loadingProviders": {
+    "defaultMessage": "Loading providers..."
+  },
+  "providerCatalogPicker.modelsAvailable": {
+    "defaultMessage": "{count} models available"
+  },
+  "providerCatalogPicker.noProvidersAvailable": {
+    "defaultMessage": "No providers available"
+  },
+  "providerCatalogPicker.noProvidersFound": {
+    "defaultMessage": "No providers found for \"{query}\""
+  },
+  "providerCatalogPicker.openaiCompatible": {
+    "defaultMessage": "OpenAI Compatible"
+  },
+  "providerCatalogPicker.providerLoadFailed": {
+    "defaultMessage": "AccordLock couldn't load this provider. Try again or choose another provider."
+  },
+  "providerCatalogPicker.requiresEnvVar": {
+    "defaultMessage": "• Requires {envVar}"
+  },
+  "providerCatalogPicker.searchProviders": {
+    "defaultMessage": "Search providers..."
+  },
+  "providerCatalogPicker.selectFormatDescription": {
+    "defaultMessage": "Select an API format and provider. We'll auto-fill the configuration for you."
+  },
+  "providerConfigForm.browserWindowOpen": {
+    "defaultMessage": "A browser window will open for you to complete the login."
+  },
+  "providerConfigForm.configuring": {
+    "defaultMessage": "Configuring..."
+  },
+  "providerConfigForm.continue": {
+    "defaultMessage": "Continue"
+  },
+  "providerConfigForm.deviceCodeFlowHint": {
+    "defaultMessage": "A browser window will open and the verification code will be copied to your clipboard. Paste it in the browser to complete sign-in."
+  },
+  "providerConfigForm.noApiKey": {
+    "defaultMessage": "Don't have an API key?"
+  },
+  "providerConfigForm.setupFailed": {
+    "defaultMessage": "AccordLock couldn't connect to this provider. Check the provider settings and try again."
+  },
+  "providerConfigForm.signInWith": {
+    "defaultMessage": "Sign in with {providerName}"
+  },
+  "providerConfigForm.signingIn": {
+    "defaultMessage": "Signing in..."
+  },
+  "providerConfigurationModal.addApiKeyDescription": {
+    "defaultMessage": "Add your API key(s) to connect this provider to AccordLock"
+  },
+  "providerConfigurationModal.browserWindowHint": {
+    "defaultMessage": "A browser window will open for you to complete the login."
+  },
+  "providerConfigurationModal.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "providerConfigurationModal.cannotDeleteActive": {
+    "defaultMessage": "You cannot delete this provider while it's currently in use. Please switch to a different model first."
+  },
+  "providerConfigurationModal.checkConfigAgain": {
+    "defaultMessage": "Check your configuration again to use this provider."
+  },
+  "providerConfigurationModal.chooseModel": {
+    "defaultMessage": "Choose model"
+  },
+  "providerConfigurationModal.close": {
+    "defaultMessage": "Close"
+  },
+  "providerConfigurationModal.configureHeader": {
+    "defaultMessage": "Configure {providerName}"
+  },
+  "providerConfigurationModal.deleteConfigHeader": {
+    "defaultMessage": "Delete configuration for {providerName}"
+  },
+  "providerConfigurationModal.deleteConfirmation": {
+    "defaultMessage": "This will permanently delete the current provider configuration."
+  },
+  "providerConfigurationModal.deviceCodeFlowHint": {
+    "defaultMessage": "A browser window will open and the verification code will be copied to your clipboard. Paste it in the browser to complete sign-in."
+  },
+  "providerConfigurationModal.errorCheckingConfig": {
+    "defaultMessage": "There was an error checking this provider configuration."
+  },
+  "providerConfigurationModal.errorTitle": {
+    "defaultMessage": "Error"
+  },
+  "providerConfigurationModal.externalSetupIntro": {
+    "defaultMessage": "This provider is configured outside AccordLock. Follow these steps:"
+  },
+  "providerConfigurationModal.goBack": {
+    "defaultMessage": "Go Back"
+  },
+  "providerConfigurationModal.huggingFaceOAuthDescription": {
+    "defaultMessage": "Sign in to use Hugging Face Inference Providers without manually entering an API token."
+  },
+  "providerConfigurationModal.oauthLoginFailed": {
+    "defaultMessage": "Sign-in could not be completed. Check the provider and try again."
+  },
+  "providerConfigurationModal.oauthSignInDescription": {
+    "defaultMessage": "Sign in with your {providerName} account to use this provider"
+  },
+  "providerConfigurationModal.parameterRequired": {
+    "defaultMessage": "{paramName} is required"
+  },
+  "providerConfigurationModal.removeConfiguration": {
+    "defaultMessage": "Remove Configuration"
+  },
+  "providerConfigurationModal.seeDocumentation": {
+    "defaultMessage": "See the <link>documentation</link> for more details."
+  },
+  "providerConfigurationModal.signInWith": {
+    "defaultMessage": "Sign in with {providerName}"
+  },
+  "providerConfigurationModal.signingIn": {
+    "defaultMessage": "Signing in..."
+  },
+  "providerGrid.addProvider": {
+    "defaultMessage": "Add Provider"
+  },
+  "providerGrid.addProviderTitle": {
+    "defaultMessage": "Add Provider"
+  },
+  "providerGrid.chooseModel": {
+    "defaultMessage": "Choose Model"
+  },
+  "providerGrid.configureProvider": {
+    "defaultMessage": "Configure Provider"
+  },
+  "providerGrid.editProvider": {
+    "defaultMessage": "Edit Provider"
+  },
+  "providerGrid.fromTemplateOrManual": {
+    "defaultMessage": "From template or manual setup"
+  },
+  "providerGrid.noMatch": {
+    "defaultMessage": "No providers match \"{query}\""
+  },
+  "providerGrid.searchPlaceholder": {
+    "defaultMessage": "Search providers..."
+  },
+  "providerLogo.alt": {
+    "defaultMessage": "{providerName} logo"
+  },
+  "providerSelector.addCustomProvider": {
+    "defaultMessage": "Add a custom provider"
+  },
+  "providerSelector.addCustomProviderTitle": {
+    "defaultMessage": "Add Custom Provider"
+  },
+  "providerSelector.browseAllProviders": {
+    "defaultMessage": "Browse all {count} providers"
+  },
+  "providerSelector.changeProvider": {
+    "defaultMessage": "Choose another provider"
+  },
+  "providerSelector.connectProvider": {
+    "defaultMessage": "Connect a model"
+  },
+  "providerSelector.connectProviderDescription": {
+    "defaultMessage": "Use your provider account or API key."
+  },
+  "providerSelector.discoverWithoutModel": {
+    "defaultMessage": "Explore first"
+  },
+  "providerSelector.discoverWithoutModelDescription": {
+    "defaultMessage": "Preview task access and action approval. No model or files required."
+  },
+  "providerSelector.hideProviderCatalog": {
+    "defaultMessage": "Show fewer providers"
+  },
+  "providerSelector.loadProvidersError": {
+    "defaultMessage": "AccordLock could not load model providers."
+  },
+  "providerSelector.loadingProviders": {
+    "defaultMessage": "Loading model providers…"
+  },
+  "providerSelector.localModelDescription": {
+    "defaultMessage": "Download a model and run it on this device. No API key or account needed."
+  },
+  "providerSelector.recommendedProviders": {
+    "defaultMessage": "Recommended"
+  },
+  "providerSelector.retryProviders": {
+    "defaultMessage": "Try again"
+  },
+  "providerSelector.selectProvider": {
+    "defaultMessage": "Select a provider"
+  },
+  "providerSelector.useLocalModel": {
+    "defaultMessage": "Use a local model"
+  },
+  "providerSettings.configurationSettings": {
+    "defaultMessage": "Provider Configuration Settings"
+  },
+  "providerSettings.loadingProviders": {
+    "defaultMessage": "Loading providers..."
+  },
+  "providerSettings.onboardingDescription": {
+    "defaultMessage": "Select the AI model provider AccordLock should use. Keys saved here are stored only in your operating system credential vault and can be changed at any time."
+  },
+  "providerSettings.otherProviders": {
+    "defaultMessage": "Other providers"
+  },
+  "providerSetupActions.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "providerSetupActions.cannotDeleteActive": {
+    "defaultMessage": "You cannot delete {providerName} while it's currently in use. Please switch to a different model before deleting this provider."
+  },
+  "providerSetupActions.confirmDelete": {
+    "defaultMessage": "Confirm Delete"
+  },
+  "providerSetupActions.confirmDeleteMessage": {
+    "defaultMessage": "Are you sure you want to delete the configuration parameters for {providerName}? This action cannot be undone."
+  },
+  "providerSetupActions.deleteProvider": {
+    "defaultMessage": "Delete Provider"
+  },
+  "providerSetupActions.enableProvider": {
+    "defaultMessage": "Enable Provider"
+  },
+  "providerSetupActions.ok": {
+    "defaultMessage": "Ok"
+  },
+  "providerSetupActions.submit": {
+    "defaultMessage": "Submit"
+  },
+  "recipeActivityEditor.activitiesDescription": {
+    "defaultMessage": "Suggested prompts shown when the playbook opens."
+  },
+  "recipeActivityEditor.activitiesLabel": {
+    "defaultMessage": "Activities"
+  },
+  "recipeActivityEditor.activityButtonsDescription": {
+    "defaultMessage": "Help people start common tasks."
+  },
+  "recipeActivityEditor.activityButtonsLabel": {
+    "defaultMessage": "Prompt buttons"
+  },
+  "recipeActivityEditor.addActivity": {
+    "defaultMessage": "Add activity"
+  },
+  "recipeActivityEditor.addNewActivityPlaceholder": {
+    "defaultMessage": "Add new activity..."
+  },
+  "recipeActivityEditor.messageDescription": {
+    "defaultMessage": "A message shown above the prompt buttons. Markdown is supported."
+  },
+  "recipeActivityEditor.messageLabel": {
+    "defaultMessage": "Message"
+  },
+  "recipeActivityEditor.messagePlaceholder": {
+    "defaultMessage": "Introduction message…"
+  },
+  "recipeExtensionSelector.description": {
+    "defaultMessage": "Leave empty to use the default tools."
+  },
+  "recipeExtensionSelector.extensionsSelected": {
+    "defaultMessage": "{count,plural,one{# extension selected} other{# extensions selected}}"
+  },
+  "recipeExtensionSelector.label": {
+    "defaultMessage": "Tools"
+  },
+  "recipeExtensionSelector.noExtensionsAvailable": {
+    "defaultMessage": "No extensions available"
+  },
+  "recipeExtensionSelector.noExtensionsFound": {
+    "defaultMessage": "No extensions found"
+  },
+  "recipeExtensionSelector.searchPlaceholder": {
+    "defaultMessage": "Search extensions..."
+  },
+  "recipeFormFields.addParameter": {
+    "defaultMessage": "Add parameter"
+  },
+  "recipeFormFields.advancedOptions": {
+    "defaultMessage": "Advanced options"
+  },
+  "recipeFormFields.advancedOptionsHint": {
+    "defaultMessage": "Prompts, parameters, model, tools, output, nested playbooks"
+  },
+  "recipeFormFields.descriptionLabel": {
+    "defaultMessage": "Description"
+  },
+  "recipeFormFields.descriptionPlaceholder": {
+    "defaultMessage": "What this playbook does"
+  },
+  "recipeFormFields.enterValueFor": {
+    "defaultMessage": "Enter value for {key}"
+  },
+  "recipeFormFields.initialPrompt": {
+    "defaultMessage": "Starting prompt"
+  },
+  "recipeFormFields.instructionsLabel": {
+    "defaultMessage": "Instructions"
+  },
+  "recipeFormFields.instructionsPlaceholder": {
+    "defaultMessage": "Detailed instructions for the AI, hidden from the user"
+  },
+  "recipeFormFields.openEditor": {
+    "defaultMessage": "Open editor"
+  },
+  "recipeFormFields.parameterNamePlaceholder": {
+    "defaultMessage": "Parameter name…"
+  },
+  "recipeFormFields.parametersDescription": {
+    "defaultMessage": "Parameters in '{{parameter_name}}' format appear here automatically."
+  },
+  "recipeFormFields.parametersLabel": {
+    "defaultMessage": "Parameters"
+  },
+  "recipeFormFields.promptOptionalHint": {
+    "defaultMessage": "Optional if instructions are set"
+  },
+  "recipeFormFields.promptPlaceholder": {
+    "defaultMessage": "Prompt sent when the playbook starts"
+  },
+  "recipeFormFields.responseJsonSchema": {
+    "defaultMessage": "Output schema"
+  },
+  "recipeFormFields.responseJsonSchemaDescription": {
+    "defaultMessage": "Require a JSON Schema response"
+  },
+  "recipeFormFields.templateVarHint": {
+    "defaultMessage": "Use '{{parameter_name}}' for values entered at run time."
+  },
+  "recipeFormFields.titleLabel": {
+    "defaultMessage": "Title"
+  },
+  "recipeFormFields.titlePlaceholder": {
+    "defaultMessage": "Playbook title"
+  },
+  "recipeHeader.recipeLabel": {
+    "defaultMessage": "Playbook"
+  },
+  "recipeModelSelector.backToModelList": {
+    "defaultMessage": "Back to model list"
+  },
+  "recipeModelSelector.enterCustomModel": {
+    "defaultMessage": "Enter custom model name"
+  },
+  "recipeModelSelector.enterModelNotListed": {
+    "defaultMessage": "Enter a model not listed..."
+  },
+  "recipeModelSelector.fetchError": {
+    "defaultMessage": "Could not load models. Try again."
+  },
+  "recipeModelSelector.loadingModels": {
+    "defaultMessage": "Loading models…"
+  },
+  "recipeModelSelector.modelHint": {
+    "defaultMessage": "Leave empty to use the default model for the selected provider"
+  },
+  "recipeModelSelector.modelLabel": {
+    "defaultMessage": "Model (Optional)"
+  },
+  "recipeModelSelector.providerHint": {
+    "defaultMessage": "Leave empty to use the default provider configured in settings"
+  },
+  "recipeModelSelector.providerLabel": {
+    "defaultMessage": "Provider (Optional)"
+  },
+  "recipeModelSelector.selectModel": {
+    "defaultMessage": "Select a model"
+  },
+  "recipeModelSelector.selectProvider": {
+    "defaultMessage": "Select provider"
+  },
+  "recipeModelSelector.useDefaultProvider": {
+    "defaultMessage": "Use default provider"
+  },
+  "recipeWarningModal.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "recipeWarningModal.descriptionLabel": {
+    "defaultMessage": "Description:"
+  },
+  "recipeWarningModal.firstTimeDescription": {
+    "defaultMessage": "You haven't run this playbook before."
+  },
+  "recipeWarningModal.hiddenCharsWarning": {
+    "defaultMessage": "Hidden characters were removed from this playbook."
+  },
+  "recipeWarningModal.instructionsLabel": {
+    "defaultMessage": "Instructions:"
+  },
+  "recipeWarningModal.newRecipeWarningTitle": {
+    "defaultMessage": "New playbook"
+  },
+  "recipeWarningModal.recipePreview": {
+    "defaultMessage": "Preview"
+  },
+  "recipeWarningModal.securityWarningTitle": {
+    "defaultMessage": "Review before running"
+  },
+  "recipeWarningModal.titleLabel": {
+    "defaultMessage": "Title:"
+  },
+  "recipeWarningModal.trustAndExecute": {
+    "defaultMessage": "Run playbook"
+  },
+  "recipeWarningModal.trustSource": {
+    "defaultMessage": "Run it only if you trust its source."
+  },
+  "recipesView.addSchedule": {
+    "defaultMessage": "Add schedule"
+  },
+  "recipesView.addSlashCommand": {
+    "defaultMessage": "Add slash command"
+  },
+  "recipesView.adjustSearchTerms": {
+    "defaultMessage": "Try a different search."
+  },
+  "recipesView.allFiles": {
+    "defaultMessage": "All files"
+  },
+  "recipesView.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "recipesView.copyDeeplink": {
+    "defaultMessage": "Copy share link"
+  },
+  "recipesView.copyDeeplinkFailedMsg": {
+    "defaultMessage": "Could not copy share link"
+  },
+  "recipesView.copyFailedTitle": {
+    "defaultMessage": "Copy failed"
+  },
+  "recipesView.copyYaml": {
+    "defaultMessage": "Copy YAML"
+  },
+  "recipesView.copyYamlFailedMsg": {
+    "defaultMessage": "Could not copy playbook YAML"
+  },
+  "recipesView.createRecipe": {
+    "defaultMessage": "New playbook"
+  },
+  "recipesView.deeplinkCopiedMsg": {
+    "defaultMessage": "Playbook share link copied"
+  },
+  "recipesView.deeplinkCopiedTitle": {
+    "defaultMessage": "Share link copied"
+  },
+  "recipesView.deleteRecipe": {
+    "defaultMessage": "Delete playbook"
+  },
+  "recipesView.deleteRecipeConfirm": {
+    "defaultMessage": "Are you sure you want to delete \"{title}\"?"
+  },
+  "recipesView.deleteRecipeDetail": {
+    "defaultMessage": "The saved playbook will be deleted."
+  },
+  "recipesView.deleteRecipeTitle": {
+    "defaultMessage": "Delete playbook"
+  },
+  "recipesView.editRecipe": {
+    "defaultMessage": "Edit playbook"
+  },
+  "recipesView.editSchedule": {
+    "defaultMessage": "Edit schedule"
+  },
+  "recipesView.editSlashCommand": {
+    "defaultMessage": "Edit slash command"
+  },
+  "recipesView.errorLoadingRecipes": {
+    "defaultMessage": "Could not load playbooks"
+  },
+  "recipesView.exportFailedMsg": {
+    "defaultMessage": "Could not export playbook"
+  },
+  "recipesView.exportFailedTitle": {
+    "defaultMessage": "Export failed"
+  },
+  "recipesView.exportRecipeDialogTitle": {
+    "defaultMessage": "Export playbook"
+  },
+  "recipesView.exportToFile": {
+    "defaultMessage": "Export file"
+  },
+  "recipesView.noMatchingRecipes": {
+    "defaultMessage": "No matching playbooks"
+  },
+  "recipesView.noSavedRecipes": {
+    "defaultMessage": "No playbooks yet"
+  },
+  "recipesView.noSavedRecipesDescription": {
+    "defaultMessage": "Create one for work you want to repeat."
+  },
+  "recipesView.openInNewWindow": {
+    "defaultMessage": "Open in new window"
+  },
+  "recipesView.recipeDeletedSuccess": {
+    "defaultMessage": "Playbook deleted"
+  },
+  "recipesView.recipeExportedMsg": {
+    "defaultMessage": "Saved to {filePath}"
+  },
+  "recipesView.recipeExportedTitle": {
+    "defaultMessage": "Playbook exported"
+  },
+  "recipesView.recipesDescription": {
+    "defaultMessage": "Run recurring work from a saved setup. {shortcut} to search."
+  },
+  "recipesView.recipesTitle": {
+    "defaultMessage": "Playbooks"
+  },
+  "recipesView.remove": {
+    "defaultMessage": "Remove"
+  },
+  "recipesView.removeSchedule": {
+    "defaultMessage": "Remove schedule"
+  },
+  "recipesView.runs": {
+    "defaultMessage": "Runs {schedule}"
+  },
+  "recipesView.save": {
+    "defaultMessage": "Save"
+  },
+  "recipesView.scheduleDialogTitle": {
+    "defaultMessage": "{action} schedule"
+  },
+  "recipesView.scheduleRemovedMsg": {
+    "defaultMessage": "Automatic runs stopped"
+  },
+  "recipesView.scheduleRemovedTitle": {
+    "defaultMessage": "Schedule removed"
+  },
+  "recipesView.scheduleSavedMsg": {
+    "defaultMessage": "Runs {schedule}"
+  },
+  "recipesView.scheduleSavedTitle": {
+    "defaultMessage": "Schedule saved"
+  },
+  "recipesView.searchRecipesPlaceholder": {
+    "defaultMessage": "Search playbooks…"
+  },
+  "recipesView.shareRecipe": {
+    "defaultMessage": "Share playbook"
+  },
+  "recipesView.slashCommandDescription": {
+    "defaultMessage": "Run this playbook from any task."
+  },
+  "recipesView.slashCommandPlaceholder": {
+    "defaultMessage": "command-name"
+  },
+  "recipesView.slashCommandRemovedMsg": {
+    "defaultMessage": "Slash command removed"
+  },
+  "recipesView.slashCommandRemovedTitle": {
+    "defaultMessage": "Slash command removed"
+  },
+  "recipesView.slashCommandSavedMsg": {
+    "defaultMessage": "Run with /{command}"
+  },
+  "recipesView.slashCommandSavedTitle": {
+    "defaultMessage": "Slash command saved"
+  },
+  "recipesView.slashCommandTitle": {
+    "defaultMessage": "Slash command"
+  },
+  "recipesView.slashCommandUsageHint": {
+    "defaultMessage": "Use /{command} in any task"
+  },
+  "recipesView.tryAgain": {
+    "defaultMessage": "Try again"
+  },
+  "recipesView.useRecipe": {
+    "defaultMessage": "Run playbook"
+  },
+  "recipesView.yamlCopiedMsg": {
+    "defaultMessage": "Playbook YAML copied"
+  },
+  "recipesView.yamlCopiedTitle": {
+    "defaultMessage": "YAML copied"
+  },
+  "recipesView.yamlFiles": {
+    "defaultMessage": "YAML files"
+  },
+  "resetProviderSection.resetButton": {
+    "defaultMessage": "Clear selection"
+  },
+  "responseStyle.conciseDescription": {
+    "defaultMessage": "Keep action details collapsed by default."
+  },
+  "responseStyle.conciseLabel": {
+    "defaultMessage": "Concise"
+  },
+  "responseStyle.detailedDescription": {
+    "defaultMessage": "Keep action details expanded by default."
+  },
+  "responseStyle.detailedLabel": {
+    "defaultMessage": "Detailed"
+  },
+  "scheduleDetailView.actions": {
+    "defaultMessage": "Actions"
+  },
+  "scheduleDetailView.cannotModifyRunning": {
+    "defaultMessage": "This schedule is already running."
+  },
+  "scheduleDetailView.completedSession": {
+    "defaultMessage": "Session: {sessionId}"
+  },
+  "scheduleDetailView.created": {
+    "defaultMessage": "Created: {date}"
+  },
+  "scheduleDetailView.cronExpression": {
+    "defaultMessage": "Cron Expression:"
+  },
+  "scheduleDetailView.currentSession": {
+    "defaultMessage": "Current task:"
+  },
+  "scheduleDetailView.currentlyRunning": {
+    "defaultMessage": "Currently Running"
+  },
+  "scheduleDetailView.dir": {
+    "defaultMessage": "Dir: {path}"
+  },
+  "scheduleDetailView.editSchedule": {
+    "defaultMessage": "Edit Schedule"
+  },
+  "scheduleDetailView.errorPrefix": {
+    "defaultMessage": "Error: {error}"
+  },
+  "scheduleDetailView.idLabel": {
+    "defaultMessage": "ID:"
+  },
+  "scheduleDetailView.inspectJobError": {
+    "defaultMessage": "Inspect Job Error"
+  },
+  "scheduleDetailView.inspectNoInfo": {
+    "defaultMessage": "No detailed information available"
+  },
+  "scheduleDetailView.inspectRunningJob": {
+    "defaultMessage": "Inspect Running Job"
+  },
+  "scheduleDetailView.jobCancelled": {
+    "defaultMessage": "Job Cancelled"
+  },
+  "scheduleDetailView.jobCancelledMsg": {
+    "defaultMessage": "The job was cancelled while starting up."
+  },
+  "scheduleDetailView.jobInspection": {
+    "defaultMessage": "Job Inspection"
+  },
+  "scheduleDetailView.jobKilled": {
+    "defaultMessage": "Job Killed"
+  },
+  "scheduleDetailView.killJobError": {
+    "defaultMessage": "Kill Job Error"
+  },
+  "scheduleDetailView.killRunningJob": {
+    "defaultMessage": "Kill Running Job"
+  },
+  "scheduleDetailView.lastRun": {
+    "defaultMessage": "Last Run:"
+  },
+  "scheduleDetailView.loadingSchedule": {
+    "defaultMessage": "Loading schedule..."
+  },
+  "scheduleDetailView.loadingSessions": {
+    "defaultMessage": "Loading sessions..."
+  },
+  "scheduleDetailView.messages": {
+    "defaultMessage": "Messages: {count}"
+  },
+  "scheduleDetailView.noScheduleId": {
+    "defaultMessage": "No schedule ID provided. Return to schedules list."
+  },
+  "scheduleDetailView.noSessions": {
+    "defaultMessage": "No sessions found for this schedule."
+  },
+  "scheduleDetailView.pauseSchedule": {
+    "defaultMessage": "Pause Schedule"
+  },
+  "scheduleDetailView.pauseUnpauseError": {
+    "defaultMessage": "Pause/Unpause Error"
+  },
+  "scheduleDetailView.paused": {
+    "defaultMessage": "Paused"
+  },
+  "scheduleDetailView.pausedMsg": {
+    "defaultMessage": "Paused \"{id}\""
+  },
+  "scheduleDetailView.pausedWarning": {
+    "defaultMessage": "This schedule is paused and will not run automatically. Use \"Run Schedule Now\" to trigger it manually or unpause to resume automatic execution."
+  },
+  "scheduleDetailView.processStarted": {
+    "defaultMessage": "Process Started:"
+  },
+  "scheduleDetailView.recentSessions": {
+    "defaultMessage": "Recent runs"
+  },
+  "scheduleDetailView.recipeSource": {
+    "defaultMessage": "Playbook:"
+  },
+  "scheduleDetailView.runScheduleError": {
+    "defaultMessage": "Run Schedule Error"
+  },
+  "scheduleDetailView.runScheduleNow": {
+    "defaultMessage": "Run Schedule Now"
+  },
+  "scheduleDetailView.scheduleCompleted": {
+    "defaultMessage": "Run completed"
+  },
+  "scheduleDetailView.scheduleDetails": {
+    "defaultMessage": "Schedule Details"
+  },
+  "scheduleDetailView.scheduleInformation": {
+    "defaultMessage": "Schedule Information"
+  },
+  "scheduleDetailView.scheduleLabel": {
+    "defaultMessage": "Schedule:"
+  },
+  "scheduleDetailView.scheduleNotFound": {
+    "defaultMessage": "Schedule Not Found"
+  },
+  "scheduleDetailView.scheduleNotFoundError": {
+    "defaultMessage": "Schedule not found"
+  },
+  "scheduleDetailView.schedulePaused": {
+    "defaultMessage": "Schedule Paused"
+  },
+  "scheduleDetailView.scheduleUnpaused": {
+    "defaultMessage": "Schedule Unpaused"
+  },
+  "scheduleDetailView.scheduleUpdated": {
+    "defaultMessage": "Schedule Updated"
+  },
+  "scheduleDetailView.sessionId": {
+    "defaultMessage": "Session ID: {id}"
+  },
+  "scheduleDetailView.unpauseSchedule": {
+    "defaultMessage": "Unpause Schedule"
+  },
+  "scheduleDetailView.unpausedMsg": {
+    "defaultMessage": "Unpaused \"{id}\""
+  },
+  "scheduleDetailView.updateScheduleError": {
+    "defaultMessage": "Update Schedule Error"
+  },
+  "scheduleDetailView.updatedMsg": {
+    "defaultMessage": "Updated \"{id}\""
+  },
+  "scheduleDetailView.viewingScheduleId": {
+    "defaultMessage": "Viewing Schedule ID: {id}"
+  },
+  "scheduleModal.browseYaml": {
+    "defaultMessage": "Choose YAML file…"
+  },
+  "scheduleModal.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "scheduleModal.createNewSchedule": {
+    "defaultMessage": "New schedule"
+  },
+  "scheduleModal.createSchedule": {
+    "defaultMessage": "Create schedule"
+  },
+  "scheduleModal.creating": {
+    "defaultMessage": "Creating…"
+  },
+  "scheduleModal.deepLink": {
+    "defaultMessage": "Share link"
+  },
+  "scheduleModal.deepLinkPlaceholder": {
+    "defaultMessage": "Paste an AccordLock share link…"
+  },
+  "scheduleModal.editSchedule": {
+    "defaultMessage": "Edit schedule"
+  },
+  "scheduleModal.failedParseRecipe": {
+    "defaultMessage": "This file is not a valid playbook."
+  },
+  "scheduleModal.failedReadFile": {
+    "defaultMessage": "Could not read the selected file."
+  },
+  "scheduleModal.invalidDeepLink": {
+    "defaultMessage": "Enter a valid AccordLock share link."
+  },
+  "scheduleModal.invalidFileType": {
+    "defaultMessage": "Choose a YAML file (.yaml or .yml)."
+  },
+  "scheduleModal.nameLabel": {
+    "defaultMessage": "Name"
+  },
+  "scheduleModal.namePlaceholder": {
+    "defaultMessage": "daily-summary"
+  },
+  "scheduleModal.provideValidRecipe": {
+    "defaultMessage": "Choose a valid playbook source."
+  },
+  "scheduleModal.recipeDescription": {
+    "defaultMessage": "Description: {description}"
+  },
+  "scheduleModal.recipeParsed": {
+    "defaultMessage": "Playbook ready"
+  },
+  "scheduleModal.recipeTitle": {
+    "defaultMessage": "Title: {title}"
+  },
+  "scheduleModal.scheduleIdRequired": {
+    "defaultMessage": "Schedule ID is required."
+  },
+  "scheduleModal.scheduleLabel": {
+    "defaultMessage": "Schedule"
+  },
+  "scheduleModal.selected": {
+    "defaultMessage": "Selected: {path}"
+  },
+  "scheduleModal.sourceLabel": {
+    "defaultMessage": "Source"
+  },
+  "scheduleModal.updateSchedule": {
+    "defaultMessage": "Save schedule"
+  },
+  "scheduleModal.updating": {
+    "defaultMessage": "Updating…"
+  },
+  "scheduleModal.yaml": {
+    "defaultMessage": "YAML"
+  },
+  "schedulesView.confirmDelete": {
+    "defaultMessage": "Remove schedule \"{id}\"? The playbook will remain."
+  },
+  "schedulesView.createSchedule": {
+    "defaultMessage": "New schedule"
+  },
+  "schedulesView.description": {
+    "defaultMessage": "Run playbooks on a schedule."
+  },
+  "schedulesView.edit": {
+    "defaultMessage": "Edit"
+  },
+  "schedulesView.errorPrefix": {
+    "defaultMessage": "Error: {error}"
+  },
+  "schedulesView.inspect": {
+    "defaultMessage": "Inspect"
+  },
+  "schedulesView.inspectError": {
+    "defaultMessage": "Inspect Job Error"
+  },
+  "schedulesView.inspectNoInfo": {
+    "defaultMessage": "No detailed information available for this job"
+  },
+  "schedulesView.jobInspection": {
+    "defaultMessage": "Job Inspection"
+  },
+  "schedulesView.jobKilled": {
+    "defaultMessage": "Job Killed"
+  },
+  "schedulesView.kill": {
+    "defaultMessage": "Kill"
+  },
+  "schedulesView.killError": {
+    "defaultMessage": "Kill Job Error"
+  },
+  "schedulesView.lastRun": {
+    "defaultMessage": "Last run: {date}"
+  },
+  "schedulesView.noSchedules": {
+    "defaultMessage": "No schedules yet"
+  },
+  "schedulesView.pause": {
+    "defaultMessage": "Pause"
+  },
+  "schedulesView.pauseError": {
+    "defaultMessage": "Pause Schedule Error"
+  },
+  "schedulesView.paused": {
+    "defaultMessage": "Paused"
+  },
+  "schedulesView.refresh": {
+    "defaultMessage": "Refresh"
+  },
+  "schedulesView.refreshing": {
+    "defaultMessage": "Refreshing..."
+  },
+  "schedulesView.resume": {
+    "defaultMessage": "Resume"
+  },
+  "schedulesView.running": {
+    "defaultMessage": "Running"
+  },
+  "schedulesView.schedulePaused": {
+    "defaultMessage": "Schedule paused"
+  },
+  "schedulesView.schedulePausedMsg": {
+    "defaultMessage": "Paused \"{id}\""
+  },
+  "schedulesView.scheduleUnpaused": {
+    "defaultMessage": "Schedule resumed"
+  },
+  "schedulesView.scheduleUnpausedMsg": {
+    "defaultMessage": "Resumed \"{id}\""
+  },
+  "schedulesView.scheduleUpdated": {
+    "defaultMessage": "Schedule updated"
+  },
+  "schedulesView.scheduleUpdatedMsg": {
+    "defaultMessage": "Updated \"{id}\""
+  },
+  "schedulesView.scheduler": {
+    "defaultMessage": "Scheduler"
+  },
+  "schedulesView.unpauseError": {
+    "defaultMessage": "Unpause Schedule Error"
+  },
+  "searchBar.caseSensitive": {
+    "defaultMessage": "Case Sensitive"
+  },
+  "searchBar.close": {
+    "defaultMessage": "Close ({shortcut})"
+  },
+  "searchBar.next": {
+    "defaultMessage": "Next ({shortcut})"
+  },
+  "searchBar.placeholder": {
+    "defaultMessage": "Search conversation..."
+  },
+  "searchBar.previous": {
+    "defaultMessage": "Previous ({shortcut})"
+  },
+  "secureStorageNotice.defaultMessage": {
+    "defaultMessage": "Keys saved here are stored only in your operating system credential vault"
+  },
+  "securityToggle.apiTokenDescription": {
+    "defaultMessage": "Authentication token for the classification service"
+  },
+  "securityToggle.apiTokenOptional": {
+    "defaultMessage": "API Token (Optional)"
+  },
+  "securityToggle.classificationEndpoint": {
+    "defaultMessage": "Classification Endpoint"
+  },
+  "securityToggle.classificationEndpointDescription": {
+    "defaultMessage": "Enter the full URL for your classification service"
+  },
+  "securityToggle.commandClassifierActive": {
+    "defaultMessage": "Command classifier active (auto-configured from environment)"
+  },
+  "securityToggle.commandEndpointDescription": {
+    "defaultMessage": "Enter the full URL for your command injection classification service"
+  },
+  "securityToggle.commandInjectionDescription": {
+    "defaultMessage": "Use ML models to detect malicious shell commands"
+  },
+  "securityToggle.detectionModel": {
+    "defaultMessage": "Detection Model"
+  },
+  "securityToggle.detectionModelDescription": {
+    "defaultMessage": "Select which ML model to use for prompt injection detection"
+  },
+  "securityToggle.detectionThreshold": {
+    "defaultMessage": "Detection Threshold"
+  },
+  "securityToggle.enableCommandInjection": {
+    "defaultMessage": "Enable Command Injection ML Detection"
+  },
+  "securityToggle.enablePromptInjection": {
+    "defaultMessage": "Enable Prompt Injection Detection"
+  },
+  "securityToggle.enablePromptInjectionMl": {
+    "defaultMessage": "Enable Prompt Injection ML Detection"
+  },
+  "securityToggle.mlEndpointDescription": {
+    "defaultMessage": "Enter the full URL for your ML classification service (including model identifier)"
+  },
+  "securityToggle.mlTokenDescription": {
+    "defaultMessage": "Authentication token for the ML service (e.g., HuggingFace token)"
+  },
+  "securityToggle.overrideNotice": {
+    "defaultMessage": "This setting is managed by your organization and cannot be changed."
+  },
+  "securityToggle.promptInjectionDescription": {
+    "defaultMessage": "Detect and prevent potential prompt injection attacks"
+  },
+  "securityToggle.promptInjectionMlDescription": {
+    "defaultMessage": "Detect potential prompt injection in task content"
+  },
+  "securityToggle.thresholdDescription": {
+    "defaultMessage": "Higher values are more strict (0.01 = very lenient, 1.0 = maximum strict)"
+  },
+  "securityToggle.warpNotice": {
+    "defaultMessage": "Command injection detection works best when connected to WARP (required to reach the classification service)."
+  },
+  "sessionActionsHeader.actionsLabel": {
+    "defaultMessage": "Task actions"
+  },
+  "sessionActionsHeader.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "sessionActionsHeader.close": {
+    "defaultMessage": "Close"
+  },
+  "sessionActionsHeader.copiedJson": {
+    "defaultMessage": "Audit trail copied"
+  },
+  "sessionActionsHeader.copiedModelInteractions": {
+    "defaultMessage": "Model activity copied"
+  },
+  "sessionActionsHeader.copiedText": {
+    "defaultMessage": "Text copied"
+  },
+  "sessionActionsHeader.copyJson": {
+    "defaultMessage": "Copy"
+  },
+  "sessionActionsHeader.copyText": {
+    "defaultMessage": "Copy"
+  },
+  "sessionActionsHeader.duplicateFailed": {
+    "defaultMessage": "Failed to duplicate task: {error}"
+  },
+  "sessionActionsHeader.duplicateSession": {
+    "defaultMessage": "Duplicate task"
+  },
+  "sessionActionsHeader.duplicated": {
+    "defaultMessage": "Task duplicated"
+  },
+  "sessionActionsHeader.fullTextTitle": {
+    "defaultMessage": "Text value"
+  },
+  "sessionActionsHeader.jsonFailed": {
+    "defaultMessage": "Could not load audit trail: {error}"
+  },
+  "sessionActionsHeader.jsonTitle": {
+    "defaultMessage": "Audit trail"
+  },
+  "sessionActionsHeader.loadingJson": {
+    "defaultMessage": "Loading…"
+  },
+  "sessionActionsHeader.modelInteractionsFailed": {
+    "defaultMessage": "Failed to load model interactions: {error}"
+  },
+  "sessionActionsHeader.modelInteractionsTitle": {
+    "defaultMessage": "Model activity"
+  },
+  "sessionActionsHeader.renameFailed": {
+    "defaultMessage": "Failed to rename task: {error}"
+  },
+  "sessionActionsHeader.renamePlaceholder": {
+    "defaultMessage": "Enter a task name"
+  },
+  "sessionActionsHeader.renameSession": {
+    "defaultMessage": "Rename task"
+  },
+  "sessionActionsHeader.renameTitle": {
+    "defaultMessage": "Rename task"
+  },
+  "sessionActionsHeader.renamed": {
+    "defaultMessage": "Task renamed"
+  },
+  "sessionActionsHeader.save": {
+    "defaultMessage": "Save"
+  },
+  "sessionActionsHeader.saving": {
+    "defaultMessage": "Saving..."
+  },
+  "sessionActionsHeader.viewJson": {
+    "defaultMessage": "View audit trail"
+  },
+  "sessionActionsHeader.viewModelInteractions": {
+    "defaultMessage": "View model activity"
+  },
+  "sessionIndicators.error": {
+    "defaultMessage": "Needs attention"
+  },
+  "sessionIndicators.newActivity": {
+    "defaultMessage": "Has new activity"
+  },
+  "sessionIndicators.newLabel": {
+    "defaultMessage": "New"
+  },
+  "sessionIndicators.streaming": {
+    "defaultMessage": "Working"
+  },
+  "sessions.action.archive": {
+    "defaultMessage": "Archive task"
+  },
+  "sessions.action.changeProject": {
+    "defaultMessage": "Move to project"
+  },
+  "sessions.action.duplicate": {
+    "defaultMessage": "Duplicate task"
+  },
+  "sessions.action.editName": {
+    "defaultMessage": "Rename task"
+  },
+  "sessions.action.export": {
+    "defaultMessage": "Export task"
+  },
+  "sessions.action.exportJson": {
+    "defaultMessage": "JSON"
+  },
+  "sessions.action.exportMarkdown": {
+    "defaultMessage": "Markdown"
+  },
+  "sessions.action.more": {
+    "defaultMessage": "More actions for {name}"
+  },
+  "sessions.action.openNewWindow": {
+    "defaultMessage": "Open in new window"
+  },
+  "sessions.action.restore": {
+    "defaultMessage": "Restore task"
+  },
+  "sessions.action.shareNostr": {
+    "defaultMessage": "Create encrypted share link"
+  },
+  "sessions.active": {
+    "defaultMessage": "Active"
+  },
+  "sessions.archive.message": {
+    "defaultMessage": "Archive “{name}”? You can restore it later."
+  },
+  "sessions.archive.title": {
+    "defaultMessage": "Archive task?"
+  },
+  "sessions.archived": {
+    "defaultMessage": "Archived"
+  },
+  "sessions.archived.empty": {
+    "defaultMessage": "No archived tasks"
+  },
+  "sessions.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "sessions.chatHistory": {
+    "defaultMessage": "Tasks"
+  },
+  "sessions.close": {
+    "defaultMessage": "Close"
+  },
+  "sessions.edit.placeholder": {
+    "defaultMessage": "Enter a task name"
+  },
+  "sessions.edit.title": {
+    "defaultMessage": "Rename task"
+  },
+  "sessions.empty.description": {
+    "defaultMessage": "Start a task to see it here."
+  },
+  "sessions.empty.title": {
+    "defaultMessage": "No tasks yet"
+  },
+  "sessions.error.loading": {
+    "defaultMessage": "Could not load tasks"
+  },
+  "sessions.error.tryAgain": {
+    "defaultMessage": "Try again"
+  },
+  "sessions.import": {
+    "defaultMessage": "Import"
+  },
+  "sessions.importNostr": {
+    "defaultMessage": "Import link"
+  },
+  "sessions.importNostr.description": {
+    "defaultMessage": "Paste an encrypted AccordLock share link."
+  },
+  "sessions.importNostr.placeholder": {
+    "defaultMessage": "accordlock://sessions/nostr?nevent=...&key=..."
+  },
+  "sessions.importNostr.title": {
+    "defaultMessage": "Import shared task"
+  },
+  "sessions.importing": {
+    "defaultMessage": "Importing..."
+  },
+  "sessions.loadingMore": {
+    "defaultMessage": "Loading more tasks…"
+  },
+  "sessions.project.allTasks": {
+    "defaultMessage": "All tasks"
+  },
+  "sessions.project.description": {
+    "defaultMessage": "Choose where “{name}” belongs."
+  },
+  "sessions.project.empty.description": {
+    "defaultMessage": "New tasks started from a project folder appear here."
+  },
+  "sessions.project.empty.title": {
+    "defaultMessage": "No tasks in this project"
+  },
+  "sessions.project.none": {
+    "defaultMessage": "No project"
+  },
+  "sessions.project.title": {
+    "defaultMessage": "Move task"
+  },
+  "sessions.project.updateFailed": {
+    "defaultMessage": "The task could not be moved. Try again."
+  },
+  "sessions.project.updated": {
+    "defaultMessage": "Project updated"
+  },
+  "sessions.save": {
+    "defaultMessage": "Save"
+  },
+  "sessions.saving": {
+    "defaultMessage": "Saving..."
+  },
+  "sessions.search.noResults": {
+    "defaultMessage": "No matching tasks"
+  },
+  "sessions.search.noResultsDesc": {
+    "defaultMessage": "Try another search."
+  },
+  "sessions.searchPlaceholder": {
+    "defaultMessage": "Search tasks…"
+  },
+  "sessions.shareNostr.description": {
+    "defaultMessage": "Anyone with this link can fetch and decrypt the session. Treat it like a secret."
+  },
+  "sessions.shareNostr.title": {
+    "defaultMessage": "Encrypted share link"
+  },
+  "sessions.toast.archiveFailed": {
+    "defaultMessage": "Couldn’t archive “{name}”. {error}"
+  },
+  "sessions.toast.archived": {
+    "defaultMessage": "Task archived"
+  },
+  "sessions.toast.copied": {
+    "defaultMessage": "Copied to clipboard"
+  },
+  "sessions.toast.duplicateFailed": {
+    "defaultMessage": "Failed to duplicate task: {error}"
+  },
+  "sessions.toast.duplicated": {
+    "defaultMessage": "Task \"{name}\" duplicated"
+  },
+  "sessions.toast.exportFailed": {
+    "defaultMessage": "Failed to export task: {error}"
+  },
+  "sessions.toast.exported": {
+    "defaultMessage": "Task exported"
+  },
+  "sessions.toast.importFailed": {
+    "defaultMessage": "Failed to import task: {error}"
+  },
+  "sessions.toast.imported": {
+    "defaultMessage": "Task imported"
+  },
+  "sessions.toast.restoreFailed": {
+    "defaultMessage": "Couldn’t restore “{name}”. {error}"
+  },
+  "sessions.toast.restored": {
+    "defaultMessage": "Task restored"
+  },
+  "sessions.toast.shareNostr": {
+    "defaultMessage": "Encrypted Nostr share link created"
+  },
+  "sessions.toast.shareNostrFailed": {
+    "defaultMessage": "Failed to create Nostr share link: {error}"
+  },
+  "sessions.toast.updateFailed": {
+    "defaultMessage": "Failed to rename task: {error}"
+  },
+  "sessions.toast.updated": {
+    "defaultMessage": "Task renamed"
+  },
+  "settings.costTracking.description": {
+    "defaultMessage": "Show model usage costs."
+  },
+  "settings.costTracking.title": {
+    "defaultMessage": "Show costs"
+  },
+  "settings.dockIcon.description": {
+    "defaultMessage": "Show AccordLock in the dock"
+  },
+  "settings.dockIcon.title": {
+    "defaultMessage": "Dock icon"
+  },
+  "settings.general.description": {
+    "defaultMessage": "Window and task behavior."
+  },
+  "settings.general.title": {
+    "defaultMessage": "General"
+  },
+  "settings.menuBarIcon.description": {
+    "defaultMessage": "Keep AccordLock available from the system tray or menu bar."
+  },
+  "settings.menuBarIcon.title": {
+    "defaultMessage": "Background access"
+  },
+  "settings.notifications.cardDescription": {
+    "defaultMessage": "Choose when AccordLock alerts you."
+  },
+  "settings.notifications.description": {
+    "defaultMessage": "Allow AccordLock notifications in your system settings."
+  },
+  "settings.notifications.openSettings": {
+    "defaultMessage": "Open Settings"
+  },
+  "settings.notifications.permissions.title": {
+    "defaultMessage": "Notification permissions"
+  },
+  "settings.notifications.task.description": {
+    "defaultMessage": "Notify me when a task needs attention or finishes."
+  },
+  "settings.notifications.task.title": {
+    "defaultMessage": "Task notifications"
+  },
+  "settings.notifications.title": {
+    "defaultMessage": "Notifications"
+  },
+  "settings.preventSleep.description": {
+    "defaultMessage": "Keep the computer awake while a task runs."
+  },
+  "settings.preventSleep.title": {
+    "defaultMessage": "Keep awake"
+  },
+  "settings.theme.description": {
+    "defaultMessage": "Light, dark, or system theme."
+  },
+  "settings.theme.title": {
+    "defaultMessage": "Theme"
+  },
+  "settings.updates.description": {
+    "defaultMessage": "Check for and install AccordLock updates"
+  },
+  "settings.updates.title": {
+    "defaultMessage": "Updates"
+  },
+  "settings.version.title": {
+    "defaultMessage": "Version"
+  },
+  "settingsView.approvalAlertsDescription": {
+    "defaultMessage": "Send review alerts to Slack, Teams, Telegram, or WhatsApp. Pair a gateway below to approve remotely."
+  },
+  "settingsView.approvalAlertsTitle": {
+    "defaultMessage": "Approval channels"
+  },
+  "settingsView.keyboardShortcutsDescription": {
+    "defaultMessage": "Customize shortcuts for common actions."
+  },
+  "settingsView.keyboardShortcutsHide": {
+    "defaultMessage": "Hide"
+  },
+  "settingsView.keyboardShortcutsShow": {
+    "defaultMessage": "Customize"
+  },
+  "settingsView.keyboardShortcutsTitle": {
+    "defaultMessage": "Keyboard shortcuts"
+  },
+  "settingsView.nativeProgramsDescription": {
+    "defaultMessage": "Allow specific local programs for terminal tasks."
+  },
+  "settingsView.nativeProgramsHide": {
+    "defaultMessage": "Hide"
+  },
+  "settingsView.nativeProgramsShow": {
+    "defaultMessage": "Manage"
+  },
+  "settingsView.nativeProgramsTitle": {
+    "defaultMessage": "Native programs"
+  },
+  "settingsView.networkDescription": {
+    "defaultMessage": "Allow GET and HEAD requests to specific HTTPS domains. Each request needs approval."
+  },
+  "settingsView.networkHide": {
+    "defaultMessage": "Hide"
+  },
+  "settingsView.networkManage": {
+    "defaultMessage": "Manage"
+  },
+  "settingsView.networkTitle": {
+    "defaultMessage": "Network access"
+  },
+  "settingsView.tabApp": {
+    "defaultMessage": "App"
+  },
+  "settingsView.tabConnections": {
+    "defaultMessage": "Connections"
+  },
+  "settingsView.tabModels": {
+    "defaultMessage": "Models"
+  },
+  "settingsView.tabNotifications": {
+    "defaultMessage": "Notifications"
+  },
+  "settingsView.tabSecurity": {
+    "defaultMessage": "Security"
+  },
+  "settingsView.title": {
+    "defaultMessage": "Settings"
+  },
+  "shortcutRecorder.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "shortcutRecorder.clickToRecord": {
+    "defaultMessage": "Click to record..."
+  },
+  "shortcutRecorder.conflictWarning": {
+    "defaultMessage": "This shortcut is already used by {label}. Saving will reassign it to this action."
+  },
+  "shortcutRecorder.pressShortcut": {
+    "defaultMessage": "Press shortcut..."
+  },
+  "shortcutRecorder.save": {
+    "defaultMessage": "Save"
+  },
+  "skillsView.addSkill": {
+    "defaultMessage": "Add Skill"
+  },
+  "skillsView.adjustSearchTerms": {
+    "defaultMessage": "Try adjusting your search terms"
+  },
+  "skillsView.comingSoon": {
+    "defaultMessage": "Coming soon"
+  },
+  "skillsView.errorLoadingSkills": {
+    "defaultMessage": "Error Loading Skills"
+  },
+  "skillsView.noMatchingSkills": {
+    "defaultMessage": "No matching skills found"
+  },
+  "skillsView.noSkillsDescription": {
+    "defaultMessage": "Skills are loaded from supported personal and workspace skill folders."
+  },
+  "skillsView.noSkillsInstalled": {
+    "defaultMessage": "No skills installed"
+  },
+  "skillsView.searchSkillsPlaceholder": {
+    "defaultMessage": "Search skills..."
+  },
+  "skillsView.skillsDescription": {
+    "defaultMessage": "View installed skills that extend AccordLock capabilities. {shortcut} to search."
+  },
+  "skillsView.skillsTitle": {
+    "defaultMessage": "Skills"
+  },
+  "skillsView.tryAgain": {
+    "defaultMessage": "Try Again"
+  },
+  "spellcheckToggle.description": {
+    "defaultMessage": "Check spelling while you type. Restart AccordLock to apply this change."
+  },
+  "spellcheckToggle.title": {
+    "defaultMessage": "Spell check"
+  },
+  "standaloneAppView.failedToLoad": {
+    "defaultMessage": "Failed to Load App"
+  },
+  "standaloneAppView.initializing": {
+    "defaultMessage": "Initializing app..."
+  },
+  "standaloneAppView.missingParams": {
+    "defaultMessage": "Missing required parameters"
+  },
+  "stringUtils.configuredProvider": {
+    "defaultMessage": "{name} provider is configured"
+  },
+  "subRecipeEditor.addExisting": {
+    "defaultMessage": "Add existing"
+  },
+  "subRecipeEditor.createNew": {
+    "defaultMessage": "New nested playbook"
+  },
+  "subRecipeEditor.deleteSubrecipe": {
+    "defaultMessage": "Delete nested playbook {name}"
+  },
+  "subRecipeEditor.description": {
+    "defaultMessage": "Run one playbook as a tool inside another."
+  },
+  "subRecipeEditor.duplicateName": {
+    "defaultMessage": "Name already used"
+  },
+  "subRecipeEditor.duplicateNameMsg": {
+    "defaultMessage": "A nested playbook named \"{name}\" already exists."
+  },
+  "subRecipeEditor.editSubrecipe": {
+    "defaultMessage": "Edit nested playbook {name}"
+  },
+  "subRecipeEditor.label": {
+    "defaultMessage": "Nested playbooks"
+  },
+  "subRecipeEditor.preconfiguredValues": {
+    "defaultMessage": "Preconfigured values:"
+  },
+  "subRecipeEditor.sequential": {
+    "defaultMessage": "Sequential"
+  },
+  "subRecipeModal.addTitle": {
+    "defaultMessage": "Add nested playbook"
+  },
+  "subRecipeModal.apply": {
+    "defaultMessage": "Apply"
+  },
+  "subRecipeModal.browse": {
+    "defaultMessage": "Browse"
+  },
+  "subRecipeModal.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "subRecipeModal.closeModal": {
+    "defaultMessage": "Close nested playbook"
+  },
+  "subRecipeModal.configureTitle": {
+    "defaultMessage": "Edit nested playbook"
+  },
+  "subRecipeModal.descriptionLabel": {
+    "defaultMessage": "Description"
+  },
+  "subRecipeModal.descriptionPlaceholder": {
+    "defaultMessage": "What this playbook does…"
+  },
+  "subRecipeModal.invalidFile": {
+    "defaultMessage": "Invalid file"
+  },
+  "subRecipeModal.invalidFileMsg": {
+    "defaultMessage": "Choose a YAML file (.yaml or .yml)."
+  },
+  "subRecipeModal.nameHint": {
+    "defaultMessage": "Unique identifier used to generate the tool name"
+  },
+  "subRecipeModal.nameLabel": {
+    "defaultMessage": "Name"
+  },
+  "subRecipeModal.namePlaceholder": {
+    "defaultMessage": "e.g., security_scan"
+  },
+  "subRecipeModal.pathHint": {
+    "defaultMessage": "Choose a playbook file or enter its path"
+  },
+  "subRecipeModal.pathLabel": {
+    "defaultMessage": "Path"
+  },
+  "subRecipeModal.pathPlaceholder": {
+    "defaultMessage": "e.g., ./playbooks/security-analysis.yaml"
+  },
+  "subRecipeModal.preconfiguredValues": {
+    "defaultMessage": "Preconfigured values"
+  },
+  "subRecipeModal.preconfiguredValuesHint": {
+    "defaultMessage": "Values passed to every run"
+  },
+  "subRecipeModal.sequentialHint": {
+    "defaultMessage": "Run repeated calls one at a time"
+  },
+  "subRecipeModal.sequentialLabel": {
+    "defaultMessage": "Sequential when repeated"
+  },
+  "subRecipeModal.subtitle": {
+    "defaultMessage": "Run this playbook as a tool inside another."
+  },
+  "switchModelModal.backToModelList": {
+    "defaultMessage": "Back to model list"
+  },
+  "switchModelModal.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "switchModelModal.checkProviderConfig": {
+    "defaultMessage": "Check your provider configuration in Settings → Providers"
+  },
+  "switchModelModal.chooseModel": {
+    "defaultMessage": "Choose a model:"
+  },
+  "switchModelModal.claudeAdaptive": {
+    "defaultMessage": "Adaptive - Claude decides when and how much to think"
+  },
+  "switchModelModal.claudeDisabled": {
+    "defaultMessage": "Disabled - No extended thinking"
+  },
+  "switchModelModal.claudeEffortHigh": {
+    "defaultMessage": "High - Deep reasoning (default)"
+  },
+  "switchModelModal.claudeEffortLow": {
+    "defaultMessage": "Low - Minimal thinking, fastest responses"
+  },
+  "switchModelModal.claudeEffortMax": {
+    "defaultMessage": "Max - No constraints on thinking depth"
+  },
+  "switchModelModal.claudeEffortMedium": {
+    "defaultMessage": "Medium - Moderate thinking"
+  },
+  "switchModelModal.claudeEnabled": {
+    "defaultMessage": "Enabled - Fixed token budget for thinking"
+  },
+  "switchModelModal.couldNotContactProvider": {
+    "defaultMessage": "Could not contact provider"
+  },
+  "switchModelModal.customModelName": {
+    "defaultMessage": "Custom model name"
+  },
+  "switchModelModal.description": {
+    "defaultMessage": "Select a provider and model to use for your conversations."
+  },
+  "switchModelModal.enterModelNotListed": {
+    "defaultMessage": "Enter a model not listed..."
+  },
+  "switchModelModal.extendedThinking": {
+    "defaultMessage": "Extended Thinking"
+  },
+  "switchModelModal.geminiOnly": {
+    "defaultMessage": "(Gemini 3 models only)"
+  },
+  "switchModelModal.goToSettings": {
+    "defaultMessage": "Go to Settings"
+  },
+  "switchModelModal.loadingModels": {
+    "defaultMessage": "Loading models…"
+  },
+  "switchModelModal.localModelsDescription": {
+    "defaultMessage": "To use local inference, you need to download a model to your computer first. Go to Settings → Models to manage local models."
+  },
+  "switchModelModal.localModelsTitle": {
+    "defaultMessage": "Local models need to be downloaded first"
+  },
+  "switchModelModal.providerPlaceholder": {
+    "defaultMessage": "Provider, type to search"
+  },
+  "switchModelModal.recommended": {
+    "defaultMessage": "Recommended"
+  },
+  "switchModelModal.selectEffortLevel": {
+    "defaultMessage": "Select effort level"
+  },
+  "switchModelModal.selectModel": {
+    "defaultMessage": "Choose a model."
+  },
+  "switchModelModal.selectModelButton": {
+    "defaultMessage": "Select model"
+  },
+  "switchModelModal.selectModelPlaceholder": {
+    "defaultMessage": "Select a model, type to search"
+  },
+  "switchModelModal.selectOrEnterModel": {
+    "defaultMessage": "Choose or enter a model."
+  },
+  "switchModelModal.selectProvider": {
+    "defaultMessage": "Choose a provider."
+  },
+  "switchModelModal.selectThinkingLevel": {
+    "defaultMessage": "Select thinking level"
+  },
+  "switchModelModal.selectThinkingMode": {
+    "defaultMessage": "Select thinking mode"
+  },
+  "switchModelModal.thinkingBudget": {
+    "defaultMessage": "Thinking Budget (tokens)"
+  },
+  "switchModelModal.thinkingEffort": {
+    "defaultMessage": "Thinking Effort"
+  },
+  "switchModelModal.thinkingEffortOff": {
+    "defaultMessage": "Off - No extended thinking"
+  },
+  "switchModelModal.thinkingLevel": {
+    "defaultMessage": "Thinking Level"
+  },
+  "switchModelModal.thinkingLevelHigh": {
+    "defaultMessage": "High - Deeper reasoning, higher latency"
+  },
+  "switchModelModal.thinkingLevelLow": {
+    "defaultMessage": "Low - Better latency, lighter reasoning"
+  },
+  "switchModelModal.title": {
+    "defaultMessage": "Switch models"
+  },
+  "switchModelModal.typeModelName": {
+    "defaultMessage": "Type model name here"
+  },
+  "switchModelModal.useOtherProvider": {
+    "defaultMessage": "Use other provider"
+  },
+  "taskStatus.accessScoped": {
+    "defaultMessage": "Access scoped"
+  },
+  "taskStatus.accessScopedDetail": {
+    "defaultMessage": "Folder, tools, and protected paths stay fixed."
+  },
+  "taskStatus.active": {
+    "defaultMessage": "Working"
+  },
+  "taskStatus.activity": {
+    "defaultMessage": "Audit trail"
+  },
+  "taskStatus.activityCount": {
+    "defaultMessage": "{count,plural,one{# record} other{# records}}"
+  },
+  "taskStatus.alreadyRestored": {
+    "defaultMessage": "File already restored"
+  },
+  "taskStatus.alreadyRestoredDetail": {
+    "defaultMessage": "{path} is already back in place."
+  },
+  "taskStatus.approvalDetail": {
+    "defaultMessage": "Review the requested action."
+  },
+  "taskStatus.approvalRequired": {
+    "defaultMessage": "Approval needed"
+  },
+  "taskStatus.executionRecorded": {
+    "defaultMessage": "Execution recorded"
+  },
+  "taskStatus.executionRecordedDetail": {
+    "defaultMessage": "{count,plural,one{# action has a verification record.} other{# actions have verification records.}}"
+  },
+  "taskStatus.expires": {
+    "defaultMessage": "Access ends in {duration}"
+  },
+  "taskStatus.exportFailure": {
+    "defaultMessage": "Couldn’t export audit trail"
+  },
+  "taskStatus.exportFailureDetail": {
+    "defaultMessage": "Try again after the current action finishes."
+  },
+  "taskStatus.finishedWithErrors": {
+    "defaultMessage": "Needs attention"
+  },
+  "taskStatus.finishedWithErrorsDetail": {
+    "defaultMessage": "One or more protected actions failed."
+  },
+  "taskStatus.goalLocked": {
+    "defaultMessage": "Goal locked"
+  },
+  "taskStatus.goalLockedDetail": {
+    "defaultMessage": "The approved task goal is fixed for this run."
+  },
+  "taskStatus.locked": {
+    "defaultMessage": "Task stopped"
+  },
+  "taskStatus.modelFailed": {
+    "defaultMessage": "Model request failed"
+  },
+  "taskStatus.modelFailedDetail": {
+    "defaultMessage": "Nothing ran after the failure."
+  },
+  "taskStatus.modelSlow": {
+    "defaultMessage": "Still working"
+  },
+  "taskStatus.modelSlowDetail": {
+    "defaultMessage": "Taking longer than usual."
+  },
+  "taskStatus.noResultYet": {
+    "defaultMessage": "No result yet"
+  },
+  "taskStatus.noResultYetDetail": {
+    "defaultMessage": "No protected action has run."
+  },
+  "taskStatus.protection": {
+    "defaultMessage": "Protection"
+  },
+  "taskStatus.protectionOff": {
+    "defaultMessage": "Off"
+  },
+  "taskStatus.protectionOn": {
+    "defaultMessage": "On"
+  },
+  "taskStatus.protectionPending": {
+    "defaultMessage": "Pending"
+  },
+  "taskStatus.ready": {
+    "defaultMessage": "Ready to work"
+  },
+  "taskStatus.readyForReview": {
+    "defaultMessage": "Ready for review"
+  },
+  "taskStatus.restorableChanges": {
+    "defaultMessage": "{count,plural,one{# file can be restored} other{# files can be restored}}"
+  },
+  "taskStatus.restoreFailure": {
+    "defaultMessage": "Couldn’t restore file"
+  },
+  "taskStatus.restoreFailureDetail": {
+    "defaultMessage": "The file was not restored. Check task access and try again."
+  },
+  "taskStatus.restored": {
+    "defaultMessage": "File restored"
+  },
+  "taskStatus.restoredDetail": {
+    "defaultMessage": "{path} was restored from its saved copy."
+  },
+  "taskStatus.resultNeedsReview": {
+    "defaultMessage": "Result needs review"
+  },
+  "taskStatus.resultNeedsReviewDetail": {
+    "defaultMessage": "Some protected activity could not be verified."
+  },
+  "taskStatus.reviewResults": {
+    "defaultMessage": "Check results"
+  },
+  "taskStatus.runtimeUnavailable": {
+    "defaultMessage": "Actions paused"
+  },
+  "taskStatus.runtimeUnavailableDetail": {
+    "defaultMessage": "AccordLock is reconnecting."
+  },
+  "taskStatus.stateCheckReady": {
+    "defaultMessage": "State check ready"
+  },
+  "taskStatus.stateCheckReadyDetail": {
+    "defaultMessage": "The target will be checked before a protected action runs."
+  },
+  "taskStatus.stateChecked": {
+    "defaultMessage": "State checked"
+  },
+  "taskStatus.stateCheckedDetail": {
+    "defaultMessage": "The target is checked again before a protected action runs."
+  },
+  "taskStatus.stopAndLock": {
+    "defaultMessage": "Stop task"
+  },
+  "taskStatus.stopping": {
+    "defaultMessage": "Stopping…"
+  },
+  "taskStatus.task": {
+    "defaultMessage": "Task"
+  },
+  "taskStatus.taskFallback": {
+    "defaultMessage": "Untitled task"
+  },
+  "taskStatus.taskReviewRequired": {
+    "defaultMessage": "Confirm task access to begin."
+  },
+  "taskStatus.workspace": {
+    "defaultMessage": "Folder: {workspace}"
+  },
+  "telemetryConsentPrompt.description": {
+    "defaultMessage": "Would you like to share anonymous usage data to help improve AccordLock? We never collect your conversations, code, or personal data."
+  },
+  "telemetryConsentPrompt.heading": {
+    "defaultMessage": "Help improve AccordLock"
+  },
+  "telemetryConsentPrompt.learnMore": {
+    "defaultMessage": "Learn more"
+  },
+  "telemetryConsentPrompt.optIn": {
+    "defaultMessage": "Yes, share anonymous usage data"
+  },
+  "telemetryConsentPrompt.optOut": {
+    "defaultMessage": "No thanks"
+  },
+  "telemetrySettings.configErrorTitle": {
+    "defaultMessage": "Configuration Error"
+  },
+  "telemetrySettings.description": {
+    "defaultMessage": "Control how your data is used"
+  },
+  "telemetrySettings.learnMore": {
+    "defaultMessage": "Learn more"
+  },
+  "telemetrySettings.loadError": {
+    "defaultMessage": "Failed to load telemetry settings."
+  },
+  "telemetrySettings.title": {
+    "defaultMessage": "Privacy"
+  },
+  "telemetrySettings.toggleDescription": {
+    "defaultMessage": "Help improve AccordLock by sharing anonymous usage statistics."
+  },
+  "telemetrySettings.toggleLabel": {
+    "defaultMessage": "Anonymous usage data"
+  },
+  "telemetrySettings.updateError": {
+    "defaultMessage": "Failed to update telemetry settings."
+  },
+  "themeSelector.dark": {
+    "defaultMessage": "Dark"
+  },
+  "themeSelector.light": {
+    "defaultMessage": "Light"
+  },
+  "themeSelector.system": {
+    "defaultMessage": "System"
+  },
+  "themeSelector.theme": {
+    "defaultMessage": "Theme"
+  },
+  "toolApprovalButtons.allowOnce": {
+    "defaultMessage": "Approve once"
+  },
+  "toolApprovalButtons.allowedOnce": {
+    "defaultMessage": "Approved once"
+  },
+  "toolApprovalButtons.alwaysAllowed": {
+    "defaultMessage": "Allowed for future requests"
+  },
+  "toolApprovalButtons.cancelled": {
+    "defaultMessage": "Cancelled"
+  },
+  "toolApprovalButtons.denied": {
+    "defaultMessage": "Denied"
+  },
+  "toolApprovalButtons.deniedOnce": {
+    "defaultMessage": "Not allowed"
+  },
+  "toolApprovalButtons.deny": {
+    "defaultMessage": "Don’t allow"
+  },
+  "toolApprovalButtons.protectedReviewUnavailable": {
+    "defaultMessage": "The secure review couldn’t start. The action remains blocked."
+  },
+  "toolApprovalButtons.staleApprovalRequest": {
+    "defaultMessage": "This approval request is no longer active."
+  },
+  "toolCallStatusIndicator.toolStatus": {
+    "defaultMessage": "Tool status: {status}"
+  },
+  "toolCallWithResponse.activityCount": {
+    "defaultMessage": "Activity ({count})"
+  },
+  "toolCallWithResponse.code": {
+    "defaultMessage": "Code"
+  },
+  "toolCallWithResponse.loadingSpinner": {
+    "defaultMessage": "Loading spinner"
+  },
+  "toolCallWithResponse.logs": {
+    "defaultMessage": "Logs"
+  },
+  "toolCallWithResponse.output": {
+    "defaultMessage": "Output"
+  },
+  "toolCallWithResponse.toolDetails": {
+    "defaultMessage": "Tool Details"
+  },
+  "toolCallWithResponse.toolResultAlt": {
+    "defaultMessage": "Tool result"
+  },
+  "toolCallWithResponse.viewSubagentSession": {
+    "defaultMessage": "View subagent session"
+  },
+  "toolConfirmation.allowToolCallWithName": {
+    "defaultMessage": "Allow {toolName}?"
+  },
+  "toolConfirmation.technicalPermissionWithName": {
+    "defaultMessage": "Review this request before it continues."
+  },
+  "updateSection.autoDownload": {
+    "defaultMessage": "AccordLock will download the update in the background and install it the next time you quit or restart."
+  },
+  "updateSection.autoDownloadDisabledByEnv": {
+    "defaultMessage": "Automatic downloads are disabled via the GOOSE_DISABLE_AUTO_DOWNLOAD environment variable."
+  },
+  "updateSection.autoDownloadDisabledNote": {
+    "defaultMessage": "Automatic download is disabled. Click \"Download Now\" to download manually."
+  },
+  "updateSection.autoInstallNote": {
+    "defaultMessage": "No manual install is needed."
+  },
+  "updateSection.checkForUpdates": {
+    "defaultMessage": "Check for Updates"
+  },
+  "updateSection.checking": {
+    "defaultMessage": "Checking for updates..."
+  },
+  "updateSection.currentVersion": {
+    "defaultMessage": "Current version"
+  },
+  "updateSection.disableAutoDownload": {
+    "defaultMessage": "Disable automatic update downloads"
+  },
+  "updateSection.disableAutoDownloadDesc": {
+    "defaultMessage": "When enabled, AccordLock will notify you of new versions without downloading them automatically."
+  },
+  "updateSection.downloadNow": {
+    "defaultMessage": "Download Now"
+  },
+  "updateSection.downloadReady": {
+    "defaultMessage": "Update downloaded and ready to install!"
+  },
+  "updateSection.downloadingProgress": {
+    "defaultMessage": "Downloading update... {percent}%"
+  },
+  "updateSection.downloadingUpdate": {
+    "defaultMessage": "Downloading update..."
+  },
+  "updateSection.installAndRestart": {
+    "defaultMessage": "Install & Restart"
+  },
+  "updateSection.installNowHint": {
+    "defaultMessage": "Click \"Install & Restart\" to update now."
+  },
+  "updateSection.latestVersion": {
+    "defaultMessage": "You are running the latest version!"
+  },
+  "updateSection.loading": {
+    "defaultMessage": "Loading..."
+  },
+  "updateSection.manualInstallNote": {
+    "defaultMessage": "After download, you'll need to manually install the update."
+  },
+  "updateSection.manualInstallRequired": {
+    "defaultMessage": "Manual installation required for this update method."
+  },
+  "updateSection.readyInstallAuto": {
+    "defaultMessage": "✓ Update is ready. Restart AccordLock to finish installing it, or quit when you're done."
+  },
+  "updateSection.readyInstallManual": {
+    "defaultMessage": "✓ Update is ready! Click \"Install & Restart\" for installation instructions."
+  },
+  "updateSection.upToDate": {
+    "defaultMessage": "(up to date)"
+  },
+  "updateSection.updateAvailable": {
+    "defaultMessage": "Update available!"
+  },
+  "updateSection.versionAvailable": {
+    "defaultMessage": "→ {version} available"
+  },
+  "updateSection.versionIsAvailable": {
+    "defaultMessage": "Version {version} is available"
+  },
+  "userMessage.cancel": {
+    "defaultMessage": "Cancel"
+  },
+  "userMessage.cancelAriaLabel": {
+    "defaultMessage": "Cancel editing"
+  },
+  "userMessage.editAriaLabel": {
+    "defaultMessage": "Edit message content"
+  },
+  "userMessage.editButton": {
+    "defaultMessage": "Edit"
+  },
+  "userMessage.editImagesHeading": {
+    "defaultMessage": "Attached images:"
+  },
+  "userMessage.editInPlace": {
+    "defaultMessage": "Edit in Place"
+  },
+  "userMessage.editInPlaceAriaLabel": {
+    "defaultMessage": "Edit message in place"
+  },
+  "userMessage.editInPlaceDescription": {
+    "defaultMessage": "<b>Edit in Place</b> updates this session • <b>Fork Session</b> creates a new session"
+  },
+  "userMessage.editInPlaceTitle": {
+    "defaultMessage": "Update this message in the current task"
+  },
+  "userMessage.editMessageAriaLabel": {
+    "defaultMessage": "Edit message: {preview}"
+  },
+  "userMessage.editMessageTitle": {
+    "defaultMessage": "Edit message"
+  },
+  "userMessage.editPlaceholder": {
+    "defaultMessage": "Edit your message..."
+  },
+  "userMessage.emptyError": {
+    "defaultMessage": "Message cannot be empty"
+  },
+  "userMessage.forkSession": {
+    "defaultMessage": "Branch task"
+  },
+  "userMessage.forkSessionAriaLabel": {
+    "defaultMessage": "Branch task from the edited message"
+  },
+  "userMessage.forkSessionTitle": {
+    "defaultMessage": "Create a new task from the edited message"
+  },
+  "userMessage.removeImageFromEdit": {
+    "defaultMessage": "Remove image from message"
+  }
+}

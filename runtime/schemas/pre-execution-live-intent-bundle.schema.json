@@ -1,0 +1,280 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:schema:pre-execution-live-intent-bundle:1",
+  "title": "AccordLock Pre-Execution Live Intent Bundle",
+  "description": "A strict request-plan-action evaluation persisted before an effect runs. This local profile carries no provider evidence and always requires review.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "checkpoint",
+    "requirements",
+    "transformations",
+    "evidence",
+    "context",
+    "record"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "checkpoint": { "$ref": "#/$defs/preExecutionTrace" },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": { "$ref": "#/$defs/taskRequirement" }
+    },
+    "transformations": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        { "$ref": "#/$defs/requestToPlan" },
+        { "$ref": "#/$defs/planToAction" }
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "maxItems": 0,
+      "$comment": "The strict local runtime profile does not accept provider evidence."
+    },
+    "context": { "$ref": "#/$defs/context" },
+    "record": { "$ref": "#/$defs/preExecutionRecord" }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "not": { "const": "sha256:0000000000000000000000000000000000000000000000000000000000000000" }
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "not": { "const": "00000000-0000-0000-0000-000000000000" }
+    },
+    "positiveTime": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9223372036854775807
+    },
+    "positiveEpoch": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9223372036854775807
+    },
+    "preExecutionTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "trace_id",
+        "task_hash",
+        "requirement_hashes",
+        "request_hash",
+        "plan_hash",
+        "action_hash",
+        "transformation_step_hashes",
+        "recorded_at"
+      ],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "trace_id": { "$ref": "#/$defs/uuid" },
+        "task_hash": { "$ref": "#/$defs/digest" },
+        "requirement_hashes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/digest" }
+        },
+        "request_hash": { "$ref": "#/$defs/digest" },
+        "plan_hash": { "$ref": "#/$defs/digest" },
+        "action_hash": { "$ref": "#/$defs/digest" },
+        "transformation_step_hashes": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/digest" }
+        },
+        "recorded_at": { "$ref": "#/$defs/positiveTime" }
+      }
+    },
+    "taskRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "requirement_id", "task_hash", "statement_hash", "minimum_score"],
+      "properties": {
+        "schema_version": { "const": 2 },
+        "requirement_id": { "$ref": "#/$defs/uuid" },
+        "task_hash": { "$ref": "#/$defs/digest" },
+        "statement_hash": { "$ref": "#/$defs/digest" },
+        "minimum_score": { "const": 1000000 }
+      }
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "step_id",
+        "task_hash",
+        "sequence",
+        "parent_step_hash",
+        "source_stage",
+        "source_hash",
+        "target_stage",
+        "target_hash",
+        "recorded_at"
+      ],
+      "properties": {
+        "schema_version": { "const": 2 },
+        "step_id": { "$ref": "#/$defs/uuid" },
+        "task_hash": { "$ref": "#/$defs/digest" },
+        "sequence": { "type": "integer", "minimum": 0, "maximum": 18446744073709551615 },
+        "parent_step_hash": {
+          "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }]
+        },
+        "source_stage": {
+          "enum": ["REQUEST", "POLICY_DECISION", "SPECIFICATION", "PLAN", "ACTION", "EXECUTION", "OBSERVATION", "RESULT", "NOTIFICATION", "AUDIT_RECORD"]
+        },
+        "source_hash": { "$ref": "#/$defs/digest" },
+        "target_stage": {
+          "enum": ["REQUEST", "POLICY_DECISION", "SPECIFICATION", "PLAN", "ACTION", "EXECUTION", "OBSERVATION", "RESULT", "NOTIFICATION", "AUDIT_RECORD"]
+        },
+        "target_hash": { "$ref": "#/$defs/digest" },
+        "recorded_at": { "$ref": "#/$defs/positiveTime" }
+      }
+    },
+    "requestToPlan": {
+      "allOf": [
+        { "$ref": "#/$defs/step" },
+        {
+          "properties": {
+            "sequence": { "const": 0 },
+            "parent_step_hash": { "type": "null" },
+            "source_stage": { "const": "REQUEST" },
+            "target_stage": { "const": "PLAN" }
+          }
+        }
+      ]
+    },
+    "planToAction": {
+      "allOf": [
+        { "$ref": "#/$defs/step" },
+        {
+          "properties": {
+            "sequence": { "const": 1 },
+            "parent_step_hash": { "$ref": "#/$defs/digest" },
+            "source_stage": { "const": "PLAN" },
+            "target_stage": { "const": "ACTION" }
+          }
+        }
+      ]
+    },
+    "ledgerSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "snapshot_id", "ledger_hash", "task_hash", "trace_id", "epoch", "evidence_count", "evidence_head", "captured_at", "valid_until"],
+      "properties": {
+        "schema_version": { "const": 2 },
+        "snapshot_id": { "$ref": "#/$defs/uuid" },
+        "ledger_hash": { "$ref": "#/$defs/digest" },
+        "task_hash": { "$ref": "#/$defs/digest" },
+        "trace_id": { "$ref": "#/$defs/uuid" },
+        "epoch": { "$ref": "#/$defs/positiveEpoch" },
+        "evidence_count": { "const": 0 },
+        "evidence_head": { "type": "null" },
+        "captured_at": { "$ref": "#/$defs/positiveTime" },
+        "valid_until": { "$ref": "#/$defs/positiveTime" }
+      }
+    },
+    "ledgerExpectation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ledger_hash", "minimum_epoch", "evaluated_at"],
+      "properties": {
+        "ledger_hash": { "$ref": "#/$defs/digest" },
+        "minimum_epoch": { "$ref": "#/$defs/positiveEpoch" },
+        "evaluated_at": { "$ref": "#/$defs/positiveTime" }
+      }
+    },
+    "trustPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "policy_id", "task_hash", "policy_epoch", "trusted_provenance_hashes", "valid_from", "valid_until"],
+      "properties": {
+        "schema_version": { "const": 2 },
+        "policy_id": { "$ref": "#/$defs/uuid" },
+        "task_hash": { "$ref": "#/$defs/digest" },
+        "policy_epoch": { "$ref": "#/$defs/positiveEpoch" },
+        "trusted_provenance_hashes": { "type": "array", "maxItems": 0 },
+        "valid_from": { "$ref": "#/$defs/positiveTime" },
+        "valid_until": { "$ref": "#/$defs/positiveTime" }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "ledger_snapshot", "ledger_expectation", "trust_policy", "minimum_trust_policy_epoch"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "ledger_snapshot": { "$ref": "#/$defs/ledgerSnapshot" },
+        "ledger_expectation": { "$ref": "#/$defs/ledgerExpectation" },
+        "trust_policy": { "$ref": "#/$defs/trustPolicy" },
+        "minimum_trust_policy_epoch": { "$ref": "#/$defs/positiveEpoch" }
+      }
+    },
+    "preExecutionRecord": {
+      "allOf": [
+        { "$ref": "urn:accordlock:schema:intent-conformance-record:2" },
+        {
+          "properties": {
+            "profile": { "const": "PRE_EXECUTION" },
+            "evidence_head": { "type": "null" },
+            "evidence_hashes": { "type": "array", "maxItems": 0 },
+            "outcome": { "const": "UNCERTAIN" },
+            "baseline_decision": { "const": "ALLOW" },
+            "decision": { "const": "REQUIRE_APPROVAL" },
+            "reasons": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "prefixItems": [{ "const": "CONFORMANCE_EVALUATION_MISSING" }]
+            },
+            "findings": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 3,
+              "prefixItems": [
+                { "$ref": "#/$defs/missingRequestFinding" },
+                { "$ref": "#/$defs/missingPlanFinding" },
+                { "$ref": "#/$defs/missingActionFinding" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "missingFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_hash", "stage", "evidence_hash", "reason"],
+      "properties": {
+        "requirement_hash": { "$ref": "#/$defs/digest" },
+        "stage": { "enum": ["REQUEST", "PLAN", "ACTION"] },
+        "evidence_hash": { "type": "null" },
+        "reason": { "const": "MISSING_EVIDENCE" }
+      }
+    },
+    "missingRequestFinding": {
+      "allOf": [{ "$ref": "#/$defs/missingFinding" }, { "properties": { "stage": { "const": "REQUEST" } } }]
+    },
+    "missingPlanFinding": {
+      "allOf": [{ "$ref": "#/$defs/missingFinding" }, { "properties": { "stage": { "const": "PLAN" } } }]
+    },
+    "missingActionFinding": {
+      "allOf": [{ "$ref": "#/$defs/missingFinding" }, { "properties": { "stage": { "const": "ACTION" } } }]
+    }
+  },
+  "$comment": "Consumers must re-run the typed evaluator. JSON Schema cannot verify canonical digests, parent hashes, timestamp ordering, or cross-object equality by itself."
+}

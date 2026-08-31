@@ -1,0 +1,21 @@
+{
+  "apiVersion": "policy/v1",
+  "kind": "PodDisruptionBudget",
+  "metadata": {
+    "name": "accordlock-webhook",
+    "namespace": "accordlock-system",
+    "labels": {
+      "app.kubernetes.io/name": "accordlock-webhook",
+      "app.kubernetes.io/part-of": "accordlock"
+    }
+  },
+  "spec": {
+    "maxUnavailable": 1,
+    "unhealthyPodEvictionPolicy": "IfHealthyBudget",
+    "selector": {
+      "matchLabels": {
+        "app.kubernetes.io/name": "accordlock-webhook"
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=AccordLock
+Exec=/usr/lib/AccordLock/AccordLock %U
+Icon=/usr/share/pixmaps/AccordLock.png
+Terminal=false
+Type=Application
+Categories=Development;
+MimeType=x-scheme-handler/accordlock;

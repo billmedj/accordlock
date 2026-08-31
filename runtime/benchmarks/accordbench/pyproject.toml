@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "accordbench"
+version = "0.3.0"
+description = "Deterministic safety and intent-conformance benchmark for autonomous agents"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+accordbench = "accordbench.cli:main"

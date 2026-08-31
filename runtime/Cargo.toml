@@ -1,0 +1,110 @@
+[workspace]
+resolver = "3"
+members = [
+  "crates/accordlock-protocol",
+  "crates/accordlock-agent-protocol",
+  "crates/accordlock-evaluation",
+  "crates/accordlock-approval-channels",
+  "crates/accordlock-runner-protocol",
+  "crates/accordlock-runner-bridge",
+  "crates/accordlock-runner-engine",
+  "crates/accordlock-agent-runtime",
+  "crates/accordlock-kernel",
+  "crates/accordlock-state",
+  "crates/accordlock-issuance",
+  "crates/accordlock-k8s",
+  "crates/accordlock-dispatch",
+  "crates/accordlock-executor",
+  "crates/accordlock-eks-transport",
+  "crates/accordlock-eks-profile",
+  "crates/accordlock-activation",
+  "crates/accordlock-eks-broker",
+  "crates/accordlock-terminal-witness",
+  "crates/accordlock-enforcement",
+  "crates/accordlock-admission",
+  "crates/accordlock-webhook",
+  "crates/accordlock-connectors",
+  "crates/accordlock-provider-adapters",
+  "crates/accordlock-preflight-runner",
+  "crates/accordlock-service",
+  "crates/accordlock-ingress",
+  "crates/accordlock-ingress-state",
+  "crates/accordlock-control",
+  "crates/accordlock-cli",
+  "crates/accordlock-conformance",
+]
+
+[workspace.package]
+version = "0.1.0-alpha.1"
+edition = "2024"
+rust-version = "1.97.1"
+license-file = "LICENSE"
+authors = ["Bilal Medjani"]
+publish = false
+
+[workspace.dependencies]
+anyhow = "1.0.100"
+axum = "0.8.9"
+axum-server = { version = "0.8.0", features = ["tls-rustls"] }
+base64 = "0.22.1"
+cap-fs-ext = "4.0.2"
+cap-std = "4.0.2"
+clap = { version = "4.5.48", features = ["derive"] }
+coset = "0.4.2"
+ed25519-dalek = { version = "2.2.0", features = ["rand_core"] }
+hmac = "0.12.1"
+hex = "0.4.3"
+httparse = "1.10.1"
+minicbor = { version = "2.3.0", features = ["derive", "std"] }
+parking_lot = "0.12.4"
+postgres = { version = "0.19.10", features = ["with-serde_json-1", "with-uuid-1"] }
+process-wrap = { version = "9.1.0", default-features = false, features = ["std", "job-object", "process-group"] }
+proptest = "1.11.0"
+rand = "0.8.5"
+rand_core = { version = "0.6.4", features = ["getrandom"] }
+rcgen = "0.13.2"
+rusqlite = { version = "0.37.0", features = ["bundled"] }
+rustls = { version = "0.23.43", default-features = false, features = ["aws_lc_rs", "std", "tls12"] }
+rustls-pki-types = "=1.15.1"
+same-file = "1.0.6"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+sha2 = "0.10.9"
+thiserror = "2.0.17"
+subtle = "2.6.1"
+tokio = { version = "1.53.1", features = ["fs", "macros", "rt-multi-thread", "signal", "sync", "time"] }
+tower = { version = "0.5.3", features = ["util"] }
+tower-http = { version = "0.7.0", features = ["limit"] }
+unicode-general-category = "1.1.0"
+uuid = { version = "1.18.1", features = ["v4", "serde"] }
+webpki-roots = "1.0"
+zeroize = "=1.9.0"
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+overflow-checks = true
+panic = "abort"
+strip = "symbols"
+
+# Security tests are numerous but do not need local debug symbols. Keeping
+# these profiles lean prevents a reproducibility run from exhausting a small
+# workstation volume. Release artifacts retain their own explicit profile.
+[profile.dev]
+debug = 0
+incremental = false
+
+[profile.test]
+debug = 0
+incremental = false
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"

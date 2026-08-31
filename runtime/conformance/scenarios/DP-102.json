@@ -1,0 +1,193 @@
+{
+  "schema_version": "accordlock.conformance.scenario.v0.1",
+  "id": "DP-102",
+  "title": "Review dismissed after authorization and before authorization consumption",
+  "classification": "synthetic_primary_differential",
+  "status": "preimplementation_oracle",
+  "g0_evidence": false,
+  "repaired_by": "DP-102R",
+  "fixture_ref": "../common-fixture.json#DEPLOY_FIXTURE_001",
+  "requirements": [
+    "FR-017",
+    "FR-020",
+    "FR-032",
+    "FR-034",
+    "FR-038",
+    "SEC-009",
+    "SEC-014",
+    "SEC-026"
+  ],
+  "assumptions": [
+    "The required reviews are valid and visible as GitHub object version github-pr-42-v17 during evaluation and authorization issuance.",
+    "The dismissal is committed as GitHub object version github-pr-42-v18 before the AccordLock consumption refresh.",
+    "The connector observes version github-pr-42-v18 at the declared barrier; this is not an unobserved change inside a freshness window.",
+    "The plain-policy comparator returns an allow result before the dismissal and performs no source refresh before forwarding the provider request.",
+    "The AccordLock trusted path, connector, transaction store, clock, and Kubernetes control plane are uncompromised."
+  ],
+  "residual_limits": [
+    "AccordLock does not claim instantaneous knowledge of an external source change that its connector has not observed.",
+    "A plain-policy gateway that refreshes and binds the same object version at execution can reject this case.",
+    "The fixture is synthetic and is not customer or G0 evidence."
+  ],
+  "action_proposal": {
+    "tenant_id": "example-org",
+    "environment_id": "prod",
+    "client_request_id": "synthetic-dp-102",
+    "api_idempotency_key": "idem-dp-102",
+    "grant_selector": "grant-example-org-prod-deploy-001",
+    "action_class": "deploy.release",
+    "operation": "DEPLOY_EKS_IMAGE_V1",
+    "repository": "example-org/payments",
+    "commit": "1111111111111111111111111111111111111111",
+    "image": "111122223333.dkr.ecr.us-east-1.amazonaws.com/example-org/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "cluster": "eks:us-east-1:111122223333:cluster/prod-1",
+    "namespace": "payments-prod",
+    "deployment_name": "payments",
+    "deployment_uid": "11111111-2222-4333-8444-555555555555",
+    "container_name": "app"
+  },
+  "timeline": [
+    {
+      "sequence": 1,
+      "at_ms": 1786752000000,
+      "barrier": "INITIAL_STATE",
+      "event": "Load approved GitHub PR object version github-pr-42-v17 and the remaining valid common fixture."
+    },
+    {
+      "sequence": 2,
+      "at_ms": 1786752001000,
+      "barrier": "AFTER_EVALUATION",
+      "event": "Both profiles evaluate ALLOW from the approved state."
+    },
+    {
+      "sequence": 3,
+      "at_ms": 1786752005000,
+      "barrier": "AFTER_AUTHORIZATION_ISSUED_BEFORE_CONSUMPTION",
+      "event": "AccordLock has durably issued one ExecutionAuthorization; the baseline has retained its allow result."
+    },
+    {
+      "sequence": 4,
+      "at_ms": 1786752015000,
+      "barrier": "MUTATE_GITHUB_REVIEW",
+      "event": "Dismiss reviewer bob-reviewer and advance the GitHub object version from github-pr-42-v17 to github-pr-42-v18."
+    },
+    {
+      "sequence": 5,
+      "at_ms": 1786752020000,
+      "barrier": "CONSUMPTION_REFRESH",
+      "event": "The registered AccordLock connector returns github-pr-42-v18; AccordLock compares it with the authorization-bound source-state commitment."
+    },
+    {
+      "sequence": 6,
+      "at_ms": 1786752025000,
+      "barrier": "BASELINE_PROVIDER_RESULT",
+      "event": "The frozen baseline forwards its prior allow result and Kubernetes accepts the image-only patch."
+    }
+  ],
+  "expected": {
+    "plain_policy": {
+      "decision": "ALLOW",
+      "state_sequence": [
+        "RECEIVED",
+        "AUTHENTICATED",
+        "POLICY_EVALUATED_ALLOW",
+        "SOURCE_CHANGED_AFTER_DECISION",
+        "PROVIDER_PATCH_SUBMITTED",
+        "PROVIDER_ACCEPTED"
+      ],
+      "terminal_state": "PROVIDER_ACCEPTED",
+      "reason_codes": [
+        "ALLOW"
+      ],
+      "counts": {
+        "evaluations": 1,
+        "allow_decisions": 1,
+        "deny_decisions": 0,
+        "deny_receipts": 0,
+        "execution_authorizations_issued": 0,
+        "successful_authorization_consumptions": 0,
+        "rejected_authorization_consumptions": 0,
+        "bound_objects_created": 0,
+        "credentials_issued": 0,
+        "effect_releases": 0,
+        "credential_handoffs": 0,
+        "provider_patch_attempts": 1,
+        "stored_protected_effects": 1,
+        "automatic_patch_retries": 0,
+        "credential_retirements": 0,
+        "transactions_final": 1
+      },
+      "final_resource": {
+        "image_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "required_review_current_at_provider_call": false,
+        "unauthorized_projected_delta_count": 0
+      },
+      "security_result": "FAIL_STALE_AUTHORIZATION_EXECUTED"
+    },
+    "accordlock": {
+      "decision": "ALLOW_AT_EVALUATION_NO_EXECUTION",
+      "state_sequence": [
+        "PROPOSED",
+        "EVALUATING",
+        "EVALUATED_ALLOW",
+        "EVIDENCE_DURABLE",
+        "SIGNING",
+        "AUTHORIZATION_ISSUED",
+        "CONSUMING",
+        "CONSUMPTION_REJECTED"
+      ],
+      "provider_terminal_state": "NOT_ATTEMPTED",
+      "transaction_terminal_state": "CONSUMPTION_REJECTED",
+      "reason_codes": [
+        "SOURCE_STATE_CHANGED",
+        "GITHUB_REQUIRED_REVIEW_DISMISSED"
+      ],
+      "counts": {
+        "evaluations": 1,
+        "allow_decisions": 1,
+        "deny_decisions": 0,
+        "deny_receipts": 0,
+        "execution_authorizations_issued": 1,
+        "successful_authorization_consumptions": 0,
+        "rejected_authorization_consumptions": 1,
+        "bound_objects_created": 0,
+        "credentials_issued": 0,
+        "effect_releases": 0,
+        "credential_handoffs": 0,
+        "provider_patch_attempts": 0,
+        "stored_protected_effects": 0,
+        "automatic_patch_retries": 0,
+        "credential_retirements": 0,
+        "transactions_final": 0
+      },
+      "authorization_postcondition": {
+        "old_authorization_id_executable": false,
+        "old_authorization_id_may_be_rebound": false,
+        "new_envelope_required": true,
+        "new_authorization_required": true
+      },
+      "final_resource": {
+        "image_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "unchanged": true
+      },
+      "replay": {
+        "required": true,
+        "model_invocations": 0,
+        "historical_policy_decision": "ALLOW",
+        "historical_lifecycle_terminal_state": "CONSUMPTION_REJECTED",
+        "historical_lifecycle_reason_codes": [
+          "SOURCE_STATE_CHANGED",
+          "GITHUB_REQUIRED_REVIEW_DISMISSED"
+        ],
+        "agreement": true,
+        "missing_object_count": 0
+      }
+    }
+  },
+  "falsifier": "If the frozen strongest implemented baseline refreshes and binds the GitHub object version immediately before forwarding and therefore blocks, DP-102 is not discriminating and must not be reported as an AccordLock advantage.",
+  "forbidden_outputs": [
+    "Any AccordLock bound object, Kubernetes credential, effect release, provider patch, or stored effect.",
+    "Reuse or revival of the old ExecutionAuthorization after the review is restored.",
+    "A claim that AccordLock knew about an external change before the connector observed it."
+  ]
+}

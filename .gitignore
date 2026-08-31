@@ -1,0 +1,27 @@
+# Build outputs
+**/target/
+**/node_modules/
+**/dist/
+**/out/
+**/build/
+**/.turbo/
+
+# Local runtime state
+**/.accordlock/
+**/.goose/
+*.log
+
+# Local secrets and overrides
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+

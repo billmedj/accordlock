@@ -1,0 +1,190 @@
+{
+  "schema_version": "accordlock.conformance.scenario.v0.1",
+  "id": "DP-102R",
+  "title": "Repaired temporal case: required reviews remain current through consumption and release",
+  "classification": "synthetic_repaired_twin",
+  "status": "preimplementation_oracle",
+  "g0_evidence": false,
+  "repairs": "DP-102",
+  "fixture_ref": "../common-fixture.json#DEPLOY_FIXTURE_001",
+  "repair": {
+    "removed_event": "MUTATE_GITHUB_REVIEW",
+    "github_object_version_at_evaluation": "github-pr-42-v17",
+    "github_object_version_at_consumption": "github-pr-42-v17",
+    "github_object_version_at_release": "github-pr-42-v17",
+    "all_other_security_inputs_unchanged": true
+  },
+  "requirements": [
+    "FR-017",
+    "FR-020",
+    "FR-032",
+    "FR-034",
+    "FR-038",
+    "SEC-009",
+    "SEC-014",
+    "SEC-026"
+  ],
+  "assumptions": [
+    "GitHub object version github-pr-42-v17 remains current and approved through evaluation, consumption, and final effect release.",
+    "All other common-fixture source, authority, mediation, target, time, and trusted-path assumptions remain valid."
+  ],
+  "residual_limits": [
+    "Current means authenticated state observed within the declared freshness bound, not atomic truth at remote effect completion.",
+    "The fixture is synthetic and is not customer or G0 evidence."
+  ],
+  "action_proposal": {
+    "tenant_id": "example-org",
+    "environment_id": "prod",
+    "client_request_id": "synthetic-dp-102r",
+    "api_idempotency_key": "idem-dp-102r",
+    "grant_selector": "grant-example-org-prod-deploy-001",
+    "action_class": "deploy.release",
+    "operation": "DEPLOY_EKS_IMAGE_V1",
+    "repository": "example-org/payments",
+    "commit": "1111111111111111111111111111111111111111",
+    "image": "111122223333.dkr.ecr.us-east-1.amazonaws.com/example-org/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "cluster": "eks:us-east-1:111122223333:cluster/prod-1",
+    "namespace": "payments-prod",
+    "deployment_name": "payments",
+    "deployment_uid": "11111111-2222-4333-8444-555555555555",
+    "container_name": "app"
+  },
+  "timeline": [
+    {
+      "sequence": 1,
+      "at_ms": 1786752000000,
+      "barrier": "INITIAL_STATE",
+      "event": "Load approved GitHub object version github-pr-42-v17."
+    },
+    {
+      "sequence": 2,
+      "at_ms": 1786752005000,
+      "barrier": "AFTER_AUTHORIZATION_ISSUED_BEFORE_CONSUMPTION",
+      "event": "Keep the source state unchanged."
+    },
+    {
+      "sequence": 3,
+      "at_ms": 1786752020000,
+      "barrier": "CONSUMPTION_REFRESH",
+      "event": "Return the same current approved GitHub object version github-pr-42-v17."
+    },
+    {
+      "sequence": 4,
+      "at_ms": 1786752025000,
+      "barrier": "PROVIDER_RESULT",
+      "event": "Kubernetes accepts the exact authorized patch and rollout reaches the declared success state."
+    },
+    {
+      "sequence": 5,
+      "at_ms": 1786752140000,
+      "barrier": "CREDENTIAL_RETIRED",
+      "event": "Retire the credential and finalize the transaction."
+    }
+  ],
+  "expected": {
+    "plain_policy": {
+      "decision": "ALLOW",
+      "state_sequence": [
+        "RECEIVED",
+        "AUTHENTICATED",
+        "POLICY_EVALUATED_ALLOW",
+        "PROVIDER_PATCH_SUBMITTED",
+        "PROVIDER_ACCEPTED"
+      ],
+      "terminal_state": "PROVIDER_ACCEPTED",
+      "reason_codes": [
+        "ALLOW"
+      ],
+      "counts": {
+        "evaluations": 1,
+        "allow_decisions": 1,
+        "deny_decisions": 0,
+        "deny_receipts": 0,
+        "execution_authorizations_issued": 0,
+        "successful_authorization_consumptions": 0,
+        "rejected_authorization_consumptions": 0,
+        "bound_objects_created": 0,
+        "credentials_issued": 0,
+        "effect_releases": 0,
+        "credential_handoffs": 0,
+        "provider_patch_attempts": 1,
+        "stored_protected_effects": 1,
+        "automatic_patch_retries": 0,
+        "credential_retirements": 0,
+        "transactions_final": 1
+      },
+      "final_resource": {
+        "image_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "required_review_current_at_provider_call": true,
+        "unauthorized_projected_delta_count": 0
+      }
+    },
+    "accordlock": {
+      "decision": "ALLOW",
+      "state_sequence": [
+        "PROPOSED",
+        "EVALUATING",
+        "EVALUATED_ALLOW",
+        "EVIDENCE_DURABLE",
+        "SIGNING",
+        "AUTHORIZATION_ISSUED",
+        "CONSUMING",
+        "AUTHORIZATION_CONSUMED",
+        "CONSUMPTION_WITNESSING",
+        "CONSUMPTION_WITNESSED",
+        "DISPATCH_CHECKING",
+        "BOUND_OBJECT_CREATE_PENDING",
+        "CREDENTIAL_PREPARED",
+        "CREDENTIAL_ISSUING",
+        "CREDENTIAL_READY",
+        "RELEASE_CHECKING",
+        "EFFECT_RELEASED",
+        "EXECUTING",
+        "EXECUTED",
+        "TRANSACTION_FINAL"
+      ],
+      "provider_terminal_state": "EXECUTED",
+      "transaction_terminal_state": "TRANSACTION_FINAL",
+      "reason_codes": [
+        "ALLOW"
+      ],
+      "counts": {
+        "evaluations": 1,
+        "allow_decisions": 1,
+        "deny_decisions": 0,
+        "deny_receipts": 0,
+        "execution_authorizations_issued": 1,
+        "successful_authorization_consumptions": 1,
+        "rejected_authorization_consumptions": 0,
+        "bound_objects_created": 1,
+        "credentials_issued": 1,
+        "effect_releases": 1,
+        "credential_handoffs": 1,
+        "provider_patch_attempts": 1,
+        "stored_protected_effects": 1,
+        "automatic_patch_retries": 0,
+        "credential_retirements": 1,
+        "transactions_final": 1
+      },
+      "final_resource": {
+        "deployment_uid": "11111111-2222-4333-8444-555555555555",
+        "image_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "reserved_annotation_count": 3,
+        "unauthorized_projected_delta_count": 0,
+        "rollout_condition": "AVAILABLE"
+      },
+      "replay": {
+        "required": true,
+        "model_invocations": 0,
+        "historical_policy_decision": "ALLOW",
+        "historical_lifecycle_terminal_state": "TRANSACTION_FINAL",
+        "agreement": true,
+        "missing_object_count": 0
+      }
+    }
+  },
+  "forbidden_outputs": [
+    "Any second authorization consumption, credential lifecycle, or provider patch attempt.",
+    "Any claim of instantaneous external-state currentness at remote effect completion."
+  ]
+}

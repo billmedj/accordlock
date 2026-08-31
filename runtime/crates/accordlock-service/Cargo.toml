@@ -1,0 +1,23 @@
+[package]
+name = "accordlock-service"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+description = "Strict application boundary for provenance-gated AccordLock actions"
+publish.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+accordlock-ingress = { path = "../accordlock-ingress" }
+
+[dev-dependencies]
+serde_json.workspace = true
+accordlock-protocol = { path = "../accordlock-protocol" }
+uuid.workspace = true
+
+[lints]
+workspace = true

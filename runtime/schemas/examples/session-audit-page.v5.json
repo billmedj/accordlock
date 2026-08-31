@@ -1,0 +1,24 @@
+{
+  "schema_version": 5,
+  "task_id": "12345678-1234-4abc-8def-123456789abc",
+  "session_id": "session-1",
+  "run_id": "run-1",
+  "offset": 0,
+  "next_offset": 1,
+  "total_events": 2,
+  "snapshot_revision": 17,
+  "snapshot_at": 120,
+  "events": [
+    {
+      "type": "ACTION_DENIED",
+      "event_id": "action-denied:42",
+      "recorded_at": 119,
+      "denial_id": 42,
+      "attempted_run_id": "run-1",
+      "tool_call_id": "call-1",
+      "proposal_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "reason_code": "CAPABILITY_NOT_APPROVED"
+    }
+  ],
+  "page_digest": "sha256:b6ead11debc51802080f070f8a86859aff7e6d36eca613d95c3ca8cf3b639cbd"
+}

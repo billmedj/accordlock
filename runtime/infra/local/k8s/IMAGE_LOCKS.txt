@@ -1,0 +1,5 @@
+# Resolved from the OCI registries on 2026-08-15. Tags are recorded only as
+# source labels; every executable manifest uses the immutable digest.
+kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+docker.io/library/nginx:1.27-alpine -> sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+docker.io/library/nginx:1.28-alpine -> sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236

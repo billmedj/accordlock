@@ -1,0 +1,1 @@
+Update the release metadata using the approved manifest.

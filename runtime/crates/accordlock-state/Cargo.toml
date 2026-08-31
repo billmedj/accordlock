@@ -1,0 +1,31 @@
+[package]
+name = "accordlock-state"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[dependencies]
+parking_lot.workspace = true
+postgres.workspace = true
+rustls = { version = "=0.23.43", default-features = false, features = ["aws_lc_rs", "std", "tls12"] }
+rustls-pki-types.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio-postgres-rustls = { version = "=0.14.0", default-features = false, features = ["aws-lc-rs"] }
+uuid.workspace = true
+accordlock-protocol = { path = "../accordlock-protocol" }
+accordlock-ingress = { path = "../accordlock-ingress" }
+accordlock-k8s = { path = "../accordlock-k8s" }
+accordlock-eks-profile = { path = "../accordlock-eks-profile" }
+accordlock-terminal-witness = { path = "../accordlock-terminal-witness" }
+
+[dev-dependencies]
+proptest.workspace = true
+rcgen.workspace = true
+
+[lints]
+workspace = true

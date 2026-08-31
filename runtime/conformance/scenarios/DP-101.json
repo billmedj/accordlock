@@ -1,0 +1,165 @@
+{
+  "schema_version": "accordlock.conformance.scenario.v0.1",
+  "id": "DP-101",
+  "title": "Artifact swap: approved commit A paired with clean signed digest B",
+  "classification": "synthetic_primary_differential",
+  "status": "preimplementation_oracle",
+  "g0_evidence": false,
+  "repaired_by": "DP-101R",
+  "fixture_ref": "../common-fixture.json#DEPLOY_FIXTURE_001",
+  "requirements": [
+    "FR-004",
+    "FR-006",
+    "FR-007",
+    "FR-015",
+    "SEC-001",
+    "SEC-004",
+    "SEC-005",
+    "SEC-006"
+  ],
+  "assumptions": [
+    "The PR for commit A is currently approved and its registered run 9001 succeeded with digest A.",
+    "Digest B is independently clean, signed, and not quarantined, but it was produced by run 9002 for unreviewed commit B.",
+    "The plain-policy comparator checks the approval, CI, signature, and quarantine attributes independently but has no trusted equality relation from approved commit through run output to requested digest.",
+    "All AccordLock connectors and the kernel are uncompromised within their registered scopes."
+  ],
+  "residual_limits": [
+    "A policy engine supplied with a trusted lineage relation can reject this case; this scenario is not an impossibility result about policy engines.",
+    "The fixture is synthetic and is not customer or G0 evidence.",
+    "The scenario does not establish payload safety of commit A or image A."
+  ],
+  "action_proposal": {
+    "tenant_id": "example-org",
+    "environment_id": "prod",
+    "client_request_id": "synthetic-dp-101",
+    "api_idempotency_key": "idem-dp-101",
+    "grant_selector": "grant-example-org-prod-deploy-001",
+    "action_class": "deploy.release",
+    "operation": "DEPLOY_EKS_IMAGE_V1",
+    "repository": "example-org/payments",
+    "commit": "1111111111111111111111111111111111111111",
+    "image": "111122223333.dkr.ecr.us-east-1.amazonaws.com/example-org/payments@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "cluster": "eks:us-east-1:111122223333:cluster/prod-1",
+    "namespace": "payments-prod",
+    "deployment_name": "payments",
+    "deployment_uid": "11111111-2222-4333-8444-555555555555",
+    "container_name": "app"
+  },
+  "timeline": [
+    {
+      "sequence": 1,
+      "at_ms": 1786752000000,
+      "barrier": "INITIAL_STATE",
+      "event": "Load approved commit A, run 9001 output digest A, and separately valid digest B."
+    },
+    {
+      "sequence": 2,
+      "at_ms": 1786752001000,
+      "barrier": "ACTION_PROPOSED",
+      "event": "Submit a proposal that names commit A but requests digest B."
+    },
+    {
+      "sequence": 3,
+      "at_ms": 1786752005000,
+      "barrier": "DECISION_COMPLETE",
+      "event": "Record the comparator decision and the AccordLock provenance relation result before any provider operation."
+    },
+    {
+      "sequence": 4,
+      "at_ms": 1786752010000,
+      "barrier": "BASELINE_PROVIDER_RESULT",
+      "event": "The frozen baseline forwards digest B and Kubernetes persists the image-only update; AccordLock makes no provider request."
+    }
+  ],
+  "expected": {
+    "plain_policy": {
+      "decision": "ALLOW",
+      "state_sequence": [
+        "RECEIVED",
+        "AUTHENTICATED",
+        "POLICY_EVALUATED_ALLOW",
+        "PROVIDER_PATCH_SUBMITTED",
+        "PROVIDER_ACCEPTED"
+      ],
+      "terminal_state": "PROVIDER_ACCEPTED",
+      "reason_codes": [
+        "ALLOW"
+      ],
+      "counts": {
+        "evaluations": 1,
+        "allow_decisions": 1,
+        "deny_decisions": 0,
+        "deny_receipts": 0,
+        "execution_authorizations_issued": 0,
+        "successful_authorization_consumptions": 0,
+        "rejected_authorization_consumptions": 0,
+        "bound_objects_created": 0,
+        "credentials_issued": 0,
+        "effect_releases": 0,
+        "credential_handoffs": 0,
+        "provider_patch_attempts": 1,
+        "stored_protected_effects": 1,
+        "automatic_patch_retries": 0,
+        "credential_retirements": 0,
+        "transactions_final": 1
+      },
+      "final_resource": {
+        "image_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "lineage_matches_requested_commit": false,
+        "unauthorized_projected_delta_count": 0
+      },
+      "security_result": "FAIL_LINEAGE_SUBSTITUTION_EXECUTED"
+    },
+    "accordlock": {
+      "decision": "DENY",
+      "state_sequence": [
+        "PROPOSED",
+        "EVALUATING",
+        "EVALUATED_DENY"
+      ],
+      "provider_terminal_state": "NOT_ATTEMPTED",
+      "transaction_terminal_state": "EVALUATED_DENY",
+      "reason_codes": [
+        "PROV_TRANSFORM_OUTPUT_MISMATCH"
+      ],
+      "counts": {
+        "evaluations": 1,
+        "allow_decisions": 0,
+        "deny_decisions": 1,
+        "deny_receipts": 1,
+        "execution_authorizations_issued": 0,
+        "successful_authorization_consumptions": 0,
+        "rejected_authorization_consumptions": 0,
+        "bound_objects_created": 0,
+        "credentials_issued": 0,
+        "effect_releases": 0,
+        "credential_handoffs": 0,
+        "provider_patch_attempts": 0,
+        "stored_protected_effects": 0,
+        "automatic_patch_retries": 0,
+        "credential_retirements": 0,
+        "transactions_final": 0
+      },
+      "final_resource": {
+        "image_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "unchanged": true
+      },
+      "replay": {
+        "required": true,
+        "model_invocations": 0,
+        "historical_decision": "DENY",
+        "historical_reason_codes": [
+          "PROV_TRANSFORM_OUTPUT_MISMATCH"
+        ],
+        "agreement": true,
+        "missing_object_count": 0
+      }
+    }
+  },
+  "falsifier": "If the frozen strongest implemented baseline authenticates and enforces the exact approved-commit to workflow-run to requested-digest relation and therefore denies, DP-101 is not discriminating and must not be reported as an AccordLock advantage.",
+  "forbidden_outputs": [
+    "Any AccordLock ExecutionAuthorization, downstream credential, provider request, or stored effect.",
+    "A generic reason code that hides the exact lineage mismatch.",
+    "A claim that the result proves a limitation of Cedar, OPA, AuthZEN, or policy engines."
+  ]
+}

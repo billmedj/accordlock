@@ -1,0 +1,85 @@
+name: Bug report
+description: Report a reproducible AccordLock defect using sanitized data.
+title: "[Bug]: "
+labels:
+  - bug
+  - triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for the report. Do not disclose vulnerabilities, credentials,
+        customer information, private endpoints, or exploit details here. Use
+        the private process in SECURITY.md for security reports.
+
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: Select the closest match and add the full commit below.
+      options:
+        - Latest pre-release
+        - Default branch
+        - Older version or fork
+    validations:
+      required: true
+
+  - type: input
+    id: commit
+    attributes:
+      label: Commit or release
+      description: Full commit hash or exact release tag.
+      placeholder: 0123456789abcdef... or v0.1.0-alpha.1
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, architecture, Rust version, Kubernetes distribution, and relevant tool versions.
+      placeholder: Ubuntu 24.04, x86_64, rustc ..., kind ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Provide exact steps using synthetic data and the smallest possible fixture.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include complete reason codes and sanitized output where useful.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs or artifacts
+      description: Remove credentials, tokens, personal data, customer identifiers, private endpoints, and secrets.
+      render: text
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues and did not find a duplicate.
+          required: true
+        - label: This report contains no sensitive or confidential information.
+          required: true
+        - label: This is not a private security vulnerability report.
+          required: true

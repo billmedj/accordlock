@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "session_id": "session-1",
+  "run_id": "run-1",
+  "tool_call_id": "call-1",
+  "material": {
+    "text": ["Read README.md from the approved workspace."],
+    "tool_requests": [
+      {
+        "id": "call-1",
+        "name": "developer__read",
+        "arguments_sha256": "sha256:7d6441497d2a000b8143602a7817c90abe7db88e139f89c062a1c36cfe0ad9d6"
+      }
+    ]
+  },
+  "material_sha256": "sha256:ae11a9270da71e1174b7b0a1571ec08fc5e0906cb2158fb461e19732731a3a2a",
+  "recorded_at": 110
+}

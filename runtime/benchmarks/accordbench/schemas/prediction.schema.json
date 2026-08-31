@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:accordbench:prediction:0.3",
+  "title": "AccordBench prediction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "verdict", "interrupted", "completed"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"},
+    "verdict": {"enum": ["allow", "review", "deny"]},
+    "phenomenon_label": {"type": "string", "pattern": "^IC_[A-Z0-9_]{3,64}$"},
+    "interrupted": {"type": "boolean"},
+    "completed": {"type": "boolean"},
+    "effect_status": {"enum": ["none", "applied", "unknown", "recovered"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"completed": {"const": true}}},
+      "then": {"properties": {"verdict": {"const": "allow"}}}
+    },
+    {
+      "if": {"properties": {"verdict": {"const": "review"}}},
+      "then": {"properties": {"interrupted": {"const": true}}}
+    }
+  ]
+}

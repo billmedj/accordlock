@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "evaluation_schema_version": 3,
+  "profile": "COMPLETE_TRACE",
+  "evaluation_hash": "sha256:4f935be64624ea8c6c4ae8816c512687e679b6855717f2b8edf4cf3406838880",
+  "task_hash": "sha256:0101010101010101010101010101010101010101010101010101010101010101",
+  "trace_hash": "sha256:562590cd40c0efd7515faf00b0a29cffcfc6851da3200399c6fd54045ffaa396",
+  "ledger_snapshot_hash": "sha256:c7e2307475612423556d1f8f543be757bf11f8dea2a5bb42da17ee7769678210",
+  "trust_policy_hash": "sha256:efb5765708418c18839cd1f9c5582b5724abf0498fe873ea38dc9b4373dd4c53",
+  "expected_ledger_hash": "sha256:4646464646464646464646464646464646464646464646464646464646464646",
+  "minimum_ledger_epoch": 7,
+  "minimum_trust_policy_epoch": 7,
+  "evaluated_at": 1600,
+  "evidence_head": "sha256:ee6603a151b970764854aaa4b4161939e1f49408abcb10fe2049ecf63c55de78",
+  "evidence_hashes": [
+    "sha256:2f58de0ca47aacf8f58ddf33df0c62d0e26681cd64af822c2018be608548244f",
+    "sha256:3901091b62fe8f95ae11bc2db3d950151390bc732ad06d2535d5bf86810539b6",
+    "sha256:a0dffd4e6246a078c8f9a5eeeb451f963a55ac8330dbe55211f3ee1c44ef6f89",
+    "sha256:ee6603a151b970764854aaa4b4161939e1f49408abcb10fe2049ecf63c55de78"
+  ],
+  "outcome": "SUPPORTED",
+  "baseline_decision": "ALLOW",
+  "decision": "ALLOW",
+  "reasons": ["REQUIREMENT_SATISFIED"],
+  "findings": [
+    {
+      "requirement_hash": "sha256:4d7ebf8f96ecc30722bf007ca85ca202e02e8fc8e4465d87916e55894c16ed91",
+      "stage": "REQUEST",
+      "evidence_hash": "sha256:2f58de0ca47aacf8f58ddf33df0c62d0e26681cd64af822c2018be608548244f",
+      "reason": "SUPPORTED"
+    },
+    {
+      "requirement_hash": "sha256:4d7ebf8f96ecc30722bf007ca85ca202e02e8fc8e4465d87916e55894c16ed91",
+      "stage": "PLAN",
+      "evidence_hash": "sha256:3901091b62fe8f95ae11bc2db3d950151390bc732ad06d2535d5bf86810539b6",
+      "reason": "SUPPORTED"
+    },
+    {
+      "requirement_hash": "sha256:4d7ebf8f96ecc30722bf007ca85ca202e02e8fc8e4465d87916e55894c16ed91",
+      "stage": "ACTION",
+      "evidence_hash": "sha256:a0dffd4e6246a078c8f9a5eeeb451f963a55ac8330dbe55211f3ee1c44ef6f89",
+      "reason": "SUPPORTED"
+    },
+    {
+      "requirement_hash": "sha256:4d7ebf8f96ecc30722bf007ca85ca202e02e8fc8e4465d87916e55894c16ed91",
+      "stage": "RESULT",
+      "evidence_hash": "sha256:ee6603a151b970764854aaa4b4161939e1f49408abcb10fe2049ecf63c55de78",
+      "reason": "SUPPORTED"
+    }
+  ]
+}

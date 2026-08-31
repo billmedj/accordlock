@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:schema:intent-evidence-response:2",
+  "title": "AccordLock Intent Evidence Response",
+  "description": "A strict evidence response with local or authenticated external provenance. This record carries no execution authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "response_id",
+    "source_request_hash",
+    "evidence",
+    "evidence_hash",
+    "provenance_hash",
+    "calibration_status",
+    "calibration_hash",
+    "body_hash",
+    "responded_at",
+    "authentication"
+  ],
+  "properties": {
+    "schema_version": { "const": 2 },
+    "response_id": { "$ref": "#/$defs/uuid" },
+    "source_request_hash": { "$ref": "#/$defs/digest" },
+    "evidence": { "$ref": "#/$defs/evidence" },
+    "evidence_hash": { "$ref": "#/$defs/digest" },
+    "provenance_hash": { "$ref": "#/$defs/digest" },
+    "calibration_status": { "$ref": "#/$defs/calibrationStatus" },
+    "calibration_hash": { "$ref": "#/$defs/optionalDigest" },
+    "body_hash": { "$ref": "#/$defs/digest" },
+    "responded_at": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+    "authentication": { "$ref": "#/$defs/authentication" }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "not": { "const": "sha256:0000000000000000000000000000000000000000000000000000000000000000" }
+    },
+    "optionalDigest": {
+      "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }]
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "not": { "const": "00000000-0000-0000-0000-000000000000" }
+    },
+    "stage": { "enum": ["REQUEST", "PLAN", "ACTION", "RESULT"] },
+    "calibrationStatus": { "enum": ["NOT_APPLICABLE", "VERIFIED", "UNVERIFIED", "EXPIRED"] },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lower", "estimate", "upper"],
+      "properties": {
+        "lower": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "estimate": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+        "upper": { "type": "integer", "minimum": 0, "maximum": 1000000 }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "evidence_id",
+        "task_hash",
+        "trace_id",
+        "ledger_hash",
+        "sequence",
+        "parent_evidence_hash",
+        "requirement_hash",
+        "stage",
+        "subject_hash",
+        "transformation_step_hash",
+        "verdict",
+        "confidence",
+        "method_kind",
+        "method_hash",
+        "evaluator_hash",
+        "calibration_status",
+        "calibration_hash",
+        "payload_hash",
+        "observed_at"
+      ],
+      "properties": {
+        "schema_version": { "const": 2 },
+        "evidence_id": { "$ref": "#/$defs/uuid" },
+        "task_hash": { "$ref": "#/$defs/digest" },
+        "trace_id": { "$ref": "#/$defs/uuid" },
+        "ledger_hash": { "$ref": "#/$defs/digest" },
+        "sequence": { "type": "integer", "minimum": 0, "maximum": 18446744073709551615 },
+        "parent_evidence_hash": { "$ref": "#/$defs/optionalDigest" },
+        "requirement_hash": { "$ref": "#/$defs/digest" },
+        "stage": { "$ref": "#/$defs/stage" },
+        "subject_hash": { "$ref": "#/$defs/digest" },
+        "transformation_step_hash": { "$ref": "#/$defs/optionalDigest" },
+        "verdict": { "enum": ["SUPPORTS", "CONTRADICTS", "INCONCLUSIVE"] },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "method_kind": { "enum": ["DETERMINISTIC_CHECK", "HUMAN_REVIEW", "STATISTICAL_MODEL", "LANGUAGE_MODEL", "EXTERNAL_ATTESTATION"] },
+        "method_hash": { "$ref": "#/$defs/digest" },
+        "evaluator_hash": { "$ref": "#/$defs/digest" },
+        "calibration_status": { "$ref": "#/$defs/calibrationStatus" },
+        "calibration_hash": { "$ref": "#/$defs/optionalDigest" },
+        "payload_hash": { "$ref": "#/$defs/digest" },
+        "observed_at": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 }
+      },
+      "allOf": [
+        {
+          "if": { "required": ["sequence"], "properties": { "sequence": { "const": 0 } } },
+          "then": { "properties": { "parent_evidence_hash": { "type": "null" } } },
+          "else": { "properties": { "parent_evidence_hash": { "$ref": "#/$defs/digest" } } }
+        },
+        {
+          "if": { "required": ["stage"], "properties": { "stage": { "const": "REQUEST" } } },
+          "then": { "properties": { "transformation_step_hash": { "type": "null" } } },
+          "else": { "properties": { "transformation_step_hash": { "$ref": "#/$defs/digest" } } }
+        },
+        {
+          "if": {
+            "required": ["method_kind"],
+            "properties": {
+              "method_kind": { "enum": ["DETERMINISTIC_CHECK", "HUMAN_REVIEW", "EXTERNAL_ATTESTATION"] }
+            }
+          },
+          "then": {
+            "properties": {
+              "calibration_status": { "const": "NOT_APPLICABLE" },
+              "calibration_hash": { "type": "null" }
+            }
+          },
+          "else": {
+            "properties": {
+              "calibration_status": { "enum": ["VERIFIED", "UNVERIFIED", "EXPIRED"] }
+            }
+          }
+        }
+      ]
+    },
+    "authentication": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": { "mode": { "const": "LOCAL" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "provider_key_id", "provider_trust_root", "challenge_hash", "issued_at", "valid_until", "cose_sign1"],
+          "properties": {
+            "mode": { "const": "EXTERNAL" },
+            "provider_key_id": { "type": "string", "minLength": 1 },
+            "provider_trust_root": { "$ref": "#/$defs/digest" },
+            "challenge_hash": { "$ref": "#/$defs/digest" },
+            "issued_at": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+            "valid_until": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+            "cose_sign1": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "integer", "minimum": 0, "maximum": 255 }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

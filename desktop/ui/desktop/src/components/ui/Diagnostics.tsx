@@ -1,0 +1,147 @@
+import React, { useState } from 'react';
+import { AlertTriangle, Download } from 'lucide-react';
+import { Button } from './button';
+import { toastError } from '../../toasts';
+import { defineMessages, useIntl } from '../../i18n';
+import { getDiagnosticsReport } from '../../acp/diagnostics';
+
+const i18n = defineMessages({
+  reportProblem: {
+    id: 'diagnosticsModal.reportProblem',
+    defaultMessage: 'Report a Problem',
+  },
+  description: {
+    id: 'diagnosticsModal.localDescription',
+    defaultMessage:
+      "You can download a diagnostics JSON report for review through your organization's approved support channel. It contains:",
+  },
+  systemInfo: {
+    id: 'diagnosticsModal.systemInfo',
+    defaultMessage: 'Basic system info',
+  },
+  sessionMessages: {
+    id: 'diagnosticsModal.sessionMessages',
+    defaultMessage: 'Your current session messages',
+  },
+  logFiles: {
+    id: 'diagnosticsModal.logFiles',
+    defaultMessage: 'Recent log files',
+  },
+  configSettings: {
+    id: 'diagnosticsModal.configSettings',
+    defaultMessage: 'Configuration settings',
+  },
+  sensitiveWarning: {
+    id: 'diagnosticsModal.sensitiveWarning',
+    defaultMessage:
+      'If your session contains sensitive information, do not share the diagnostics file publicly.',
+  },
+  attachHint: {
+    id: 'diagnosticsModal.localShareHint',
+    defaultMessage: 'AccordLock does not upload this report or open an external support site.',
+  },
+  cancel: {
+    id: 'diagnosticsModal.cancel',
+    defaultMessage: 'Cancel',
+  },
+  downloading: {
+    id: 'diagnosticsModal.downloading',
+    defaultMessage: 'Downloading...',
+  },
+  download: {
+    id: 'diagnosticsModal.download',
+    defaultMessage: 'Download',
+  },
+  diagnosticsErrorTitle: {
+    id: 'diagnosticsModal.diagnosticsErrorTitle',
+    defaultMessage: 'Diagnostics Error',
+  },
+  diagnosticsErrorMsg: {
+    id: 'diagnosticsModal.diagnosticsErrorMsg',
+    defaultMessage: 'Failed to download diagnostics report',
+  },
+});
+
+interface DiagnosticsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  sessionId: string;
+}
+
+export const DiagnosticsModal: React.FC<DiagnosticsModalProps> = ({
+  isOpen,
+  onClose,
+  sessionId,
+}) => {
+  const intl = useIntl();
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+
+    try {
+      const report = await getDiagnosticsReport(sessionId, 'full');
+      const blob = new Blob([`${JSON.stringify(report, null, 2)}\n`], {
+        type: 'application/json',
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `diagnostics_${sessionId}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      onClose();
+    } catch {
+      toastError({
+        title: intl.formatMessage(i18n.diagnosticsErrorTitle),
+        msg: intl.formatMessage(i18n.diagnosticsErrorMsg),
+      });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-background-primary border border-border-primary rounded-lg p-6 max-w-md mx-4">
+        <div className="flex items-start gap-3 mb-4">
+          <AlertTriangle className="text-orange-500 flex-shrink-0 mt-1" size={20} />
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary mb-2">
+              {intl.formatMessage(i18n.reportProblem)}
+            </h3>
+            <p className="text-sm text-text-secondary mb-3">
+              {intl.formatMessage(i18n.description)}
+            </p>
+            <ul className="text-sm text-text-secondary list-disc list-inside space-y-1 mb-3">
+              <li>{intl.formatMessage(i18n.systemInfo)}</li>
+              <li>{intl.formatMessage(i18n.sessionMessages)}</li>
+              <li>{intl.formatMessage(i18n.logFiles)}</li>
+              <li>{intl.formatMessage(i18n.configSettings)}</li>
+            </ul>
+            <p className="text-sm text-text-secondary">
+              <strong>Warning:</strong> {intl.formatMessage(i18n.sensitiveWarning)}
+            </p>
+            <p className="text-sm text-text-secondary">{intl.formatMessage(i18n.attachHint)}</p>
+          </div>
+        </div>
+        <div className="flex gap-2 justify-end">
+          <Button onClick={onClose} variant="outline" size="sm" disabled={isDownloading}>
+            {intl.formatMessage(i18n.cancel)}
+          </Button>
+          <Button onClick={handleDownload} variant="outline" size="sm" disabled={isDownloading}>
+            <Download size={16} className="mr-1" />
+            {isDownloading
+              ? intl.formatMessage(i18n.downloading)
+              : intl.formatMessage(i18n.download)}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};

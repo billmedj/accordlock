@@ -1,0 +1,23 @@
+[package]
+name = "accordlock-activation"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+autotests = false
+
+[dependencies]
+minicbor.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+accordlock-eks-profile = { path = "../accordlock-eks-profile" }
+accordlock-protocol = { path = "../accordlock-protocol" }
+
+[dev-dependencies]
+serde.workspace = true
+
+[lints]
+workspace = true

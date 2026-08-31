@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:schema:complete-live-intent-bundle:1",
+  "title": "AccordLock Complete Live Intent Bundle",
+  "description": "A strict request-plan-action-result evaluation persisted after an observed tool result. This local profile carries no provider evidence and always requires review.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "trace",
+    "requirements",
+    "transformations",
+    "evidence",
+    "context",
+    "record"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "trace": { "$ref": "#/$defs/completeTrace" },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": { "$ref": "urn:accordlock:schema:pre-execution-live-intent-bundle:1#/$defs/taskRequirement" }
+    },
+    "transformations": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        { "$ref": "urn:accordlock:schema:pre-execution-live-intent-bundle:1#/$defs/requestToPlan" },
+        { "$ref": "urn:accordlock:schema:pre-execution-live-intent-bundle:1#/$defs/planToAction" },
+        { "$ref": "#/$defs/actionToResult" }
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "maxItems": 0,
+      "$comment": "The strict local runtime profile does not accept provider evidence."
+    },
+    "context": {
+      "$ref": "urn:accordlock:schema:pre-execution-live-intent-bundle:1#/$defs/context"
+    },
+    "record": { "$ref": "#/$defs/completeRecord" }
+  },
+  "$defs": {
+    "digest": {
+      "$ref": "urn:accordlock:schema:pre-execution-live-intent-bundle:1#/$defs/digest"
+    },
+    "uuid": {
+      "$ref": "urn:accordlock:schema:pre-execution-live-intent-bundle:1#/$defs/uuid"
+    },
+    "positiveTime": {
+      "$ref": "urn:accordlock:schema:pre-execution-live-intent-bundle:1#/$defs/positiveTime"
+    },
+    "completeTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "trace_id",
+        "task_hash",
+        "requirement_hashes",
+        "request_hash",
+        "plan_hash",
+        "action_hash",
+        "result_hash",
+        "transformation_step_hashes",
+        "recorded_at"
+      ],
+      "properties": {
+        "schema_version": { "const": 2 },
+        "trace_id": { "$ref": "#/$defs/uuid" },
+        "task_hash": { "$ref": "#/$defs/digest" },
+        "requirement_hashes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/digest" }
+        },
+        "request_hash": { "$ref": "#/$defs/digest" },
+        "plan_hash": { "$ref": "#/$defs/digest" },
+        "action_hash": { "$ref": "#/$defs/digest" },
+        "result_hash": { "$ref": "#/$defs/digest" },
+        "transformation_step_hashes": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/digest" }
+        },
+        "recorded_at": { "$ref": "#/$defs/positiveTime" }
+      }
+    },
+    "actionToResult": {
+      "allOf": [
+        { "$ref": "urn:accordlock:schema:pre-execution-live-intent-bundle:1#/$defs/step" },
+        {
+          "properties": {
+            "sequence": { "const": 2 },
+            "parent_step_hash": { "$ref": "#/$defs/digest" },
+            "source_stage": { "const": "ACTION" },
+            "target_stage": { "const": "RESULT" }
+          }
+        }
+      ]
+    },
+    "completeRecord": {
+      "allOf": [
+        { "$ref": "urn:accordlock:schema:intent-conformance-record:2" },
+        {
+          "properties": {
+            "profile": { "const": "COMPLETE_TRACE" },
+            "evidence_head": { "type": "null" },
+            "evidence_hashes": { "type": "array", "maxItems": 0 },
+            "outcome": { "const": "UNCERTAIN" },
+            "baseline_decision": { "const": "ALLOW" },
+            "decision": { "const": "REQUIRE_APPROVAL" },
+            "reasons": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "prefixItems": [{ "const": "CONFORMANCE_EVALUATION_MISSING" }]
+            },
+            "findings": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "prefixItems": [
+                { "$ref": "urn:accordlock:schema:pre-execution-live-intent-bundle:1#/$defs/missingRequestFinding" },
+                { "$ref": "urn:accordlock:schema:pre-execution-live-intent-bundle:1#/$defs/missingPlanFinding" },
+                { "$ref": "urn:accordlock:schema:pre-execution-live-intent-bundle:1#/$defs/missingActionFinding" },
+                { "$ref": "#/$defs/missingResultFinding" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "missingResultFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_hash", "stage", "evidence_hash", "reason"],
+      "properties": {
+        "requirement_hash": { "$ref": "#/$defs/digest" },
+        "stage": { "const": "RESULT" },
+        "evidence_hash": { "type": "null" },
+        "reason": { "const": "MISSING_EVIDENCE" }
+      }
+    }
+  },
+  "$comment": "Consumers must re-run the typed evaluator. JSON Schema cannot verify canonical digests, parent hashes, timestamp ordering, or cross-object equality by itself."
+}

@@ -1,0 +1,63 @@
+name: Feature request
+description: Propose a concrete workflow or security capability for AccordLock.
+title: "[Feature]: "
+labels:
+  - enhancement
+  - triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the user problem and security outcome before proposing an
+        implementation. Do not include customer-confidential information.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Who has this problem, in what workflow, and what happens today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: State the observable behavior or assurance the feature should provide.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+      description: Optional implementation or interface proposal.
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+
+  - type: textarea
+    id: security
+    attributes:
+      label: Security and trust-boundary impact
+      description: Identify new trusted components, credentials, data, failure modes, or bypass paths.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and validation
+      description: Explain how the result could be tested or falsified.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues and discussions for related work.
+          required: true
+        - label: I removed customer-confidential and personally identifying information.
+          required: true

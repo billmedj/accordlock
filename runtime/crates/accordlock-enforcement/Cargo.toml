@@ -1,0 +1,28 @@
+[package]
+name = "accordlock-enforcement"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+autotests = false
+
+[dependencies]
+accordlock-dispatch = { path = "../accordlock-dispatch" }
+accordlock-eks-broker = { path = "../accordlock-eks-broker" }
+accordlock-eks-profile = { path = "../accordlock-eks-profile" }
+accordlock-executor = { path = "../accordlock-executor" }
+accordlock-protocol = { path = "../accordlock-protocol" }
+accordlock-state = { path = "../accordlock-state" }
+thiserror.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+sha2.workspace = true
+accordlock-ingress = { path = "../accordlock-ingress" }
+accordlock-k8s = { path = "../accordlock-k8s" }
+
+[lints]
+workspace = true

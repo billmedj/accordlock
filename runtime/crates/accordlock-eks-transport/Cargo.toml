@@ -1,0 +1,20 @@
+[package]
+name = "accordlock-eks-transport"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+autotests = false
+
+[dependencies]
+httparse.workspace = true
+rustls.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+accordlock-executor = { path = "../accordlock-executor" }
+accordlock-eks-profile = { path = "../accordlock-eks-profile" }
+
+[lints]
+workspace = true

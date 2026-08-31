@@ -1,0 +1,29 @@
+[package]
+name = "accordlock-runner-engine"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[dependencies]
+accordlock-connectors = { path = "../accordlock-connectors" }
+accordlock-enforcement = { path = "../accordlock-enforcement" }
+accordlock-evaluation = { path = "../accordlock-evaluation" }
+accordlock-k8s = { path = "../accordlock-k8s" }
+accordlock-protocol = { path = "../accordlock-protocol" }
+accordlock-provider-adapters = { path = "../accordlock-provider-adapters" }
+accordlock-runner-bridge = { path = "../accordlock-runner-bridge" }
+accordlock-runner-protocol = { path = "../accordlock-runner-protocol" }
+sha2.workspace = true
+rusqlite.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+tempfile = "3.23.0"
+
+[lints]
+workspace = true

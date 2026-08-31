@@ -1,0 +1,322 @@
+{
+  "registry_id": "accordlock.local-candidate.reason-codes",
+  "registry_version": 1,
+  "status": "PROVISIONAL_LOCAL_CANDIDATE_NON_G1",
+  "g1_frozen": false,
+  "normative": false,
+  "updated_at": "2026-08-15",
+  "scope": "Typed AccordLock kernel ReasonCode values only; untyped plain-policy baseline strings are excluded.",
+  "source": {
+    "path": "crates/accordlock-protocol/src/types.rs",
+    "symbol": "ReasonCode",
+    "numeric_mapping": "ReasonCode::code"
+  },
+  "invariants": {
+    "allowed_code": 0,
+    "allow_outcome_requires_only": [
+      "ALLOWED"
+    ],
+    "all_nonzero_codes_are_deny_reasons": true,
+    "unknown_numeric_code_policy": "FAIL_CLOSED",
+    "caller_may_not_supply_authoritative_reasons": true
+  },
+  "codes": [
+    {
+      "code": 0,
+      "name": "ALLOWED",
+      "rust_variant": "Allowed",
+      "category": "DECISION",
+      "decision": "ALLOW",
+      "emission_status": "EMITTED",
+      "description": "All checks in the current local kernel passed; this is not an independent production assurance claim."
+    },
+    {
+      "code": 1,
+      "name": "UNKNOWN_ACTION",
+      "rust_variant": "UnknownAction",
+      "category": "REQUEST",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The schema version or operation is not supported by the fixed local profile."
+    },
+    {
+      "code": 2,
+      "name": "ACTOR_NOT_ALLOWED",
+      "rust_variant": "ActorNotAllowed",
+      "category": "AUTHORIZATION",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The actor value is not allowed by active policy; the actor must first be bound by authenticated ingress."
+    },
+    {
+      "code": 3,
+      "name": "REPOSITORY_NOT_ALLOWED",
+      "rust_variant": "RepositoryNotAllowed",
+      "category": "AUTHORIZATION",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The proposed source repository is outside active policy."
+    },
+    {
+      "code": 4,
+      "name": "IMAGE_REPOSITORY_NOT_ALLOWED",
+      "rust_variant": "ImageRepositoryNotAllowed",
+      "category": "AUTHORIZATION",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The proposed image repository is outside active policy."
+    },
+    {
+      "code": 5,
+      "name": "TARGET_NOT_ALLOWED",
+      "rust_variant": "TargetNotAllowed",
+      "category": "AUTHORIZATION",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The proposed cluster or namespace is outside active policy."
+    },
+    {
+      "code": 6,
+      "name": "CALLER_SECURITY_FACT_REJECTED",
+      "rust_variant": "CallerSecurityFactRejected",
+      "category": "TRUST_BOUNDARY",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The tenant or actor asserted in the proposal differs from the identity established by authenticated ingress."
+    },
+    {
+      "code": 7,
+      "name": "EVIDENCE_SIGNATURE_INVALID",
+      "rust_variant": "EvidenceSignatureInvalid",
+      "category": "EVIDENCE_AUTHENTICATION",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "COSE decoding, protected-header checks, signature verification, canonical payload reconstruction, or payload equality failed."
+    },
+    {
+      "code": 8,
+      "name": "ATTESTER_NOT_REGISTERED",
+      "rust_variant": "AttesterNotRegistered",
+      "category": "ATTESTER_REGISTRY",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "No current registered attester matches the asserted issuer and key identifier."
+    },
+    {
+      "code": 9,
+      "name": "ATTESTER_SCOPE_VIOLATION",
+      "rust_variant": "AttesterScopeViolation",
+      "category": "ATTESTER_REGISTRY",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "Attester tenant, environment, status, or registered scope does not authorize the assertion."
+    },
+    {
+      "code": 10,
+      "name": "EVIDENCE_DEFECTIVE",
+      "rust_variant": "EvidenceDefective",
+      "category": "EVIDENCE_PAYLOADS",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "Accepted evidence does not meet the required completeness profile."
+    },
+    {
+      "code": 11,
+      "name": "EVIDENCE_STALE",
+      "rust_variant": "EvidenceStale",
+      "category": "FRESHNESS",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "Evidence is expired or older than the active policy authorizations."
+    },
+    {
+      "code": 12,
+      "name": "EVIDENCE_FROM_FUTURE",
+      "rust_variant": "EvidenceFromFuture",
+      "category": "FRESHNESS",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "Evidence observation time is later than the trusted evaluation time."
+    },
+    {
+      "code": 13,
+      "name": "AUTHORITY_EPOCH_MISMATCH",
+      "rust_variant": "AuthorityEpochMismatch",
+      "category": "AUTHORITY_STATE",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The evidence authority vector is not exactly equal to the current local authority vector, including roots, epochs, and activation identifiers."
+    },
+    {
+      "code": 14,
+      "name": "MISSING_REVIEW",
+      "rust_variant": "MissingReview",
+      "category": "REVIEW",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "No accepted review assertion matches the proposed repository and commit."
+    },
+    {
+      "code": 15,
+      "name": "REVIEW_NOT_APPROVED",
+      "rust_variant": "ReviewNotApproved",
+      "category": "REVIEW",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The matching authoritative review assertion reports that approval is absent."
+    },
+    {
+      "code": 16,
+      "name": "REVIEW_COMMIT_MISMATCH",
+      "rust_variant": "ReviewCommitMismatch",
+      "category": "REVIEW",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "A review assertion does not bind the proposed repository and commit."
+    },
+    {
+      "code": 17,
+      "name": "REVIEW_GRADE_INSUFFICIENT",
+      "rust_variant": "ReviewGradeInsufficient",
+      "category": "REVIEW",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The registered attester grade for the matching review is below active policy."
+    },
+    {
+      "code": 18,
+      "name": "MISSING_BUILD",
+      "rust_variant": "MissingBuild",
+      "category": "BUILD",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "No accepted assertion of kind BUILD is present."
+    },
+    {
+      "code": 19,
+      "name": "BUILD_FAILED",
+      "rust_variant": "BuildFailed",
+      "category": "BUILD",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The matching authoritative build assertion reports failure."
+    },
+    {
+      "code": 20,
+      "name": "BUILD_COMMIT_MISMATCH",
+      "rust_variant": "BuildCommitMismatch",
+      "category": "BUILD",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "A build assertion does not bind the proposed repository and commit."
+    },
+    {
+      "code": 21,
+      "name": "BUILD_GRADE_INSUFFICIENT",
+      "rust_variant": "BuildGradeInsufficient",
+      "category": "BUILD",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The registered attester grade for the matching build is below active policy."
+    },
+    {
+      "code": 22,
+      "name": "MISSING_ARTIFACT",
+      "rust_variant": "MissingArtifact",
+      "category": "ARTIFACT",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "No artifact assertion is available for evaluation."
+    },
+    {
+      "code": 23,
+      "name": "ARTIFACT_SIGNATURE_INVALID",
+      "rust_variant": "ArtifactSignatureInvalid",
+      "category": "ARTIFACT",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The matching authoritative artifact assertion reports an invalid artifact signature."
+    },
+    {
+      "code": 24,
+      "name": "ARTIFACT_QUARANTINED",
+      "rust_variant": "ArtifactQuarantined",
+      "category": "ARTIFACT",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The matching authoritative artifact assertion reports that the artifact is quarantined."
+    },
+    {
+      "code": 25,
+      "name": "TRANSFORM_OUTPUT_MISMATCH",
+      "rust_variant": "TransformOutputMismatch",
+      "category": "LINEAGE",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "Build run and output digest do not link to the proposed artifact, or no matching artifact exists."
+    },
+    {
+      "code": 26,
+      "name": "MISSING_TARGET_SNAPSHOT",
+      "rust_variant": "MissingTargetSnapshot",
+      "category": "TARGET",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "No accepted target assertion matches the proposed target identity."
+    },
+    {
+      "code": 27,
+      "name": "TARGET_IDENTITY_MISMATCH",
+      "rust_variant": "TargetIdentityMismatch",
+      "category": "TARGET",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "Target cluster, namespace, deployment, or deployment UID differs from the proposal."
+    },
+    {
+      "code": 28,
+      "name": "TARGET_STATE_MISMATCH",
+      "rust_variant": "TargetStateMismatch",
+      "category": "TARGET",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "Target resource version, current image, or projection hash differs from the proposed prior state."
+    },
+    {
+      "code": 29,
+      "name": "MALFORMED_COMMIT",
+      "rust_variant": "MalformedCommit",
+      "category": "REQUEST",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The proposed commit identifier is not a lowercase or uppercase forty-character hexadecimal SHA-1 object identifier."
+    },
+    {
+      "code": 30,
+      "name": "INVALID_VALIDITY_WINDOW",
+      "rust_variant": "InvalidValidityWindow",
+      "category": "FRESHNESS",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "Evidence valid-until is not later than observed-at."
+    },
+    {
+      "code": 31,
+      "name": "POLICY_ROOT_MISMATCH",
+      "rust_variant": "PolicyRootMismatch",
+      "category": "AUTHORITY_STATE",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The canonical active policy hash differs from the active policy authority root."
+    },
+    {
+      "code": 32,
+      "name": "EVIDENCE_REQUEST_MISMATCH",
+      "rust_variant": "EvidenceRequestMismatch",
+      "category": "CORRELATION",
+      "decision": "DENY",
+      "emission_status": "EMITTED",
+      "description": "The connector evidence-set request identifier or a signed evidence assertion request identifier differs from the proposal request identifier."
+    }
+  ]
+}

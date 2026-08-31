@@ -1,0 +1,27 @@
+{
+  "apiVersion": "v1",
+  "kind": "Service",
+  "metadata": {
+    "name": "accordlock-webhook",
+    "namespace": "accordlock-system",
+    "labels": {
+      "app.kubernetes.io/name": "accordlock-webhook",
+      "app.kubernetes.io/part-of": "accordlock"
+    }
+  },
+  "spec": {
+    "type": "ClusterIP",
+    "selector": {
+      "app.kubernetes.io/name": "accordlock-webhook"
+    },
+    "ports": [
+      {
+        "name": "https",
+        "protocol": "TCP",
+        "port": 443,
+        "targetPort": "https",
+        "appProtocol": "https"
+      }
+    ]
+  }
+}

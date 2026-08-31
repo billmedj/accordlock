@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "trace": {
+    "schema_version": 2,
+    "trace_id": "11111111-1111-4111-8111-111111111111",
+    "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "requirement_hashes": [
+      "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    ],
+    "request_hash": "sha256:012dc57f22b63b43860f1dea3b6f6feaf7fa1195577cd1f1b4f66cda43e8db92",
+    "plan_hash": "sha256:ae11a9270da71e1174b7b0a1571ec08fc5e0906cb2158fb461e19732731a3a2a",
+    "action_hash": "sha256:b841bcf0b2853218c33e65cfcb11c784a4dc3ea072da2855093e98312af3e121",
+    "result_hash": "sha256:c200b16f0aa0b47e9012aadf2e9f54026d263304b21c549aa6f7f64a1cc250f7",
+    "transformation_step_hashes": [
+      "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "sha256:6666666666666666666666666666666666666666666666666666666666666666"
+    ],
+    "recorded_at": 130
+  },
+  "requirements": [
+    {
+      "schema_version": 2,
+      "requirement_id": "22222222-2222-4222-8222-222222222222",
+      "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "statement_hash": "sha256:012dc57f22b63b43860f1dea3b6f6feaf7fa1195577cd1f1b4f66cda43e8db92",
+      "minimum_score": 1000000
+    }
+  ],
+  "transformations": [
+    {
+      "schema_version": 2,
+      "step_id": "44444444-4444-4444-8444-444444444444",
+      "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "sequence": 0,
+      "parent_step_hash": null,
+      "source_stage": "REQUEST",
+      "source_hash": "sha256:012dc57f22b63b43860f1dea3b6f6feaf7fa1195577cd1f1b4f66cda43e8db92",
+      "target_stage": "PLAN",
+      "target_hash": "sha256:ae11a9270da71e1174b7b0a1571ec08fc5e0906cb2158fb461e19732731a3a2a",
+      "recorded_at": 110
+    },
+    {
+      "schema_version": 2,
+      "step_id": "55555555-5555-4555-8555-555555555555",
+      "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "sequence": 1,
+      "parent_step_hash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "source_stage": "PLAN",
+      "source_hash": "sha256:ae11a9270da71e1174b7b0a1571ec08fc5e0906cb2158fb461e19732731a3a2a",
+      "target_stage": "ACTION",
+      "target_hash": "sha256:b841bcf0b2853218c33e65cfcb11c784a4dc3ea072da2855093e98312af3e121",
+      "recorded_at": 120
+    },
+    {
+      "schema_version": 2,
+      "step_id": "66666666-6666-4666-8666-666666666666",
+      "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "sequence": 2,
+      "parent_step_hash": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "source_stage": "ACTION",
+      "source_hash": "sha256:b841bcf0b2853218c33e65cfcb11c784a4dc3ea072da2855093e98312af3e121",
+      "target_stage": "RESULT",
+      "target_hash": "sha256:c200b16f0aa0b47e9012aadf2e9f54026d263304b21c549aa6f7f64a1cc250f7",
+      "recorded_at": 130
+    }
+  ],
+  "evidence": [],
+  "context": {
+    "schema_version": 1,
+    "ledger_snapshot": {
+      "schema_version": 2,
+      "snapshot_id": "99999999-9999-4999-8999-999999999999",
+      "ledger_hash": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "trace_id": "11111111-1111-4111-8111-111111111111",
+      "epoch": 1,
+      "evidence_count": 0,
+      "evidence_head": null,
+      "captured_at": 130,
+      "valid_until": 87400
+    },
+    "ledger_expectation": {
+      "ledger_hash": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "minimum_epoch": 1,
+      "evaluated_at": 130
+    },
+    "trust_policy": {
+      "schema_version": 2,
+      "policy_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "policy_epoch": 1,
+      "trusted_provenance_hashes": [],
+      "valid_from": 100,
+      "valid_until": 87400
+    },
+    "minimum_trust_policy_epoch": 1
+  },
+  "record": {
+    "schema_version": 2,
+    "evaluation_schema_version": 3,
+    "profile": "COMPLETE_TRACE",
+    "evaluation_hash": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "trace_hash": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "ledger_snapshot_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "trust_policy_hash": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "expected_ledger_hash": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+    "minimum_ledger_epoch": 1,
+    "minimum_trust_policy_epoch": 1,
+    "evaluated_at": 130,
+    "evidence_head": null,
+    "evidence_hashes": [],
+    "outcome": "UNCERTAIN",
+    "baseline_decision": "ALLOW",
+    "decision": "REQUIRE_APPROVAL",
+    "reasons": ["CONFORMANCE_EVALUATION_MISSING"],
+    "findings": [
+      {
+        "requirement_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "stage": "REQUEST",
+        "evidence_hash": null,
+        "reason": "MISSING_EVIDENCE"
+      },
+      {
+        "requirement_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "stage": "PLAN",
+        "evidence_hash": null,
+        "reason": "MISSING_EVIDENCE"
+      },
+      {
+        "requirement_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "stage": "ACTION",
+        "evidence_hash": null,
+        "reason": "MISSING_EVIDENCE"
+      },
+      {
+        "requirement_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "stage": "RESULT",
+        "evidence_hash": null,
+        "reason": "MISSING_EVIDENCE"
+      }
+    ]
+  }
+}

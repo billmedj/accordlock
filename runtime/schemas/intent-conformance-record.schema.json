@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:schema:intent-conformance-record:2",
+  "title": "AccordLock Intent Conformance Record",
+  "description": "A strict portable record of one provider-neutral conformance evaluation. It is evidence only; authorization-sensitive consumers must re-run the evaluator over the bound inputs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evaluation_schema_version",
+    "profile",
+    "evaluation_hash",
+    "task_hash",
+    "trace_hash",
+    "ledger_snapshot_hash",
+    "trust_policy_hash",
+    "expected_ledger_hash",
+    "minimum_ledger_epoch",
+    "minimum_trust_policy_epoch",
+    "evaluated_at",
+    "evidence_head",
+    "evidence_hashes",
+    "outcome",
+    "baseline_decision",
+    "decision",
+    "reasons",
+    "findings"
+  ],
+  "properties": {
+    "schema_version": { "const": 2 },
+    "evaluation_schema_version": { "const": 3 },
+    "profile": { "$ref": "#/$defs/profile" },
+    "evaluation_hash": { "$ref": "#/$defs/digest" },
+    "task_hash": { "$ref": "#/$defs/digest" },
+    "trace_hash": { "$ref": "#/$defs/digest" },
+    "ledger_snapshot_hash": { "$ref": "#/$defs/digest" },
+    "trust_policy_hash": { "$ref": "#/$defs/digest" },
+    "expected_ledger_hash": { "$ref": "#/$defs/digest" },
+    "minimum_ledger_epoch": { "type": "integer", "minimum": 1, "maximum": 18446744073709551615 },
+    "minimum_trust_policy_epoch": { "type": "integer", "minimum": 1, "maximum": 18446744073709551615 },
+    "evaluated_at": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+    "evidence_head": { "$ref": "#/$defs/optionalDigest" },
+    "evidence_hashes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/digest" }
+    },
+    "outcome": { "enum": ["SUPPORTED", "UNCERTAIN", "NONCONFORMANT", "INVALID_EVIDENCE"] },
+    "baseline_decision": { "$ref": "#/$defs/decision" },
+    "decision": { "$ref": "#/$defs/decision" },
+    "reasons": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/decisionReason" }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/finding" }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "not": { "const": "sha256:0000000000000000000000000000000000000000000000000000000000000000" }
+    },
+    "optionalDigest": {
+      "oneOf": [{ "$ref": "#/$defs/digest" }, { "type": "null" }]
+    },
+    "profile": { "enum": ["PRE_EXECUTION", "COMPLETE_TRACE"] },
+    "stage": { "enum": ["REQUEST", "PLAN", "ACTION", "RESULT"] },
+    "optionalStage": {
+      "oneOf": [{ "$ref": "#/$defs/stage" }, { "type": "null" }]
+    },
+    "decision": { "enum": ["ALLOW", "REQUIRE_APPROVAL", "DENY"] },
+    "decisionReason": {
+      "enum": [
+        "REQUIREMENT_SATISFIED",
+        "CONFORMANCE_EVALUATION_MISSING",
+        "CONFORMANCE_INCONCLUSIVE",
+        "CONFORMANCE_THRESHOLD_UNCERTAIN",
+        "REQUIREMENT_NOT_SATISFIED",
+        "REQUIREMENT_VIOLATED",
+        "CONFORMANCE_SCOPE_MISMATCH",
+        "RESOURCE_QUOTA_MISSING",
+        "RESOURCE_RESERVATION_MISSING",
+        "RESOURCE_QUOTA_EXCEEDED",
+        "RESOURCE_SCOPE_MISMATCH",
+        "RESOURCE_RESERVATION_CONFIRMED"
+      ]
+    },
+    "findingReason": {
+      "enum": [
+        "SUPPORTED",
+        "MISSING_EVIDENCE",
+        "INCONCLUSIVE_EVIDENCE",
+        "UNVERIFIED_PROVENANCE",
+        "EXPIRED_CALIBRATION",
+        "CONFIDENCE_THRESHOLD_UNCERTAIN",
+        "BELOW_THRESHOLD",
+        "CONTRADICTORY_EVIDENCE",
+        "SCOPE_MISMATCH",
+        "EVIDENCE_CHAIN_MISMATCH",
+        "LEDGER_SNAPSHOT_MISMATCH",
+        "TRUST_POLICY_MISMATCH"
+      ]
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement_hash", "stage", "evidence_hash", "reason"],
+      "properties": {
+        "requirement_hash": { "$ref": "#/$defs/optionalDigest" },
+        "stage": { "$ref": "#/$defs/optionalStage" },
+        "evidence_hash": { "$ref": "#/$defs/optionalDigest" },
+        "reason": { "$ref": "#/$defs/findingReason" }
+      }
+    }
+  }
+}

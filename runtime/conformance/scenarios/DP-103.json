@@ -1,0 +1,236 @@
+{
+  "schema_version": "accordlock.conformance.scenario.v0.1",
+  "id": "DP-103",
+  "title": "Admission expansion: mutating webhook adds a sidecar and changes the pod service account",
+  "classification": "synthetic_primary_differential",
+  "status": "preimplementation_oracle",
+  "g0_evidence": false,
+  "repaired_by": "DP-103R",
+  "fixture_ref": "../common-fixture.json#DEPLOY_FIXTURE_001",
+  "requirements": [
+    "FR-018",
+    "FR-035",
+    "FR-041",
+    "SEC-002",
+    "SEC-024",
+    "SEC-031"
+  ],
+  "assumptions": [
+    "GitHub, Actions, ECR, policy, authority, freshness, mediation, and target checks are valid through effect release.",
+    "The exact AccordLock JSON Patch requests only digest A and the three reserved Deployment annotations.",
+    "A deterministic mutating admission webhook runs before validating admission and adds the declared sidecar and service-account change.",
+    "The AccordLock validating admission component sees the fully mutated proposed Deployment before persistence and cannot be bypassed.",
+    "The plain-policy comparator forwards the same logical image update but has no complete post-mutation AuthorizedDeploymentProjection validation."
+  ],
+  "residual_limits": [
+    "Kubernetes admission ordering, API-server correctness, and persistence are trusted substrate assumptions for this local profile.",
+    "A baseline with the same complete post-mutation validation can reject this case.",
+    "The fixture is synthetic and is not customer or G0 evidence."
+  ],
+  "action_proposal": {
+    "tenant_id": "example-org",
+    "environment_id": "prod",
+    "client_request_id": "synthetic-dp-103",
+    "api_idempotency_key": "idem-dp-103",
+    "grant_selector": "grant-example-org-prod-deploy-001",
+    "action_class": "deploy.release",
+    "operation": "DEPLOY_EKS_IMAGE_V1",
+    "repository": "example-org/payments",
+    "commit": "1111111111111111111111111111111111111111",
+    "image": "111122223333.dkr.ecr.us-east-1.amazonaws.com/example-org/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "cluster": "eks:us-east-1:111122223333:cluster/prod-1",
+    "namespace": "payments-prod",
+    "deployment_name": "payments",
+    "deployment_uid": "11111111-2222-4333-8444-555555555555",
+    "container_name": "app"
+  },
+  "admission_mutation": {
+    "mutator_id": "synthetic-add-debug-sidecar-v1",
+    "operations": [
+      {
+        "op": "add",
+        "path": "/spec/template/spec/containers/-",
+        "value": {
+          "name": "debug-shell",
+          "image": "registry.example.test/attacker/debug-shell@sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      },
+      {
+        "op": "replace",
+        "path": "/spec/template/spec/serviceAccountName",
+        "value": "default"
+      }
+    ],
+    "authorized_path_count": 0,
+    "unauthorized_path_count": 2
+  },
+  "timeline": [
+    {
+      "sequence": 1,
+      "at_ms": 1786752000000,
+      "barrier": "INITIAL_STATE",
+      "event": "Load the valid common fixture and register the deterministic mutating webhook."
+    },
+    {
+      "sequence": 2,
+      "at_ms": 1786752001000,
+      "barrier": "ACTION_PROPOSED",
+      "event": "Submit commit A and digest A."
+    },
+    {
+      "sequence": 3,
+      "at_ms": 1786752010000,
+      "barrier": "EFFECT_RELEASED",
+      "event": "AccordLock has consumed one authorization, prepared one credential, completed final release checks, and authorized one credential handoff."
+    },
+    {
+      "sequence": 4,
+      "at_ms": 1786752011000,
+      "barrier": "MUTATING_ADMISSION_COMPLETE",
+      "event": "The webhook adds the sidecar and changes serviceAccountName in the proposed Deployment."
+    },
+    {
+      "sequence": 5,
+      "at_ms": 1786752012000,
+      "barrier": "VALIDATING_ADMISSION",
+      "event": "The AccordLock profile compares the fully mutated proposed projection with oldObject; the baseline has no equivalent check."
+    },
+    {
+      "sequence": 6,
+      "at_ms": 1786752015000,
+      "barrier": "PROVIDER_RESULT",
+      "event": "The baseline cluster persists the expanded object; the AccordLock cluster returns a definite admission rejection and persists no change."
+    },
+    {
+      "sequence": 7,
+      "at_ms": 1786752140000,
+      "barrier": "CREDENTIAL_RETIRED",
+      "event": "AccordLock invalidates the bound object, passes the verified credential lifetime bound, and finalizes without retry."
+    }
+  ],
+  "expected": {
+    "plain_policy": {
+      "decision": "ALLOW",
+      "state_sequence": [
+        "RECEIVED",
+        "AUTHENTICATED",
+        "POLICY_EVALUATED_ALLOW",
+        "PROVIDER_PATCH_SUBMITTED",
+        "ADMISSION_MUTATED_REQUEST",
+        "PROVIDER_ACCEPTED"
+      ],
+      "terminal_state": "PROVIDER_ACCEPTED",
+      "reason_codes": [
+        "ALLOW"
+      ],
+      "counts": {
+        "evaluations": 1,
+        "allow_decisions": 1,
+        "deny_decisions": 0,
+        "deny_receipts": 0,
+        "execution_authorizations_issued": 0,
+        "successful_authorization_consumptions": 0,
+        "rejected_authorization_consumptions": 0,
+        "bound_objects_created": 0,
+        "credentials_issued": 0,
+        "effect_releases": 0,
+        "credential_handoffs": 0,
+        "provider_patch_attempts": 1,
+        "stored_protected_effects": 1,
+        "automatic_patch_retries": 0,
+        "credential_retirements": 0,
+        "transactions_final": 1
+      },
+      "final_resource": {
+        "image_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "container_names": [
+          "app",
+          "debug-shell"
+        ],
+        "service_account_name": "default",
+        "unauthorized_projected_delta_count": 2
+      },
+      "security_result": "FAIL_UNAUTHORIZED_ADMISSION_DELTA_PERSISTED"
+    },
+    "accordlock": {
+      "decision": "ALLOW_EXACT_REQUEST_PROVIDER_REJECTED_EXPANSION",
+      "state_sequence": [
+        "PROPOSED",
+        "EVALUATING",
+        "EVALUATED_ALLOW",
+        "EVIDENCE_DURABLE",
+        "SIGNING",
+        "AUTHORIZATION_ISSUED",
+        "CONSUMING",
+        "AUTHORIZATION_CONSUMED",
+        "CONSUMPTION_WITNESSING",
+        "CONSUMPTION_WITNESSED",
+        "DISPATCH_CHECKING",
+        "BOUND_OBJECT_CREATE_PENDING",
+        "CREDENTIAL_PREPARED",
+        "CREDENTIAL_ISSUING",
+        "CREDENTIAL_READY",
+        "RELEASE_CHECKING",
+        "EFFECT_RELEASED",
+        "EXECUTING",
+        "EXECUTION_FAILED",
+        "TRANSACTION_FINAL"
+      ],
+      "provider_terminal_state": "EXECUTION_FAILED",
+      "transaction_terminal_state": "TRANSACTION_FINAL",
+      "reason_codes": [
+        "POST_MUTATION_DELTA_UNAUTHORIZED"
+      ],
+      "counts": {
+        "evaluations": 1,
+        "allow_decisions": 1,
+        "deny_decisions": 0,
+        "deny_receipts": 0,
+        "execution_authorizations_issued": 1,
+        "successful_authorization_consumptions": 1,
+        "rejected_authorization_consumptions": 0,
+        "bound_objects_created": 1,
+        "credentials_issued": 1,
+        "effect_releases": 1,
+        "credential_handoffs": 1,
+        "provider_patch_attempts": 1,
+        "stored_protected_effects": 0,
+        "automatic_patch_retries": 0,
+        "credential_retirements": 1,
+        "transactions_final": 1
+      },
+      "final_resource": {
+        "deployment_uid": "11111111-2222-4333-8444-555555555555",
+        "image_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "container_names": [
+          "app"
+        ],
+        "service_account_name": "payments-runtime",
+        "unauthorized_projected_delta_count": 0,
+        "unchanged": true
+      },
+      "credential_postcondition": {
+        "bound_object_invalidation_required": true,
+        "resource_reservation_released_before_safe_expiry": false,
+        "replacement_credential_before_safe_expiry": false
+      },
+      "replay": {
+        "required": true,
+        "model_invocations": 0,
+        "historical_policy_decision": "ALLOW",
+        "historical_provider_terminal_state": "EXECUTION_FAILED",
+        "historical_reason_codes": [
+          "POST_MUTATION_DELTA_UNAUTHORIZED"
+        ],
+        "agreement": true,
+        "missing_object_count": 0
+      }
+    }
+  },
+  "falsifier": "If the frozen strongest implemented baseline performs the same complete post-mutation projection comparison and therefore rejects before persistence, DP-103 is not discriminating and must not be reported as an AccordLock advantage.",
+  "forbidden_outputs": [
+    "Any persisted AccordLock-side image update, sidecar, service-account change, or reserved annotation update after admission rejection.",
+    "Any automatic second patch or replacement credential before retirement completes.",
+    "Classification of the rejected provider operation as EXECUTED."
+  ]
+}

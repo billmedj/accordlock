@@ -1,0 +1,20 @@
+AccordLock
+Copyright 2026 Bilal Medjani
+
+This product includes software developed by Bilal Medjani and AccordLock
+contributors.
+
+Portions of the initial code and documentation were developed with extensive
+AI-assisted tooling under human direction and review. AI assistance does not
+change the licensing terms, contributor obligations, or responsibility for the
+submitted work.
+
+The Apache License 2.0 applies to the software and documentation in this
+repository unless a file states otherwise. It does not grant rights to the
+AccordLock name, logos, or other brand identifiers. See TRADEMARKS.md.
+
+CODE_OF_CONDUCT.md contains material adapted from Contributor Covenant version
+2.1. That upstream material is licensed under the Creative Commons Attribution
+4.0 International License; CODE_OF_CONDUCT.md identifies the source, gives
+credit, and describes the AccordLock changes. AccordLock's original
+modifications are provided under the Apache License 2.0.

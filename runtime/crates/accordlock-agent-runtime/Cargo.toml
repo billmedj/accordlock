@@ -1,0 +1,51 @@
+[package]
+name = "accordlock-agent-runtime"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[features]
+default = []
+# Legacy/core integrations may opt into caller-reported authorization and
+# observation. The AccordLock Desktop binary deliberately does not.
+caller-reported-governance = []
+
+[dependencies]
+accordlock-agent-protocol = { path = "../accordlock-agent-protocol" }
+accordlock-approval-channels = { path = "../accordlock-approval-channels" }
+accordlock-evaluation = { path = "../accordlock-evaluation" }
+axum.workspace = true
+cap-fs-ext.workspace = true
+cap-std.workspace = true
+clap.workspace = true
+hex.workspace = true
+httparse.workspace = true
+process-wrap.workspace = true
+rustls.workspace = true
+rusqlite.workspace = true
+same-file.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+subtle.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["io-util", "net", "process", "time"] }
+tower-http.workspace = true
+unicode-general-category.workspace = true
+uuid.workspace = true
+webpki-roots.workspace = true
+zeroize = "=1.9.0"
+
+[[bin]]
+name = "accordlock-agent-runtime"
+path = "src/main.rs"
+
+[dev-dependencies]
+tempfile = "3.23.0"
+tower.workspace = true
+
+[lints]
+workspace = true

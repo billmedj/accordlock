@@ -1,0 +1,33 @@
+[package]
+name = "accordlock-approval-channels"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[dependencies]
+accordlock-protocol = { path = "../accordlock-protocol" }
+base64.workspace = true
+hmac = "0.12.1"
+hex.workspace = true
+httparse.workspace = true
+rand.workspace = true
+ring = "=0.17.14"
+rustls.workspace = true
+rusqlite = { workspace = true, features = ["limits"] }
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+subtle.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+webpki-roots.workspace = true
+zeroize = "=1.9.0"
+
+[dev-dependencies]
+tempfile = "3.23.0"
+
+[lints]
+workspace = true

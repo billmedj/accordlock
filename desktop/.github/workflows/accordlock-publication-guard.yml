@@ -1,0 +1,18 @@
+name: AccordLock publication guard
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  publication-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Reject upstream publication and installer surfaces
+        run: python3 scripts/check_accordlock_publication.py

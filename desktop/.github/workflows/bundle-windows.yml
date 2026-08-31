@@ -1,0 +1,36 @@
+# AccordLock is derived from the Apache-2.0 Goose project.
+name: "AccordLock publication quarantine: Windows bundle"
+
+on:
+  workflow_dispatch:
+    inputs:
+      publication_profile:
+        required: true
+        type: choice
+        options: [accordlock-distribution]
+  workflow_call:
+    inputs:
+      publication_profile:
+        description: "Required hardened build profile"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  ACCORDLOCK_PUBLICATION_DISABLED: "true"
+
+jobs:
+  fail-closed:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Refuse unsigned Windows bundle publication
+        shell: pwsh
+        env:
+          PUBLICATION_PROFILE: ${{ inputs.publication_profile }}
+        run: |
+          if ($env:PUBLICATION_PROFILE -ne "accordlock-distribution") { throw "Invalid publication profile" }
+          python scripts/check_accordlock_publication.py
+          throw "Windows bundle/upload is disabled in the source alpha."

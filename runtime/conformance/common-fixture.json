@@ -1,0 +1,241 @@
+{
+  "schema_version": "accordlock.conformance.fixture.v0.1",
+  "fixture_id": "DEPLOY_FIXTURE_001",
+  "status": "synthetic",
+  "g0_evidence": false,
+  "clock": {
+    "canonical_unit": "integer_milliseconds_since_unix_epoch",
+    "t0": "2026-08-15T00:00:00.000Z",
+    "t0_ms": 1786752000000,
+    "source_maximum_age_ms": 60000,
+    "authorization_maximum_lifetime_ms": 120000,
+    "maximum_dispatch_delay_ms": 30000,
+    "minimum_credential_lifetime_at_release_ms": 5000,
+    "requested_token_lifetime_ms": 30000,
+    "token_lifetime_upper_bound_ms": 120000,
+    "bound_object_invalidation_propagation_bound_ms": 5000,
+    "clock_uncertainty_ms": 100
+  },
+  "scope": {
+    "tenant_id": "example-org",
+    "environment_id": "prod",
+    "action_class": "deploy.release",
+    "operation": "DEPLOY_EKS_IMAGE_V1",
+    "audience": "https://kubernetes.default.svc",
+    "repository": "example-org/payments",
+    "ecr_repository": "111122223333.dkr.ecr.us-east-1.amazonaws.com/example-org/payments",
+    "cluster_trust_domain": "spiffe://example.test/eks/prod-1",
+    "api_server_identity": "eks:us-east-1:111122223333:cluster/prod-1",
+    "namespace": "payments-prod",
+    "deployment_name": "payments",
+    "deployment_uid": "11111111-2222-4333-8444-555555555555",
+    "container_name": "app",
+    "container_index": 0
+  },
+  "identities": {
+    "invoking_user": "user:release-operator@example.test",
+    "agent_workload": "spiffe://example.test/agent/release-bot",
+    "enforcement_node": "spiffe://example.test/accordlock/enforcement-node",
+    "signer_adapter": "spiffe://example.test/accordlock/signer-adapter",
+    "credential_broker": "spiffe://example.test/accordlock/credential-broker",
+    "executor": "spiffe://example.test/accordlock/executor",
+    "github_connector": "spiffe://example.test/accordlock/github-connector",
+    "actions_connector": "spiffe://example.test/accordlock/actions-connector",
+    "ecr_connector": "spiffe://example.test/accordlock/ecr-connector",
+    "kubernetes_connector": "spiffe://example.test/accordlock/kubernetes-connector"
+  },
+  "authority_state": {
+    "capability_grant_id": "grant-example-org-prod-deploy-001",
+    "capability_grant_maximum_uses": 20,
+    "capability_grant_holder": "spiffe://example.test/agent/release-bot",
+    "epoch_vector": {
+      "policy": 10,
+      "grant_registry": 7,
+      "office_act_registry": 1,
+      "principal_registry": 4,
+      "revocation": 8,
+      "connector_trust": 6,
+      "resource_and_destination_registry": 5,
+      "mediation_configuration": 9,
+      "signer_key": 3,
+      "workload_build_allowlist": 12,
+      "kernel_configuration": 11
+    },
+    "activation_ids": {
+      "policy": "activation-policy-010",
+      "grant_registry": "activation-grants-007",
+      "office_act_registry": "activation-office-001",
+      "principal_registry": "activation-principals-004",
+      "revocation": "activation-revocation-008",
+      "connector_trust": "activation-connectors-006",
+      "resource_and_destination_registry": "activation-destinations-005",
+      "mediation_configuration": "activation-mediation-009",
+      "signer_key": "activation-signer-003",
+      "workload_build_allowlist": "activation-builds-012",
+      "kernel_configuration": "activation-kernel-011"
+    },
+    "content_roots": {
+      "policy": "sha256:1010101010101010101010101010101010101010101010101010101010101010",
+      "grant_registry": "sha256:2020202020202020202020202020202020202020202020202020202020202020",
+      "office_act_registry": "sha256:3030303030303030303030303030303030303030303030303030303030303030",
+      "principal_registry": "sha256:4040404040404040404040404040404040404040404040404040404040404040",
+      "revocation": "sha256:5050505050505050505050505050505050505050505050505050505050505050",
+      "connector_trust": "sha256:6060606060606060606060606060606060606060606060606060606060606060",
+      "resource_and_destination_registry": "sha256:7070707070707070707070707070707070707070707070707070707070707070",
+      "mediation_configuration": "sha256:8080808080808080808080808080808080808080808080808080808080808080",
+      "signer_key": "sha256:9090909090909090909090909090909090909090909090909090909090909090",
+      "workload_build_allowlist": "sha256:a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0",
+      "kernel_configuration": "sha256:b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0"
+    }
+  },
+  "github": {
+    "repository": "example-org/payments",
+    "protected_branch": "main",
+    "required_approvals": 2,
+    "reviewed_commit_a": "1111111111111111111111111111111111111111",
+    "unreviewed_commit_b": "2222222222222222222222222222222222222222",
+    "pull_request": {
+      "number": 42,
+      "base": "main",
+      "head_commit": "1111111111111111111111111111111111111111",
+      "approved_state_version": "github-pr-42-v17",
+      "dismissed_state_version": "github-pr-42-v18",
+      "approved_reviewers": [
+        "github-user:alice-reviewer",
+        "github-user:bob-reviewer"
+      ],
+      "approved_observed_at": "2026-08-15T00:00:00.000Z",
+      "dismissed_at": "2026-08-15T00:00:15.000Z",
+      "dismissed_reviewer": "github-user:bob-reviewer"
+    }
+  },
+  "github_actions": {
+    "registered_workflow": ".github/workflows/release.yml@refs/heads/main",
+    "registered_workload_identity": "repo:example-org/payments:ref:refs/heads/main:workflow:release.yml",
+    "run_a": {
+      "run_id": 9001,
+      "commit": "1111111111111111111111111111111111111111",
+      "conclusion": "success",
+      "test_status": "passed",
+      "output_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "state_version": "github-actions-run-9001-v5",
+      "observed_at": "2026-08-15T00:00:00.000Z"
+    },
+    "run_b": {
+      "run_id": 9002,
+      "commit": "2222222222222222222222222222222222222222",
+      "conclusion": "success",
+      "test_status": "passed",
+      "output_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "state_version": "github-actions-run-9002-v3",
+      "observed_at": "2026-08-15T00:00:00.000Z"
+    }
+  },
+  "ecr": {
+    "old_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "digest_a": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "digest_b": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "digest_a_state": {
+      "signature_valid": true,
+      "quarantined": false,
+      "deleted": false,
+      "state_version": "ecr-a-v4",
+      "observed_at": "2026-08-15T00:00:00.000Z"
+    },
+    "digest_b_state": {
+      "signature_valid": true,
+      "quarantined": false,
+      "deleted": false,
+      "state_version": "ecr-b-v2",
+      "observed_at": "2026-08-15T00:00:00.000Z"
+    }
+  },
+  "kubernetes": {
+    "resource_version": "1001",
+    "generation": 23,
+    "authorized_projection_id": "deployment-projection-before-v1",
+    "initial_projection": {
+      "metadata": {
+        "labels": {
+          "app.kubernetes.io/name": "payments"
+        },
+        "annotations": {
+          "accordlock.io/transaction-id": "",
+          "accordlock.io/authorization-id": "",
+          "accordlock.io/operation-hash": ""
+        }
+      },
+      "spec": {
+        "replicas": 3,
+        "template": {
+          "metadata": {
+            "labels": {
+              "app.kubernetes.io/name": "payments"
+            },
+            "annotations": {}
+          },
+          "spec": {
+            "serviceAccountName": "payments-runtime",
+            "containers": [
+              {
+                "name": "app",
+                "image": "111122223333.dkr.ecr.us-east-1.amazonaws.com/example-org/payments@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+                "env": [],
+                "volumeMounts": []
+              }
+            ],
+            "volumes": []
+          }
+        }
+      }
+    },
+    "authorized_mutable_paths": [
+      "/spec/template/spec/containers/0/image",
+      "/metadata/annotations/accordlock.io~1transaction-id",
+      "/metadata/annotations/accordlock.io~1authorization-id",
+      "/metadata/annotations/accordlock.io~1operation-hash"
+    ],
+    "unauthorized_admission_mutation": {
+      "add_sidecar": {
+        "path": "/spec/template/spec/containers/-",
+        "name": "debug-shell",
+        "image": "registry.example.test/attacker/debug-shell@sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "replace_service_account_name": {
+        "path": "/spec/template/spec/serviceAccountName",
+        "value": "default"
+      }
+    }
+  },
+  "plain_policy_baseline": {
+    "profile_id": "PLAIN_POLICY_V0_1",
+    "default_decision": "DENY",
+    "authenticated_inputs": [
+      "invoking user and agent workload",
+      "tenant and environment",
+      "typed action and operation",
+      "repository allowlist",
+      "immutable image digest syntax and ECR repository allowlist",
+      "cluster, namespace, Deployment, and container allowlist",
+      "independently retrieved PR approval Boolean",
+      "independently retrieved CI success Boolean",
+      "independently retrieved image signature and quarantine Booleans"
+    ],
+    "explicit_omissions": [
+      "No authenticated relation requiring requested digest to equal the output of the approved commit's registered workflow run.",
+      "No retained source object-version commitment or consumption-time source refresh.",
+      "No single-use epoch-bound ExecutionAuthorization lifecycle.",
+      "No complete validation of the final post-mutation Kubernetes object."
+    ],
+    "interpretation": "This frozen comparator profile is not a claim about what Cedar, OPA, AuthZEN, or another policy engine could implement when supplied with stronger trusted context."
+  },
+  "accordlock_profile": {
+    "profile_id": "ACCORDLOCK_DEPLOY_AUTHORIZATION_V0_1",
+    "enforcement_mode": "ENFORCE",
+    "grant_profile": "PR-A_CAPABILITY_ROOTED",
+    "adoption_enabled": false,
+    "required_lineage": "GitHub pull request and reviewed commit to registered GitHub Actions run to exact ECR digest to exact Kubernetes image field",
+    "source_refresh_phase": "immediately_before_authorization_consumption",
+    "exact_effect_profile": "complete post-mutation AuthorizedDeploymentProjection comparison"
+  }
+}

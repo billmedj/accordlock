@@ -1,0 +1,75 @@
+name: AccordLock technical preview CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: accordlock-preview-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  desktop-source:
+    name: Windows desktop source validation
+    runs-on: windows-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.10.0
+
+      - name: Install Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Activate pinned pnpm
+        shell: pwsh
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.30.0 --activate
+          node --version
+          pnpm --version
+
+      - name: Check publication boundary
+        run: python scripts/check_accordlock_publication.py
+
+      - name: Check Rust formatting
+        run: cargo fmt --all -- --check
+
+      - name: Test AccordLock backend integration
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_BUILD_JOBS: "2"
+        run: cargo test --locked -p goose --features accordlock-distribution --lib accordlock_
+
+      - name: Build the exact packaged backend
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_BUILD_JOBS: "2"
+        run: cargo build --locked --release -p goose-cli --bin goose --no-default-features --features accordlock-distribution,rustls-tls,system-keyring
+
+      - name: Install locked desktop dependencies
+        working-directory: ui
+        run: pnpm install --frozen-lockfile
+
+      - name: Check English interface catalog and types
+        working-directory: ui/desktop
+        run: pnpm run lint:check
+
+      - name: Run desktop unit tests
+        working-directory: ui/desktop
+        run: pnpm run test:run

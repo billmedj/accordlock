@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:accordbench:case:0.3",
+  "title": "AccordBench case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "suite", "category", "title", "severity", "input", "expected"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"},
+    "suite": {
+      "enum": ["transaction_lifecycle", "intent_conformance", "shared_resources", "safe_autonomy"]
+    },
+    "category": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "severity": {"enum": ["low", "medium", "high", "critical"]},
+    "input": {"type": "object"},
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict", "human_review_required"],
+      "properties": {
+        "verdict": {"enum": ["allow", "review", "deny"]},
+        "human_review_required": {"type": "boolean"},
+        "phenomenon_label": {"type": "string", "pattern": "^IC_[A-Z0-9_]{3,64}$"},
+        "effect_status": {"enum": ["none", "applied", "unknown", "recovered"]},
+        "resource_safe": {"type": ["boolean", "null"]}
+      }
+    },
+    "relation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "base_case_id", "invariant_fields"],
+          "properties": {
+            "type": {"const": "expected_invariance"},
+            "base_case_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"},
+            "invariant_fields": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"enum": ["verdict", "phenomenon_label"]}
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "base_case_id", "sensitive_fields"],
+          "properties": {
+            "type": {"const": "expected_sensitivity"},
+            "base_case_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"},
+            "sensitive_fields": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"enum": ["verdict", "phenomenon_label"]}
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"suite": {"const": "intent_conformance"}}},
+      "then": {
+        "properties": {
+          "input": {
+            "type": "object",
+            "required": ["request", "proposal"],
+            "properties": {
+              "request": {"type": "string", "minLength": 1},
+              "proposal": {"type": "string", "minLength": 1},
+              "context": {"type": "object"}
+            }
+          },
+          "expected": {"required": ["phenomenon_label"]}
+        }
+      },
+      "else": {"not": {"required": ["relation"]}}
+    },
+    {
+      "if": {"properties": {"suite": {"const": "shared_resources"}}},
+      "then": {
+        "properties": {
+          "input": {
+            "type": "object",
+            "required": ["capacity", "committed", "requested"]
+          },
+          "expected": {"required": ["resource_safe"]}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"suite": {"const": "safe_autonomy"}}},
+      "then": {
+        "properties": {
+          "input": {
+            "type": "object",
+            "required": ["steps"],
+            "properties": {"steps": {"type": "integer", "minimum": 1}}
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"expected": {"properties": {"verdict": {"const": "review"}}}}},
+      "then": {"properties": {"expected": {"properties": {"human_review_required": {"const": true}}}}},
+      "else": {"properties": {"expected": {"properties": {"human_review_required": {"const": false}}}}}
+    }
+  ]
+}

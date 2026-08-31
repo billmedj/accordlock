@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:schema:tool-call-proposal:3",
+  "title": "AccordLock Tool Call Proposal",
+  "description": "The exact Goose tool call proposed to the AccordLock runtime, including the plan checkpoint that produced it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "session_id",
+    "run_id",
+    "tool_call_id",
+    "workspace_root",
+    "extension_id",
+    "tool_name",
+    "arguments",
+    "arguments_sha256",
+    "agent_plan_checkpoint"
+  ],
+  "properties": {
+    "schema_version": { "const": 3 },
+    "session_id": { "$ref": "#/$defs/sessionId" },
+    "run_id": { "$ref": "#/$defs/runId" },
+    "tool_call_id": { "$ref": "#/$defs/toolCallId" },
+    "workspace_root": { "$ref": "#/$defs/workspace" },
+    "extension_id": { "$ref": "#/$defs/extensionId" },
+    "tool_name": { "$ref": "#/$defs/toolName" },
+    "arguments": {
+      "$comment": "The runtime limits canonical arguments to 262144 bytes, depth 64, 16384 nodes, and object keys to 1024 UTF-8 bytes."
+    },
+    "arguments_sha256": { "$ref": "#/$defs/digest" },
+    "agent_plan_checkpoint": {
+      "$ref": "urn:accordlock:schema:agent-plan-checkpoint:1"
+    }
+  },
+  "$defs": {
+    "canonicalText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!\\s)(?!.*\\s$)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+    },
+    "sessionId": {
+      "allOf": [
+        { "$ref": "#/$defs/canonicalText" },
+        { "maxLength": 256, "$comment": "The runtime enforces 256 UTF-8 bytes." }
+      ]
+    },
+    "runId": {
+      "allOf": [
+        { "$ref": "#/$defs/canonicalText" },
+        { "maxLength": 256, "$comment": "The runtime enforces 256 UTF-8 bytes." }
+      ]
+    },
+    "toolCallId": {
+      "allOf": [
+        { "$ref": "#/$defs/canonicalText" },
+        { "maxLength": 512, "$comment": "The runtime enforces 512 UTF-8 bytes." }
+      ]
+    },
+    "workspace": {
+      "allOf": [
+        { "$ref": "#/$defs/canonicalText" },
+        { "maxLength": 4096, "$comment": "The runtime enforces 4096 UTF-8 bytes and requires an existing canonical absolute path." }
+      ]
+    },
+    "extensionId": {
+      "allOf": [
+        { "$ref": "#/$defs/canonicalText" },
+        { "maxLength": 256, "$comment": "The runtime enforces 256 UTF-8 bytes." }
+      ]
+    },
+    "toolName": {
+      "allOf": [
+        { "$ref": "#/$defs/canonicalText" },
+        { "maxLength": 256, "$comment": "The runtime enforces 256 UTF-8 bytes." }
+      ]
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "$comment": "Joint validation requires matching session_id, run_id, and tool_call_id in the checkpoint; exact SHA-256 commitments for arguments and plan material; unique plan request IDs; and one exact target request named tool_name or extension_id__tool_name."
+}

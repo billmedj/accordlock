@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:schema:task-control-projection:2",
+  "title": "AccordLock Task Control Projection",
+  "description": "A bounded, non-secret projection derived from one verified authorization decision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "execution_request_hash",
+    "task_policy_hash",
+    "authorization_decision_hash",
+    "policy_decision_hash",
+    "conformance_evaluation_hashes",
+    "intent_evaluation_hash",
+    "task_scope_status",
+    "review_status",
+    "decision_reason_code",
+    "approval_evidence_hash",
+    "decided_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "execution_request_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "task_policy_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "authorization_decision_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "policy_decision_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "conformance_evaluation_hashes": {
+      "type": "array",
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/digest"
+      }
+    },
+    "intent_evaluation_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "task_scope_status": {
+      "enum": [
+        "WITHIN_APPROVED_ACCESS",
+        "REVIEW_REQUIRED"
+      ]
+    },
+    "review_status": {
+      "enum": [
+        "NOT_REQUIRED",
+        "APPROVED"
+      ]
+    },
+    "decision_reason_code": {
+      "enum": [
+        "POLICY_CONFORMANT",
+        "ACTION_APPROVAL_ACCEPTED"
+      ]
+    },
+    "approval_evidence_hash": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/digest"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "decided_at": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9223372036854775807
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "task_scope_status"
+        ],
+        "properties": {
+          "task_scope_status": {
+            "const": "WITHIN_APPROVED_ACCESS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "review_status": {
+            "const": "NOT_REQUIRED"
+          },
+          "decision_reason_code": {
+            "const": "POLICY_CONFORMANT"
+          },
+          "approval_evidence_hash": {
+            "type": "null"
+          },
+          "conformance_evaluation_hashes": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "task_scope_status"
+        ],
+        "properties": {
+          "task_scope_status": {
+            "const": "REVIEW_REQUIRED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "review_status": {
+            "const": "APPROVED"
+          },
+          "decision_reason_code": {
+            "const": "ACTION_APPROVAL_ACCEPTED"
+          },
+          "approval_evidence_hash": {
+            "$ref": "#/$defs/digest"
+          },
+          "conformance_evaluation_hashes": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

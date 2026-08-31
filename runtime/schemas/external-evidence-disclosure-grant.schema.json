@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:schema:external-evidence-disclosure-grant:1",
+  "title": "AccordLock External Evidence Disclosure Grant",
+  "description": "A short-lived, signed authorization for one exact external evidence disclosure request. The validity window is additionally enforced by the Rust verifier and cannot exceed 300 seconds.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_request_hash",
+    "task_hash",
+    "trace_id",
+    "evaluation_profile",
+    "stage",
+    "provider_id_hash",
+    "egress_policy_hash",
+    "provider_trust_root",
+    "challenge_hash",
+    "authority_key_id",
+    "egress_authority_root",
+    "issued_at",
+    "valid_until",
+    "cose_sign1"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "source_request_hash": { "$ref": "#/$defs/digest" },
+    "task_hash": { "$ref": "#/$defs/digest" },
+    "trace_id": { "$ref": "#/$defs/uuid" },
+    "evaluation_profile": { "$ref": "#/$defs/profile" },
+    "stage": { "$ref": "#/$defs/stage" },
+    "provider_id_hash": { "$ref": "#/$defs/digest" },
+    "egress_policy_hash": { "$ref": "#/$defs/digest" },
+    "provider_trust_root": { "$ref": "#/$defs/digest" },
+    "challenge_hash": { "$ref": "#/$defs/digest" },
+    "authority_key_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^\\S(?:.*\\S)?$",
+      "not": { "pattern": "^.{257}" }
+    },
+    "egress_authority_root": { "$ref": "#/$defs/digest" },
+    "issued_at": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+    "valid_until": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+    "cose_sign1": {
+      "type": "array",
+      "minItems": 1,
+      "not": { "type": "array", "minItems": 1048577 },
+      "items": { "type": "integer", "minimum": 0, "maximum": 255 }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "not": { "const": "sha256:0000000000000000000000000000000000000000000000000000000000000000" }
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "not": { "const": "00000000-0000-0000-0000-000000000000" }
+    },
+    "profile": { "enum": ["PRE_EXECUTION", "COMPLETE_TRACE"] },
+    "stage": { "enum": ["REQUEST", "PLAN", "ACTION", "RESULT"] }
+  }
+}

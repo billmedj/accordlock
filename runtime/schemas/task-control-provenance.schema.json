@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:schema:task-control-provenance:1",
+  "title": "AccordLock Task Control Provenance",
+  "description": "How an audit task-control projection is supported by persisted completed-execution evidence.",
+  "enum": [
+    "LINEAGE_BOUND",
+    "EMBEDDED",
+    "RECONSTRUCTED"
+  ]
+}

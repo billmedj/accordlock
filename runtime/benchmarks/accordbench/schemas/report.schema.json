@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:accordbench:report:0.3",
+  "title": "AccordBench report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["benchmark", "benchmark_version", "normative_profiles", "fixture_digest", "case_count", "suite_counts", "profiles"],
+  "properties": {
+    "benchmark": {"const": "AccordBench"},
+    "benchmark_version": {"type": "string"},
+    "normative_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "version", "digest"],
+        "properties": {
+          "id": {"type": "string"},
+          "version": {"type": "string"},
+          "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+        }
+      }
+    },
+    "fixture_digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "case_count": {"type": "integer", "minimum": 1},
+    "suite_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intent_conformance", "safe_autonomy", "shared_resources", "transaction_lifecycle"],
+      "properties": {
+        "intent_conformance": {"type": "integer", "minimum": 1},
+        "safe_autonomy": {"type": "integer", "minimum": 1},
+        "shared_resources": {"type": "integer", "minimum": 1},
+        "transaction_lifecycle": {"type": "integer", "minimum": 1}
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "metrics", "per_suite", "intent_conformance", "category_counts", "verdict_mismatch_count", "verdict_mismatch_sample"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "metrics": {"$ref": "#/$defs/metricBlock"},
+          "per_suite": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["intent_conformance", "safe_autonomy", "shared_resources", "transaction_lifecycle"],
+            "properties": {
+              "intent_conformance": {"$ref": "#/$defs/metricBlock"},
+              "safe_autonomy": {"$ref": "#/$defs/metricBlock"},
+              "shared_resources": {"$ref": "#/$defs/metricBlock"},
+              "transaction_lifecycle": {"$ref": "#/$defs/metricBlock"}
+            }
+          },
+          "intent_conformance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["profile_id", "profile_version", "reference_cases", "verdict_conformance", "phenomenon_conformance", "metamorphic_invariance", "metamorphic_sensitivity", "conformant"],
+            "properties": {
+              "profile_id": {"const": "intent-conformance"},
+              "profile_version": {"const": "1.1.0"},
+              "reference_cases": {"type": "integer", "minimum": 1},
+              "verdict_conformance": {"$ref": "#/$defs/conformanceResult"},
+              "phenomenon_conformance": {"$ref": "#/$defs/conformanceResult"},
+              "metamorphic_invariance": {"$ref": "#/$defs/conformanceResult"},
+              "metamorphic_sensitivity": {"$ref": "#/$defs/conformanceResult"},
+              "conformant": {"type": "boolean"}
+            }
+          },
+          "category_counts": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["intent_conformance", "safe_autonomy", "shared_resources", "transaction_lifecycle"],
+            "properties": {
+              "intent_conformance": {"$ref": "#/$defs/categoryCountBlock"},
+              "safe_autonomy": {"$ref": "#/$defs/categoryCountBlock"},
+              "shared_resources": {"$ref": "#/$defs/categoryCountBlock"},
+              "transaction_lifecycle": {"$ref": "#/$defs/categoryCountBlock"}
+            }
+          },
+          "verdict_mismatch_count": {"type": "integer", "minimum": 0},
+          "verdict_mismatch_sample": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "expected", "predicted"],
+              "properties": {
+                "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{2,127}$"},
+                "expected": {"enum": ["allow", "review", "deny"]},
+                "predicted": {"enum": ["allow", "review", "deny"]}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "rate": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "metricBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_count",
+        "verdict_accuracy",
+        "unsafe_allow_rate",
+        "critical_denial_recall",
+        "safe_coverage",
+        "false_refusal_rate",
+        "review_match_rate",
+        "interruption_rate",
+        "avoidable_interruption_rate",
+        "completion_rate",
+        "safe_completion_rate",
+        "intent_phenomenon_match_rate",
+        "metamorphic_invariance_rate",
+        "metamorphic_sensitivity_rate",
+        "unknown_effect_detection_rate",
+        "replay_escape_rate",
+        "resource_violation_escape_rate"
+      ],
+      "properties": {
+        "case_count": {"type": "integer", "minimum": 1},
+        "verdict_accuracy": {"$ref": "#/$defs/rate"},
+        "unsafe_allow_rate": {"$ref": "#/$defs/rate"},
+        "critical_denial_recall": {"$ref": "#/$defs/rate"},
+        "safe_coverage": {"$ref": "#/$defs/rate"},
+        "false_refusal_rate": {"$ref": "#/$defs/rate"},
+        "review_match_rate": {"$ref": "#/$defs/rate"},
+        "interruption_rate": {"$ref": "#/$defs/rate"},
+        "avoidable_interruption_rate": {"$ref": "#/$defs/rate"},
+        "completion_rate": {"$ref": "#/$defs/rate"},
+        "safe_completion_rate": {"$ref": "#/$defs/rate"},
+        "intent_phenomenon_match_rate": {"$ref": "#/$defs/rate"},
+        "metamorphic_invariance_rate": {"$ref": "#/$defs/rate"},
+        "metamorphic_sensitivity_rate": {"$ref": "#/$defs/rate"},
+        "unknown_effect_detection_rate": {"$ref": "#/$defs/rate"},
+        "replay_escape_rate": {"$ref": "#/$defs/rate"},
+        "resource_violation_escape_rate": {"$ref": "#/$defs/rate"}
+      }
+    },
+    "categoryCountBlock": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 1}
+    },
+    "conformanceResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passed", "total", "failure_sample"],
+      "properties": {
+        "passed": {"type": "integer", "minimum": 0},
+        "total": {"type": "integer", "minimum": 0},
+        "failure_sample": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

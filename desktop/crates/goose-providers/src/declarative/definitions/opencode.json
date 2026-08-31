@@ -1,0 +1,44 @@
+{
+  "name": "opencode",
+  "engine": "openai",
+  "display_name": "OpenCode Zen",
+  "description": "OpenCode Zen models through its OpenAI-compatible API.",
+  "api_key_env": "OPENCODE_API_KEY",
+  "base_url": "https://opencode.ai/zen/v1",
+  "catalog_provider_id": "opencode",
+  "dynamic_models": true,
+  "model_doc_link": "https://opencode.ai/docs/zen/",
+  "preserves_thinking": true,
+  "models": [
+    {
+      "name": "x-preview-f-free",
+      "context_limit": 1000000,
+      "max_tokens": 128000,
+      "input_token_cost": 0.0,
+      "output_token_cost": 0.0,
+      "currency": "USD",
+      "reasoning": true
+    },
+    {
+      "name": "nemotron-3-ultra-free",
+      "context_limit": 1000000,
+      "max_tokens": 128000,
+      "input_token_cost": 0.0,
+      "output_token_cost": 0.0,
+      "currency": "USD",
+      "reasoning": true
+    }
+  ],
+  "supports_streaming": true,
+  "setup_steps": [
+    "Open https://opencode.ai/auth and sign in",
+    "Create an OpenCode Zen API key",
+    "Paste the key above; AccordLock stores it in the operating-system credential vault"
+  ],
+  "setup": {
+    "category": "model",
+    "setup_method": "single_api_key",
+    "group": "default",
+    "docs_url": "https://opencode.ai/docs/zen/"
+  }
+}

@@ -1,0 +1,19 @@
+[package]
+name = "accordlock-runner-bridge"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[dependencies]
+accordlock-connectors = { path = "../accordlock-connectors" }
+accordlock-evaluation = { path = "../accordlock-evaluation" }
+accordlock-protocol = { path = "../accordlock-protocol" }
+accordlock-runner-protocol = { path = "../accordlock-runner-protocol" }
+thiserror.workspace = true
+uuid.workspace = true
+
+[lints]
+workspace = true

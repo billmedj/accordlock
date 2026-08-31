@@ -1,0 +1,26 @@
+[package]
+name = "accordlock-dispatch"
+autotests = false
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+accordlock-k8s = { path = "../accordlock-k8s" }
+accordlock-eks-profile = { path = "../accordlock-eks-profile" }
+accordlock-protocol = { path = "../accordlock-protocol" }
+accordlock-state = { path = "../accordlock-state" }
+
+[dev-dependencies]
+serde_json.workspace = true
+accordlock-ingress = { path = "../accordlock-ingress" }
+
+[lints]
+workspace = true

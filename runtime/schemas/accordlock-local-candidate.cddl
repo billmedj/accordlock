@@ -1,0 +1,275 @@
+; AccordLock local candidate canonical-record profile
+; Status: PROVISIONAL_LOCAL_CANDIDATE_NON_G1
+; G1 frozen: false
+; Date: 2026-08-15
+;
+; This draft mirrors the canonical CBOR arrays currently encoded by
+; crates/accordlock-protocol/src/canonical.rs. It is an implementation cross-check,
+; not a stable interoperability commitment. The Rust implementation remains the
+; current local candidate; neither file is normative until the public wire profile freezes the
+; protocol and independent review accepts it.
+;
+; This CDDL describes structure only. It does not make a value trustworthy.
+; In particular, AgentProposal is outside this canonical signed-record profile,
+; and no caller-supplied policy, authority state, attester registry, clock,
+; grade, security label, grant, or evidence is accepted as trusted input.
+;
+; Payload constraints not expressible here include:
+; - exact deterministic encoding and rejection of alternate encodings;
+; - sorted, duplicate-free string sets;
+; - cross-record equality, freshness, scope, and authority checks;
+; - COSE verification against a current registered key and allowed scope;
+; - external-AAD domain separation for each signed route;
+; - authenticated origin of policy, registry, time, grant, and authority state;
+; - atomic single-use consumption and exclusive resource mediation.
+
+accordlock-local-candidate-record =
+    evidence-assertion-cbor /
+    deployment-template-cbor /
+    policy-config-cbor /
+    evaluation-attestation-cbor /
+    capability-grant-cbor /
+    execution-authorization-cbor /
+    consumption-receipt-cbor
+
+uint8 = 0..255
+uint16 = 0..65535
+uint32 = 0..4294967295
+uint64 = 0..18446744073709551615
+int64 = -9223372036854775808..9223372036854775807
+
+digest32-bytes = bstr .size 32
+uuid-bytes = bstr .size 16
+optional-text = tstr / nil
+sorted-unique-texts = [* tstr]
+
+authority-domain-state-cbor = [
+    root: digest32-bytes,
+    epoch: uint64,
+    activation-id: uuid-bytes
+]
+
+; Positional order is part of the current candidate encoding.
+authority-vector-cbor = [
+    policy: authority-domain-state-cbor,
+    registry: authority-domain-state-cbor,
+    revocation: authority-domain-state-cbor,
+    connector: authority-domain-state-cbor,
+    resource: authority-domain-state-cbor,
+    signer: authority-domain-state-cbor,
+    mediation: authority-domain-state-cbor,
+    grant-registry: authority-domain-state-cbor,
+    office-act-registry: authority-domain-state-cbor,
+    principal-registry: authority-domain-state-cbor,
+    workload-build-allowlist: authority-domain-state-cbor,
+    kernel-configuration: authority-domain-state-cbor
+]
+
+completeness-profile-code =
+    0 / ; DECLARED_MATERIALS
+    1   ; HERMETIC_INPUTS_V1
+
+review-evidence-payload-cbor = [
+    kind: 0,
+    repository: tstr,
+    commit-sha: tstr,
+    approved: bool,
+    review-state-id: tstr
+]
+
+build-evidence-payload-cbor = [
+    kind: 1,
+    repository: tstr,
+    commit-sha: tstr,
+    workflow-ref: tstr,
+    run-id: tstr,
+    succeeded: bool,
+    input-manifest-root: digest32-bytes,
+    completeness-profile: completeness-profile-code,
+    output-digest: digest32-bytes
+]
+
+artifact-evidence-payload-cbor = [
+    kind: 2,
+    repository: tstr,
+    digest: digest32-bytes,
+    source-run-id: tstr,
+    signature-valid: bool,
+    quarantined: bool
+]
+
+target-evidence-payload-cbor = [
+    kind: 3,
+    cluster-identity: tstr,
+    namespace: tstr,
+    deployment: tstr,
+    deployment-uid: tstr,
+    resource-version: tstr,
+    current-image: digest32-bytes,
+    projection-hash: digest32-bytes
+]
+
+evidence-payload-cbor =
+    review-evidence-payload-cbor /
+    build-evidence-payload-cbor /
+    artifact-evidence-payload-cbor /
+    target-evidence-payload-cbor
+
+evidence-assertion-cbor = [
+    schema-version: 2,
+    request-id: uuid-bytes,
+    evidence-id: uuid-bytes,
+    issuer: tstr,
+    key-id: tstr,
+    source-uri: tstr,
+    observed-at: int64,
+    valid-until: int64,
+    authority: authority-vector-cbor,
+    payload: evidence-payload-cbor
+]
+
+; Evidence roots use SHA-256 over the UTF-8 domain
+; "accordlock:v2:evidence-root", one zero byte, and the canonical CBOR array of
+; assertions sorted by evidence-id. Version-1 roots and assertions are not
+; accepted as this profile.
+
+deployment-template-cbor = [
+    operation: tstr,
+    environment: tstr,
+    audience: tstr,
+    repository: tstr,
+    commit-sha: tstr,
+    image-repository: tstr,
+    image-digest: digest32-bytes,
+    cluster-identity: tstr,
+    namespace: tstr,
+    deployment: tstr,
+    deployment-uid: tstr,
+    container: tstr,
+    container-index: uint32,
+    prior-image-digest: digest32-bytes,
+    resource-version: tstr,
+    prior-projection-hash: digest32-bytes,
+    prior-transaction-annotation: optional-text,
+    prior-authorization-annotation: optional-text,
+    prior-operation-hash-annotation: optional-text
+]
+
+policy-config-cbor = [
+    policy-id: tstr,
+    allowed-actors: sorted-unique-texts,
+    allowed-repositories: sorted-unique-texts,
+    allowed-image-repositories: sorted-unique-texts,
+    allowed-clusters: sorted-unique-texts,
+    allowed-namespaces: sorted-unique-texts,
+    minimum-review-grade: uint8,
+    minimum-build-grade: uint8,
+    maximum-evidence-age-seconds: int64,
+    maximum-authorization-lifetime-seconds: int64
+]
+
+decision-outcome-code =
+    0 / ; DENY
+    1   ; ALLOW
+
+; Numeric assignments are mirrored in schemas/reason-codes.json.
+reason-code = 0..32
+
+evaluation-attestation-cbor = [
+    schema-version: 2,
+    request-id: uuid-bytes,
+    evaluation-nonce: uuid-bytes,
+    tenant: tstr,
+    actor: tstr,
+    evaluated-at: int64,
+    outcome: decision-outcome-code,
+    reasons: [* reason-code],
+    template-hash: digest32-bytes,
+    evidence-root: digest32-bytes,
+    principals: sorted-unique-texts,
+    policy-root: digest32-bytes,
+    authority: authority-vector-cbor,
+    consume-before: int64,
+    domain: "accordlock:v2:evaluation-attestation"
+]
+
+capability-grant-cbor = [
+    grant-id: uuid-bytes,
+    holder: tstr,
+    tenant: tstr,
+    operation: tstr,
+    repository: tstr,
+    audience: tstr,
+    cluster-identity: tstr,
+    namespace: tstr,
+    deployment-uid: tstr,
+    container: tstr,
+    image-repository: tstr,
+    not-before: int64,
+    expires-at: int64,
+    maximum-uses: uint32,
+    domain: "accordlock:v1:capability-grant"
+]
+
+; All values use integer Unix seconds. The expiry array is strictly sorted and
+; duplicate-free as an additional payload constraint.
+dispatch-deadline-policy-cbor = [
+    max-dispatch-delay-seconds: int64,
+    profile-hard-cap: int64,
+    immutable-dependency-expiries: [* int64]
+]
+
+execution-authorization-cbor = [
+    schema-version: 2,
+    authorization-id: uuid-bytes,
+    evaluation-nonce: uuid-bytes,
+    request-id: uuid-bytes,
+    tenant: tstr,
+    holder: tstr,
+    audience: tstr,
+    issued-at: int64,
+    not-before: int64,
+    consume-before: int64,
+    dispatch-deadline-policy: dispatch-deadline-policy-cbor,
+    grant-id: uuid-bytes,
+    template: deployment-template-cbor,
+    template-hash: digest32-bytes,
+    evidence-root: digest32-bytes,
+    principals: sorted-unique-texts,
+    policy-root: digest32-bytes,
+    authority: authority-vector-cbor,
+    domain: "accordlock:v2:cloud-execution-authorization",
+    single-use-profile: 1
+]
+
+consumption-receipt-cbor = [
+    schema-version: uint16,
+    transaction-id: uuid-bytes,
+    authorization-id: uuid-bytes,
+    consumed-at: int64,
+    dispatch-deadline: int64,
+    authority: authority-vector-cbor,
+    authorization-hash: digest32-bytes,
+    domain: "accordlock:v1:consumption-receipt"
+]
+
+; Current COSE_Sign1 profile. The protected map contains alg=EdDSA (-8)
+; and kid. Unprotected headers are forbidden. The payload is embedded.
+; Signature verification additionally requires route-specific external AAD:
+; - accordlock:v2:evidence:review
+; - accordlock:v2:evidence:build
+; - accordlock:v2:evidence:artifact
+; - accordlock:v2:evidence:target
+; - accordlock:v2:evaluation-attestation
+; - accordlock:v2:cloud-execution-authorization
+cose-protected-header = {
+    1 => -8,
+    4 => bstr
+}
+
+accordlock-cose-sign1 = [
+    protected: bstr .cbor cose-protected-header,
+    unprotected: {},
+    payload: bstr,
+    signature: bstr .size 64
+]

@@ -1,0 +1,57 @@
+{
+  "schema_version": "accordlock.conformance.corpus.v0.1",
+  "corpus_id": "accordlock-deploy-authorization-synthetic-local-v0.1",
+  "created_at": "2026-08-15T00:00:00Z",
+  "status": "synthetic_preimplementation_oracle",
+  "strict_json": true,
+  "g0_evidence": false,
+  "independent_validation": false,
+  "benchmark_result": false,
+  "current_implementation_claim": false,
+  "scope": {
+    "action": "DEPLOY_EKS_IMAGE_V1",
+    "path": "GitHub to GitHub Actions to ECR artifact to Kubernetes Deployment",
+    "local_target": "kind-compatible Kubernetes admission and Deployment behavior",
+    "profiles": [
+      "PLAIN_POLICY_V0_1",
+      "ACCORDLOCK_DEPLOY_AUTHORIZATION_V0_1"
+    ]
+  },
+  "fixture": "common-fixture.json",
+  "scenario_manifest_schema": "accordlock.conformance.scenario.v0.1",
+  "positive_controls": [
+    "scenarios/DP-000.json"
+  ],
+  "primary_differential_scenarios": [
+    "scenarios/DP-101.json",
+    "scenarios/DP-102.json",
+    "scenarios/DP-103.json"
+  ],
+  "repaired_twins": [
+    "scenarios/DP-101R.json",
+    "scenarios/DP-102R.json",
+    "scenarios/DP-103R.json"
+  ],
+  "declared_counts": {
+    "positive_controls": 1,
+    "primary_differential_scenarios": 3,
+    "repaired_twins": 3,
+    "scenario_manifests_total": 7
+  },
+  "corpus_wide_pass_conditions": [
+    "Every JSON document parses and later validates against its frozen schema.",
+    "Every scenario runs from fresh isolated state twice.",
+    "The baseline and AccordLock receive the same common fixture version and action proposal except for explicitly declared profile behavior.",
+    "Every expected state sequence is observed in order with no undeclared state transition.",
+    "Every expected count is exact and no required observation is absent.",
+    "Every forbidden output remains absent from APIs, logs, traces, receipts, replay exports, metrics, and object storage.",
+    "Every AccordLock replay reproduces the retained historical decision without invoking a model.",
+    "Every subprocess failure, missing tool, or skipped stage makes the top-level run fail."
+  ],
+  "non_claims": [
+    "These cases are not real customer cases.",
+    "The expected baseline outcomes are not limitations of general-purpose policy engines.",
+    "Passing this corpus does not establish complete mediation, production utility, cryptographic assurance, or absence of other vulnerabilities.",
+    "AI generation or AI review of this corpus is not independent validation."
+  ]
+}

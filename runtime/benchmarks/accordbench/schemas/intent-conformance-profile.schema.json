@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:accordbench:intent-conformance-profile:1.1",
+  "title": "AccordBench Intent Conformance profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "status", "description", "taxonomy_boundary", "verdicts", "phenomenon_labels", "metamorphic_relations"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "id": {"const": "intent-conformance"},
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "status": {"const": "normative"},
+    "description": {"type": "string", "minLength": 1},
+    "taxonomy_boundary": {
+      "type": "string",
+      "const": "IC_* values label benchmark phenomena; they are not runtime enforcement reason codes or user-interface copy."
+    },
+    "verdicts": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["value", "definition"],
+        "properties": {
+          "value": {"enum": ["allow", "review", "deny"]},
+          "definition": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "phenomenon_labels": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "verdict", "definition"],
+        "properties": {
+          "label": {"type": "string", "pattern": "^IC_[A-Z0-9_]{3,64}$"},
+          "verdict": {"enum": ["allow", "review", "deny"]},
+          "definition": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "metamorphic_relations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_invariance", "expected_sensitivity"],
+      "properties": {
+        "expected_invariance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["allowed_fields"],
+          "properties": {
+            "allowed_fields": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"enum": ["verdict", "phenomenon_label"]}
+            }
+          }
+        },
+        "expected_sensitivity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["allowed_fields"],
+          "properties": {
+            "allowed_fields": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"enum": ["verdict", "phenomenon_label"]}
+            }
+          }
+        }
+      }
+    }
+  }
+}

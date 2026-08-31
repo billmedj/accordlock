@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "checkpoint": {
+    "schema_version": 1,
+    "trace_id": "11111111-1111-4111-8111-111111111111",
+    "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "requirement_hashes": [
+      "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    ],
+    "request_hash": "sha256:012dc57f22b63b43860f1dea3b6f6feaf7fa1195577cd1f1b4f66cda43e8db92",
+    "plan_hash": "sha256:ae11a9270da71e1174b7b0a1571ec08fc5e0906cb2158fb461e19732731a3a2a",
+    "action_hash": "sha256:b841bcf0b2853218c33e65cfcb11c784a4dc3ea072da2855093e98312af3e121",
+    "transformation_step_hashes": [
+      "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+    ],
+    "recorded_at": 120
+  },
+  "requirements": [
+    {
+      "schema_version": 2,
+      "requirement_id": "22222222-2222-4222-8222-222222222222",
+      "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "statement_hash": "sha256:012dc57f22b63b43860f1dea3b6f6feaf7fa1195577cd1f1b4f66cda43e8db92",
+      "minimum_score": 1000000
+    }
+  ],
+  "transformations": [
+    {
+      "schema_version": 2,
+      "step_id": "44444444-4444-4444-8444-444444444444",
+      "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "sequence": 0,
+      "parent_step_hash": null,
+      "source_stage": "REQUEST",
+      "source_hash": "sha256:012dc57f22b63b43860f1dea3b6f6feaf7fa1195577cd1f1b4f66cda43e8db92",
+      "target_stage": "PLAN",
+      "target_hash": "sha256:ae11a9270da71e1174b7b0a1571ec08fc5e0906cb2158fb461e19732731a3a2a",
+      "recorded_at": 110
+    },
+    {
+      "schema_version": 2,
+      "step_id": "55555555-5555-4555-8555-555555555555",
+      "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "sequence": 1,
+      "parent_step_hash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "source_stage": "PLAN",
+      "source_hash": "sha256:ae11a9270da71e1174b7b0a1571ec08fc5e0906cb2158fb461e19732731a3a2a",
+      "target_stage": "ACTION",
+      "target_hash": "sha256:b841bcf0b2853218c33e65cfcb11c784a4dc3ea072da2855093e98312af3e121",
+      "recorded_at": 120
+    }
+  ],
+  "evidence": [],
+  "context": {
+    "schema_version": 1,
+    "ledger_snapshot": {
+      "schema_version": 2,
+      "snapshot_id": "77777777-7777-4777-8777-777777777777",
+      "ledger_hash": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "trace_id": "11111111-1111-4111-8111-111111111111",
+      "epoch": 1,
+      "evidence_count": 0,
+      "evidence_head": null,
+      "captured_at": 120,
+      "valid_until": 1000
+    },
+    "ledger_expectation": {
+      "ledger_hash": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "minimum_epoch": 1,
+      "evaluated_at": 120
+    },
+    "trust_policy": {
+      "schema_version": 2,
+      "policy_id": "88888888-8888-4888-8888-888888888888",
+      "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "policy_epoch": 1,
+      "trusted_provenance_hashes": [],
+      "valid_from": 100,
+      "valid_until": 1000
+    },
+    "minimum_trust_policy_epoch": 1
+  },
+  "record": {
+    "schema_version": 2,
+    "evaluation_schema_version": 3,
+    "profile": "PRE_EXECUTION",
+    "evaluation_hash": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+    "task_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "trace_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+    "ledger_snapshot_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "trust_policy_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "expected_ledger_hash": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+    "minimum_ledger_epoch": 1,
+    "minimum_trust_policy_epoch": 1,
+    "evaluated_at": 120,
+    "evidence_head": null,
+    "evidence_hashes": [],
+    "outcome": "UNCERTAIN",
+    "baseline_decision": "ALLOW",
+    "decision": "REQUIRE_APPROVAL",
+    "reasons": ["CONFORMANCE_EVALUATION_MISSING"],
+    "findings": [
+      {
+        "requirement_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "stage": "REQUEST",
+        "evidence_hash": null,
+        "reason": "MISSING_EVIDENCE"
+      },
+      {
+        "requirement_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "stage": "PLAN",
+        "evidence_hash": null,
+        "reason": "MISSING_EVIDENCE"
+      },
+      {
+        "requirement_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "stage": "ACTION",
+        "evidence_hash": null,
+        "reason": "MISSING_EVIDENCE"
+      }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+name: AccordLock deployment evidence
+description: Create a signed, short-lived provenance package for an AccordLock deployment check.
+
+inputs:
+  environment-id:
+    description: AccordLock environment UUID enrolled for this workflow.
+    required: true
+  workflow-ref:
+    description: Repository-relative workflow path, for example .github/workflows/release.yml.
+    required: true
+  ecr-registry-id:
+    description: Twelve-digit AWS account ID that owns the ECR repository.
+    required: true
+  ecr-region:
+    description: Commercial AWS region that contains the ECR repository.
+    required: true
+  ecr-repository:
+    description: Exact ECR repository name.
+    required: true
+  image-digest:
+    description: Immutable image digest in canonical sha256 form.
+    required: true
+  input-manifest-root:
+    description: Nonzero canonical sha256 commitment to the build input manifest.
+    required: true
+  artifact-signature-valid:
+    description: Exact result from the workflow's artifact-signature verification step (true or false).
+    required: true
+  artifact-quarantined:
+    description: Exact result from the workflow's artifact quarantine check (true or false).
+    required: true
+  build-authority-seed:
+    description: Base64url Ed25519 seed stored as a protected GitHub environment secret.
+    required: true
+  artifact-authority-seed:
+    description: Separate base64url Ed25519 seed stored as a protected GitHub environment secret.
+    required: true
+  validity-seconds:
+    description: Evidence validity window, from 60 to 86400 seconds.
+    required: false
+    default: "3600"
+  output-file:
+    description: JSON filename created at the root of the GitHub workspace.
+    required: false
+    default: accordlock-deployment-preflight-evidence.json
+
+outputs:
+  evidence-path:
+    description: Absolute path to the evidence package.
+  evidence-sha256:
+    description: Canonical SHA-256 digest of the exact package bytes.
+  run-id:
+    description: GitHub Actions run ID bound into the signed records.
+  image-digest:
+    description: Immutable image digest bound into the signed records.
+
+runs:
+  using: node24
+  main: src/action.mjs
+
+branding:
+  icon: shield
+  color: blue

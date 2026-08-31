@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0",
+  "assemblyDate": "2026-08-31",
+  "assemblyMethod": "Exact committed Git trees, imported without local working-tree state",
+  "components": [
+    {
+      "path": "runtime",
+      "sourceRepository": "https://github.com/billmedj/accordlock-core.git",
+      "commit": "27301d159feccf53bc565a5de68c1c307d9bff09",
+      "tree": "3a02ebe252285cacf180ca9c46976477ec71cfa7",
+      "trackedTreeExclusions": []
+    },
+    {
+      "path": "desktop",
+      "sourceRepository": "https://github.com/billmedj/accordlock-desktop.git",
+      "upstreamRepository": "https://github.com/aaif-goose/goose.git",
+      "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
+      "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
+      "trackedTreeExclusions": [
+        {
+          "path": "documentation/",
+          "trackedEntries": 829,
+          "blobBytes": 323431489,
+          "reason": "Upstream Goose documentation site content. The desktop publication script already excludes this directory, and the retained AccordLock product build and test surfaces do not consume it."
+        },
+        {
+          "path": "services/ask-ai-bot/",
+          "trackedEntries": 26,
+          "blobBytes": 89461,
+          "reason": "Upstream documentation-only bot whose corpus is the excluded documentation site; it is not part of the AccordLock desktop or runtime product."
+        }
+      ],
+      "postImportAdjustments": [
+        {
+          "path": "scripts/check_accordlock_publication.py",
+          "reason": "Removed checks for the two intentionally excluded upstream documentation surfaces."
+        }
+      ]
+    }
+  ],
+  "excludedByConstruction": [
+    "Git metadata and source repository history",
+    "Untracked or uncommitted working-tree content",
+    "Generated build outputs and dependency caches",
+    "Logs, local runtime state, credentials, and secrets",
+    "Unrelated private research and local documents"
+  ]
+}

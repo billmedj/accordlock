@@ -1,0 +1,35 @@
+{
+  "apiVersion": "v1",
+  "kind": "ConfigMap",
+  "metadata": {
+    "name": "accordlock-webhook-config",
+    "namespace": "accordlock-system",
+    "labels": {
+      "app.kubernetes.io/name": "accordlock-webhook",
+      "app.kubernetes.io/part-of": "accordlock"
+    }
+  },
+  "data": {
+    "ACCORDLOCK_WEBHOOK_BIND_ADDR": "0.0.0.0:9443",
+    "ACCORDLOCK_WEBHOOK_TLS_CERT_PATH": "/var/run/secrets/accordlock/server-tls/tls.crt",
+    "ACCORDLOCK_WEBHOOK_TLS_KEY_PATH": "/var/run/secrets/accordlock/server-tls/tls.key",
+    "ACCORDLOCK_WEBHOOK_HANDLER_TIMEOUT_MS": "1500",
+    "ACCORDLOCK_WEBHOOK_GRACEFUL_SHUTDOWN_MS": "5000",
+    "ACCORDLOCK_WEBHOOK_MAX_IN_FLIGHT": "64",
+    "ACCORDLOCK_WEBHOOK_OBSERVER_IDENTITY": "urn:accordlock:observer:REPLACE_WITH_STABLE_LOGICAL_IDENTITY",
+    "ACCORDLOCK_WEBHOOK_TENANT": "REPLACE_WITH_TENANT",
+    "ACCORDLOCK_WEBHOOK_ENVIRONMENT": "production",
+    "ACCORDLOCK_WEBHOOK_CLUSTER_TRUST_DOMAIN": "REPLACE_WITH_CLUSTER_TRUST_DOMAIN",
+    "ACCORDLOCK_WEBHOOK_API_SERVER_IDENTITY": "REPLACE_WITH_API_SERVER_IDENTITY",
+    "ACCORDLOCK_WEBHOOK_CLUSTER_IDENTITY": "REPLACE_WITH_EKS_CLUSTER_IDENTITY",
+    "ACCORDLOCK_WEBHOOK_EXECUTOR_USERNAME": "REPLACE_WITH_EXECUTOR_SERVICE_ACCOUNT_USERNAME",
+    "ACCORDLOCK_WEBHOOK_EXECUTOR_GROUPS_JSON": "[\"system:authenticated\",\"system:serviceaccounts\",\"REPLACE_WITH_EXECUTOR_SERVICE_ACCOUNT_GROUP\"]",
+    "ACCORDLOCK_STATE_POSTGRES_SERVER_NAME": "REPLACE_WITH_POSTGRES_TLS_SERVER_NAME",
+    "ACCORDLOCK_STATE_POSTGRES_PORT": "5432",
+    "ACCORDLOCK_STATE_POSTGRES_DATABASE": "accordlock",
+    "ACCORDLOCK_STATE_POSTGRES_USER": "accordlock_webhook",
+    "ACCORDLOCK_STATE_POSTGRES_PASSWORD_PATH": "/var/run/secrets/accordlock/postgres-auth/password",
+    "ACCORDLOCK_STATE_POSTGRES_CA_PATH": "/var/run/secrets/accordlock/postgres-ca/ca.crt",
+    "ACCORDLOCK_STATE_POSTGRES_CONNECT_TIMEOUT_MS": "3000"
+  }
+}

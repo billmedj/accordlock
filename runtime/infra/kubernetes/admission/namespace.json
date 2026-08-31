@@ -1,0 +1,14 @@
+{
+  "apiVersion": "v1",
+  "kind": "Namespace",
+  "metadata": {
+    "name": "accordlock-system",
+    "labels": {
+      "app.kubernetes.io/part-of": "accordlock",
+      "pod-security.kubernetes.io/audit": "restricted",
+      "pod-security.kubernetes.io/enforce": "restricted",
+      "pod-security.kubernetes.io/warn": "restricted",
+      "accordlock.io/enabled": "false"
+    }
+  }
+}

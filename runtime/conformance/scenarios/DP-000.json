@@ -1,0 +1,197 @@
+{
+  "schema_version": "accordlock.conformance.scenario.v0.1",
+  "id": "DP-000",
+  "title": "Positive control: approved commit, exact build output, clean Kubernetes admission",
+  "classification": "synthetic_positive_control",
+  "status": "preimplementation_oracle",
+  "g0_evidence": false,
+  "repairs": null,
+  "fixture_ref": "../common-fixture.json#DEPLOY_FIXTURE_001",
+  "requirements": [
+    "FR-006",
+    "FR-015",
+    "FR-017",
+    "FR-018",
+    "FR-020",
+    "FR-032",
+    "FR-035",
+    "FR-038",
+    "SEC-005",
+    "SEC-006",
+    "SEC-014",
+    "SEC-027"
+  ],
+  "assumptions": [
+    "All fixture connector identities and signatures are valid within their registered scopes.",
+    "The GitHub PR state, GitHub Actions run, ECR state, authority vector, mediation state, and Kubernetes target remain unchanged during this scenario.",
+    "The AccordLock trusted path and Kubernetes control plane are uncompromised.",
+    "The local Kubernetes admission chain implements the declared ordering and complete post-mutation validation profile.",
+    "The plain-policy comparator is exactly PLAIN_POLICY_V0_1 from the common fixture."
+  ],
+  "residual_limits": [
+    "The fixture is synthetic and proves no customer demand or production utility.",
+    "The scenario does not test an unobserved external-state change inside the declared freshness window.",
+    "A passing implementation remains conditional on the trusted components and fixture behavior."
+  ],
+  "action_proposal": {
+    "tenant_id": "example-org",
+    "environment_id": "prod",
+    "client_request_id": "synthetic-dp-000",
+    "api_idempotency_key": "idem-dp-000",
+    "grant_selector": "grant-example-org-prod-deploy-001",
+    "action_class": "deploy.release",
+    "operation": "DEPLOY_EKS_IMAGE_V1",
+    "repository": "example-org/payments",
+    "commit": "1111111111111111111111111111111111111111",
+    "image": "111122223333.dkr.ecr.us-east-1.amazonaws.com/example-org/payments@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "cluster": "eks:us-east-1:111122223333:cluster/prod-1",
+    "namespace": "payments-prod",
+    "deployment_name": "payments",
+    "deployment_uid": "11111111-2222-4333-8444-555555555555",
+    "container_name": "app"
+  },
+  "timeline": [
+    {
+      "sequence": 1,
+      "at_ms": 1786752000000,
+      "barrier": "INITIAL_STATE",
+      "event": "Load DEPLOY_FIXTURE_001 in fresh baseline and AccordLock state."
+    },
+    {
+      "sequence": 2,
+      "at_ms": 1786752001000,
+      "barrier": "ACTION_PROPOSED",
+      "event": "Submit the action proposal to each profile."
+    },
+    {
+      "sequence": 3,
+      "at_ms": 1786752005000,
+      "barrier": "BEFORE_CONSUMPTION",
+      "event": "Refresh unchanged GitHub, Actions, ECR, Kubernetes, authority, and mediation facts."
+    },
+    {
+      "sequence": 4,
+      "at_ms": 1786752010000,
+      "barrier": "BEFORE_EFFECT_RELEASE",
+      "event": "Recheck unchanged roots, expiries, lease, credential claims, source freshness, and final wire commitment."
+    },
+    {
+      "sequence": 5,
+      "at_ms": 1786752015000,
+      "barrier": "PROVIDER_RESULT",
+      "event": "Kubernetes accepts the exact image and three reserved annotation changes; rollout reaches the declared success state."
+    },
+    {
+      "sequence": 6,
+      "at_ms": 1786752140000,
+      "barrier": "CREDENTIAL_RETIRED",
+      "event": "Invalidate the bound object, pass the verified credential lifetime bound, and finalize the AccordLock transaction."
+    }
+  ],
+  "expected": {
+    "plain_policy": {
+      "decision": "ALLOW",
+      "state_sequence": [
+        "RECEIVED",
+        "AUTHENTICATED",
+        "POLICY_EVALUATED_ALLOW",
+        "PROVIDER_PATCH_SUBMITTED",
+        "PROVIDER_ACCEPTED"
+      ],
+      "terminal_state": "PROVIDER_ACCEPTED",
+      "reason_codes": [
+        "ALLOW"
+      ],
+      "counts": {
+        "evaluations": 1,
+        "allow_decisions": 1,
+        "deny_decisions": 0,
+        "deny_receipts": 0,
+        "execution_authorizations_issued": 0,
+        "successful_authorization_consumptions": 0,
+        "rejected_authorization_consumptions": 0,
+        "bound_objects_created": 0,
+        "credentials_issued": 0,
+        "effect_releases": 0,
+        "credential_handoffs": 0,
+        "provider_patch_attempts": 1,
+        "stored_protected_effects": 1,
+        "automatic_patch_retries": 0,
+        "credential_retirements": 0,
+        "transactions_final": 1
+      },
+      "final_resource": {
+        "image_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "unauthorized_projected_delta_count": 0
+      }
+    },
+    "accordlock": {
+      "decision": "ALLOW",
+      "state_sequence": [
+        "PROPOSED",
+        "EVALUATING",
+        "EVALUATED_ALLOW",
+        "EVIDENCE_DURABLE",
+        "SIGNING",
+        "AUTHORIZATION_ISSUED",
+        "CONSUMING",
+        "AUTHORIZATION_CONSUMED",
+        "CONSUMPTION_WITNESSING",
+        "CONSUMPTION_WITNESSED",
+        "DISPATCH_CHECKING",
+        "BOUND_OBJECT_CREATE_PENDING",
+        "CREDENTIAL_PREPARED",
+        "CREDENTIAL_ISSUING",
+        "CREDENTIAL_READY",
+        "RELEASE_CHECKING",
+        "EFFECT_RELEASED",
+        "EXECUTING",
+        "EXECUTED",
+        "TRANSACTION_FINAL"
+      ],
+      "provider_terminal_state": "EXECUTED",
+      "transaction_terminal_state": "TRANSACTION_FINAL",
+      "reason_codes": [
+        "ALLOW"
+      ],
+      "counts": {
+        "evaluations": 1,
+        "allow_decisions": 1,
+        "deny_decisions": 0,
+        "deny_receipts": 0,
+        "execution_authorizations_issued": 1,
+        "successful_authorization_consumptions": 1,
+        "rejected_authorization_consumptions": 0,
+        "bound_objects_created": 1,
+        "credentials_issued": 1,
+        "effect_releases": 1,
+        "credential_handoffs": 1,
+        "provider_patch_attempts": 1,
+        "stored_protected_effects": 1,
+        "automatic_patch_retries": 0,
+        "credential_retirements": 1,
+        "transactions_final": 1
+      },
+      "final_resource": {
+        "deployment_uid": "11111111-2222-4333-8444-555555555555",
+        "image_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "reserved_annotation_count": 3,
+        "unauthorized_projected_delta_count": 0,
+        "rollout_condition": "AVAILABLE"
+      },
+      "replay": {
+        "required": true,
+        "model_invocations": 0,
+        "historical_decision": "ALLOW",
+        "agreement": true,
+        "missing_object_count": 0
+      }
+    }
+  },
+  "forbidden_outputs": [
+    "Raw ExecutionAuthorization bytes in any caller-facing response or export before irreversible consumption, expiry, or revocation.",
+    "Raw Kubernetes bearer bytes in an API response, durable record, receipt, replay object, log, trace, metric, or object store.",
+    "Any Kubernetes mutation outside the selected image and three reserved annotation paths.",
+    "Any second provider patch attempt."
+  ]
+}

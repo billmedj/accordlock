@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accordlock:schema:completed-execution-evidence:4",
+  "title": "AccordLock Completed Execution Evidence",
+  "description": "The schema-4 persisted evidence written for one completed execution. Historical schemas are deliberately excluded from this new-write contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "lineage", "lineage_hash"],
+  "properties": {
+    "schema_version": { "const": 4 },
+    "lineage": { "$ref": "#/$defs/executionLineage" },
+    "lineage_hash": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "not": { "const": "00000000-0000-0000-0000-000000000000" }
+    },
+    "executionLineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "task_id",
+        "session_id",
+        "run_id",
+        "workspace_root",
+        "policy_epoch",
+        "task_objective_hash",
+        "task_policy_hash",
+        "tool_proposal_hash",
+        "execution_request_hash",
+        "intent_evaluation_hash",
+        "authorization_decision_hash",
+        "execution_authorization_hash",
+        "execution_record_hash",
+        "started_at",
+        "completed_at"
+      ],
+      "properties": {
+        "schema_version": { "const": 2 },
+        "task_id": { "$ref": "#/$defs/uuid" },
+        "session_id": { "type": "string", "minLength": 1 },
+        "run_id": { "type": "string", "minLength": 1 },
+        "workspace_root": { "type": "string", "minLength": 1 },
+        "policy_epoch": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+        "task_objective_hash": { "$ref": "#/$defs/digest" },
+        "task_policy_hash": { "$ref": "#/$defs/digest" },
+        "tool_proposal_hash": { "$ref": "#/$defs/digest" },
+        "execution_request_hash": { "$ref": "#/$defs/digest" },
+        "intent_evaluation_hash": { "$ref": "#/$defs/digest" },
+        "authorization_decision_hash": { "$ref": "#/$defs/digest" },
+        "execution_authorization_hash": { "$ref": "#/$defs/digest" },
+        "execution_record_hash": { "$ref": "#/$defs/digest" },
+        "started_at": { "type": "integer", "minimum": 0, "maximum": 9223372036854775807 },
+        "completed_at": { "type": "integer", "minimum": 0, "maximum": 9223372036854775807 }
+      }
+    }
+  }
+}

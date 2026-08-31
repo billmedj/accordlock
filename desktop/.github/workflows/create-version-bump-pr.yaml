@@ -1,0 +1,25 @@
+# AccordLock is derived from the Apache-2.0 Goose project.
+name: "AccordLock publication quarantine: version bump"
+on:
+  workflow_dispatch:
+    inputs:
+      publication_profile:
+        required: true
+        type: choice
+        options: [accordlock-distribution]
+permissions:
+  contents: read
+env:
+  ACCORDLOCK_PUBLICATION_DISABLED: "true"
+jobs:
+  fail-closed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - env:
+          PUBLICATION_PROFILE: ${{ inputs.publication_profile }}
+        run: |
+          test "$PUBLICATION_PROFILE" = "accordlock-distribution"
+          python3 scripts/check_accordlock_publication.py
+          echo "Version-bump release automation is disabled." >&2
+          exit 1

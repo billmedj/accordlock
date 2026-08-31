@@ -1,0 +1,30 @@
+[package]
+name = "accordlock-eks-broker"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+autotests = false
+
+[dependencies]
+base64.workspace = true
+httparse.workspace = true
+rustls.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+accordlock-dispatch = { path = "../accordlock-dispatch" }
+accordlock-eks-profile = { path = "../accordlock-eks-profile" }
+accordlock-executor = { path = "../accordlock-executor" }
+accordlock-state = { path = "../accordlock-state" }
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+accordlock-ingress = { path = "../accordlock-ingress" }
+accordlock-protocol = { path = "../accordlock-protocol" }

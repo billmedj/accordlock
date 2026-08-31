@@ -1,0 +1,6 @@
+name = "accordlock-formal"
+version = "0.1.0"
+defaultTargets = ["AccordLockFormal"]
+
+[[lean_lib]]
+name = "AccordLockFormal"
