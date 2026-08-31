@@ -1,23 +1,39 @@
 {
   "schemaVersion": "1.0",
   "assemblyDate": "2026-08-31",
-  "assemblyMethod": "Exact committed Git trees, imported without local working-tree state",
+  "assemblyMethod": "Exact committed Git trees imported from private development repositories without local working-tree state; this public monorepo contains the complete distributable source",
   "components": [
     {
       "path": "runtime",
       "sourceRepository": "https://github.com/billmedj/accordlock-core.git",
       "commit": "27301d159feccf53bc565a5de68c1c307d9bff09",
       "tree": "3a02ebe252285cacf180ca9c46976477ec71cfa7",
-      "assembledTree": "506ec231088c0e2f3b6bdb398b4cc4fb2e51ce64",
+      "assembledTree": "074c36d8284837de9c9e3723f0d5fdb4a54f690b",
       "trackedTreeExclusions": [],
       "postImportAdjustments": [
+        {
+          "path": "Cargo.lock",
+          "reason": "Recorded the explicit Unix errno dependency used to distinguish an absent process group from an ambiguous cleanup failure."
+        },
+        {
+          "path": "Cargo.toml",
+          "reason": "Pinned the Unix errno dependency in the runtime workspace."
+        },
+        {
+          "path": "crates/accordlock-agent-runtime/Cargo.toml",
+          "reason": "Declared the runtime's direct Unix-only dependency for exact process-group retirement classification."
+        },
         {
           "path": "crates/accordlock-agent-runtime/src/filesystem.rs",
           "reason": "Reopened the existing directory capability with a normal descriptor before durable flush so Linux does not pass an O_PATH handle to fsync."
         },
         {
+          "path": "crates/accordlock-agent-runtime/src/http.rs",
+          "reason": "Included the complete broker response when the protected terminal integration assertion fails so a fail-closed result remains diagnosable."
+        },
+        {
           "path": "crates/accordlock-agent-runtime/src/terminal.rs",
-          "reason": "Preserved stable executable-change classification and verified Linux process-group retirement without treating non-executable zombies as live descendants."
+          "reason": "Preserved stable executable-change classification, verified Linux process-group retirement without treating non-executable zombies as live descendants, and accepted raw ESRCH only after positive leader-exit or group-retirement evidence."
         },
         {
           "path": "scripts/validate_repository.py",
@@ -47,7 +63,7 @@
       "upstreamRepository": "https://github.com/aaif-goose/goose.git",
       "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
       "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
-      "assembledTree": "d493bdd98e22045e37169f074b1e694d488dd747",
+      "assembledTree": "b9b7a46e86777550e7cf76fb65b29a0244e3346f",
       "trackedTreeExclusions": [
         {
           "path": "documentation/",
@@ -64,12 +80,64 @@
       ],
       "postImportAdjustments": [
         {
+          "path": "GOOSE_UPSTREAM_MANIFEST.txt",
+          "reason": "Pinned every file mode and Git blob identity from the exact Goose v1.47.0 upstream tree, including the two explicitly excluded documentation subtrees."
+        },
+        {
+          "path": "MODIFICATIONS.md",
+          "reason": "Recorded the deterministic file-by-file inventory of inherited, modified, AccordLock-only, and omitted upstream paths, including the handling of strict-data and binary notice exceptions."
+        },
+        {
+          "path": "CUSTOM_DISTROS.md",
+          "reason": "Corrected the distribution attribution path so the retained upstream guidance resolves to AccordLock's public provenance record."
+        },
+        {
+          "path": "THIRD_PARTY_NOTICES.md",
+          "reason": "Documented exact bundled library, model, tokenizer, source, digest, and license provenance in the notice file packaged with the desktop application."
+        },
+        {
+          "path": "crates/goose/src/agents/accordlock_network.rs",
+          "reason": "Rejected wildcard and malformed DNS labels before a governed HTTPS request can reach the trusted runtime."
+        },
+        {
+          "path": "crates/goose/src/agents/extension_manager.rs",
+          "reason": "Bound distribution-mode authorization regression fixtures to the exact plan checkpoint required by the production path."
+        },
+        {
+          "path": "crates/goose/src/posthog.rs",
+          "reason": "Removed the inherited analytics ingestion key and hard-disabled upstream telemetry transport in AccordLock distributions, including adversarial feature combinations."
+        },
+        {
+          "path": "crates/goose/src/dictation/whisper_data/README.md",
+          "reason": "Recorded exact Candle, Whisper, and tokenizer snapshot provenance and the byte-level verification boundary for bundled dictation assets."
+        },
+        {
           "path": "README.md",
           "reason": "Documented the reproducible monorepo preparation and Windows development-package commands, including the explicitly verified NuGet input."
         },
         {
           "path": "scripts/check_accordlock_publication.py",
-          "reason": "Removed checks for the two intentionally excluded upstream documentation surfaces and scoped Git-visible file enumeration to the desktop component when run inside the monorepo."
+          "reason": "Scoped the public desktop boundary, rejected credentials and personal paths across Git-visible text, rejected inherited analytics tokens and runtime download-and-execute helpers, and verified the checksum-pinned build-time uv fetch."
+        },
+        {
+          "path": "scripts/tests/test_check_accordlock_publication.py",
+          "reason": "Added regression coverage for global secret detection, analytics-token rejection, tracked-input enforcement, and the fail-closed extension-helper supply-chain boundary."
+        },
+        {
+          "path": "scripts/check_upstream_modifications.py",
+          "reason": "Added a network-free comparison of the committed desktop tree to the exact pinned Goose manifest, with baseline counts, modification notices, explicit exceptions, and deterministic report enforcement."
+        },
+        {
+          "path": "scripts/tests/test_upstream_modifications.py",
+          "reason": "Added regression coverage for the exact upstream classification, modification notices, and deterministic provenance report."
+        },
+        {
+          "path": "ui/desktop/src/bin/system-tool-wrapper.sh",
+          "reason": "Replaced self-installing extension helpers with deterministic resolution of administrator-provisioned system tools outside the application bundle."
+        },
+        {
+          "path": "ui/desktop/src/platform/windows/bin/README.md",
+          "reason": "Documented the Windows system-only extension helper contract and explicit prerequisite failures."
         },
         {
           "path": "RELEASE.md",
