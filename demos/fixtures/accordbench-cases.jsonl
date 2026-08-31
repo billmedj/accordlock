@@ -1,0 +1,4 @@
+{"schema_version":1,"case_id":"legitimate-flow","driver":"accordlock_offline_native","scenario_id":"DP-000"}
+{"schema_version":1,"case_id":"lineage-mismatch","driver":"accordlock_offline_native","scenario_id":"DP-101"}
+{"schema_version":1,"case_id":"stale-authority","driver":"accordlock_offline_native","scenario_id":"DP-102"}
+{"schema_version":1,"case_id":"post-admission-drift","driver":"accordlock_offline_native","scenario_id":"DP-103"}

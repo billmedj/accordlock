@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "accordlock-signal-demos"
+version = "0.1.0"
+description = "Provider-free adversarial demonstrations and AccordBench adapter for AccordLock"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+dependencies = []
+
+[project.scripts]
+accordlock-adversarial-demo = "accordlock_demos.cli:main"
+accordlock-accordbench-adapter = "accordlock_demos.accordbench:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
