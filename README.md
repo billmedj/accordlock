@@ -135,9 +135,11 @@ python -m unittest discover -s assurance/tests -t assurance -v
 
 A passing report means the declared theorem names, configured invariants, implementation paths, test functions, and versioned contracts still exist at that revision. It does **not** prove that Lean or TLA+ refines the Rust implementation, that bounded exploration covers every state, or that AccordLock is formally verified end to end. Read [the assurance contract](assurance/README.md) before citing the result.
 
+The exact post-assembly commands, bounded state counts, passed gates, and unexecuted external gates are recorded in [Local validation](docs/LOCAL_VALIDATION.md).
+
 ## Build the desktop application
 
-The desktop is an AccordLock distribution of [Goose](https://github.com/block/goose), with the protected task and execution path integrated into the native experience.
+The desktop is an AccordLock distribution of [Goose](https://github.com/aaif-goose/goose), with the protected task and execution path integrated into the native experience.
 
 ```powershell
 cd desktop
