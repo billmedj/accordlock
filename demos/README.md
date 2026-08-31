@@ -12,7 +12,21 @@ It demonstrates five concrete properties:
 
 The output is a machine-readable JSON report and a short Markdown report. It is an enforcement demonstration, not a claim that prompt injection is solved at the model layer.
 
-## Run
+## Run from a clean clone
+
+From the repository root, one standard-library launcher builds the two locked
+native entrypoints, verifies the native offline proof, runs all five cases, and
+deletes temporary reports:
+
+```powershell
+python scripts/run_demo.py --display markdown
+```
+
+Use `--offline` after Rust dependencies are cached. Add
+`--output-directory <path>` only when you want to retain the full JSON and
+Markdown reports; existing report files are never overwritten.
+
+## Run against existing binaries
 
 Python 3.11 or newer is sufficient. The package has no runtime dependency outside the standard library.
 

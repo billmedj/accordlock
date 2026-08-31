@@ -39,6 +39,7 @@ REQUIRED_PATHS = (
     "SECURITY.md",
     "scripts/check_lean_sources.py",
     "scripts/check_source_provenance.py",
+    "scripts/run_demo.py",
     "scripts/test_all.py",
     "SOURCE_PROVENANCE.json",
 )

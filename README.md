@@ -138,9 +138,27 @@ The published paper *Whence: The Fourth Coordinate of Computational Authority* a
 
 Read the [research provenance map](docs/RESEARCH_PROVENANCE.md), the [engineering case study](docs/ENGINEERING_CASE_STUDY.md), or the paper itself ([DOI 10.5281/zenodo.20905713](https://doi.org/10.5281/zenodo.20905713)). The paper motivates this design; it does not prove the software correct.
 
-## Run the provider-free proof
+## Run the provider-free demo
 
-The fastest path exercises the real Rust decision chain without an LLM, Docker, Kubernetes, cloud account, or production credential:
+The fastest review path builds the two locked native entrypoints and exercises five real enforcement cases without an LLM, Docker, Kubernetes, cloud account, production credential, or external request:
+
+```powershell
+python scripts/run_demo.py --display markdown
+```
+
+The launcher verifies its own safety profile and then demonstrates protected-path denial, exact-domain network denial before transport, exact approval with idempotent retry, single-use authorization, and stale-authority refusal. A successful run ends with:
+
+```text
+PASS provider_free_demo cases=5 provider=NONE network=NOT_ATTEMPTED
+```
+
+It requires Python 3.11+ and the Rust toolchain pinned by the repository. After dependencies are cached, prevent Cargo from using the network:
+
+```powershell
+python scripts/run_demo.py --offline --display markdown
+```
+
+For the compact native transaction report alone:
 
 ```powershell
 cd runtime
@@ -149,7 +167,7 @@ cargo run --locked -q -p accordlock-cli -- offline --compact
 
 The report is machine-readable and deliberately includes `"production_ready": false`. It covers signed ingress, evidence evaluation, authorization issuance, transactional consumption, replay refusal, and constrained Kubernetes patch validation. It also lists the live checks the offline run cannot establish.
 
-After dependencies are cached, the same proof can run without network access:
+The same proof can also run directly in Cargo's offline mode:
 
 ```powershell
 cargo run --offline --locked -q -p accordlock-cli -- offline --compact
