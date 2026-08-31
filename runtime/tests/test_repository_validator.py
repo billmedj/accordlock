@@ -123,6 +123,27 @@ class RepositoryPublicationHygieneTests(unittest.TestCase):
             self.assertEqual(file_count, len(paths))
             self.assertEqual(link_count, 1)
 
+    def test_archive_fallback_excludes_generated_dependency_trees(self) -> None:
+        with tempfile.TemporaryDirectory() as raw_root:
+            root = Path(raw_root).resolve()
+            source = root / "src" / "lib.rs"
+            source.parent.mkdir()
+            source.write_text("pub fn checked_source() {}\n", encoding="utf-8")
+            for relative in (
+                ".lake/build/ir/private.setup.json",
+                ".local/tools/tool.jar",
+                "__pycache__/module.pyc",
+                "node_modules/package/index.js",
+                "target/debug/build-record.json",
+            ):
+                generated = root / relative
+                generated.parent.mkdir(parents=True, exist_ok=True)
+                generated.write_text("generated\n", encoding="utf-8")
+
+            visible = VALIDATOR.git_visible_files(root)
+
+            self.assertEqual(visible, [source])
+
     def test_legacy_brand_is_rejected_in_path_and_content(self) -> None:
         legacy = "sig" + "net"
         with tempfile.TemporaryDirectory() as raw_root:

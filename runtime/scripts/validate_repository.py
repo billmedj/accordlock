@@ -292,7 +292,14 @@ def git_visible_files(root: Path) -> list[Path]:
             raise ValidationError("Git-visible path is not valid UTF-8") from error
         paths = [root / relative for relative in relatives]
     else:
-        excluded_roots = {".git", ".local", "target"}
+        excluded_roots = {
+            ".git",
+            ".lake",
+            ".local",
+            "__pycache__",
+            "node_modules",
+            "target",
+        }
         paths = [
             path
             for path in root.rglob("*")
