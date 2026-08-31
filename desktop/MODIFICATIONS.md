@@ -17,11 +17,11 @@ without placing invalid comments inside strict data formats or binary assets.
 
 - 2369 files in the pinned upstream tree
 - 855 upstream files under the two explicit exclusions
-- 368 inherited files modified and distributed
-- 351 modified text/source files with an in-file notice
+- 369 inherited files modified and distributed
+- 352 modified text/source files with an in-file notice
 - 17 modified generated, strict-data, or binary files documented as exceptions
-- 1109 inherited files distributed unchanged
-- 214 AccordLock-only files
+- 1108 inherited files distributed unchanged
+- 216 AccordLock-only files
 - 37 other upstream files omitted from this distribution
 
 The standard in-file notice is:
@@ -97,6 +97,7 @@ uses a schema-neutral top-level metadata field.
 - `crates/goose-cli/src/commands/session.rs`
 - `crates/goose-cli/src/commands/update.rs`
 - `crates/goose-cli/src/session/builder.rs`
+- `crates/goose-cli/src/session/output.rs`
 - `crates/goose-mcp/src/computercontroller/mod.rs`
 - `crates/goose-mcp/src/peekaboo/mod.rs`
 - `crates/goose-mcp/src/subprocess.rs`
@@ -427,6 +428,7 @@ confirm that the out-of-band handling is sufficient for the intended distributio
 
 - `.github/workflows/accordlock-publication-guard.yml`
 - `.github/workflows/accordlock-technical-preview-ci.yml`
+- `ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json`
 - `BRAND.md`
 - `GOOSE_UPSTREAM_MANIFEST.txt`
 - `MODIFICATIONS.md`
@@ -452,6 +454,7 @@ confirm that the out-of-band handling is sufficient for the intended distributio
 - `ui/desktop/entitlements-inherit.plist`
 - `ui/desktop/scripts/accordlock-windows-signing.js`
 - `ui/desktop/scripts/generate-accordlock-icons.mjs`
+- `ui/desktop/scripts/prepare-platform-binaries.test.js`
 - `ui/desktop/scripts/sanitize-windows-build-paths.js`
 - `ui/desktop/scripts/sanitize-windows-build-paths.test.js`
 - `ui/desktop/scripts/sign-accordlock-windows-sidecars.js`

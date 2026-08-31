@@ -9,6 +9,34 @@ must still be called out explicitly.
 
 ## [Unreleased]
 
+### Security
+
+- Updated `h2` from `0.4.15` to `0.4.16` in the runtime and desktop
+  lockfiles to address `RUSTSEC-2026-0258`.
+- Updated `event-listener` from `5.4.1` to `5.4.2` in the distributed desktop
+  graph to address `RUSTSEC-2026-0221`.
+- Made `bat` optional behind the existing `tui` feature, excluding `bat` and
+  its `bincode` 1.x dependency from the protected no-default-features desktop
+  graph while preserving TUI-enabled builds.
+- Added a fail-closed RustSec audit for the exact `goose-cli` graph shipped on
+  Windows x64, macOS Intel, and macOS ARM64. Each graph is resolved on a native
+  host, bound to the productive packaging command and script digest, and checked
+  against the complete lockfile without advisory ignores or target or severity
+  filters.
+- Restricted the Windows package to ten named sidecar, marker, and support
+  files. Packaging rejects extra files, directories, links, non-x64 PE files,
+  and wildcard DLL collection.
+- Restricted the macOS package to eleven named sidecar, marker, and support
+  files. Both platforms reject redirected staging directories, and the seven
+  authored support wrappers are checksum-bound before packaging.
+- Isolated each native release build in new, platform-specific Cargo target
+  directories that are removed after staging. On the required exclusive build
+  runner, both source checkouts are revalidated against the release lock before
+  signing and again before Electron Forge runs.
+- Corrected Windows 8.3 path-alias handling by comparing native stable file or
+  directory identities instead of normalized path strings. Terminal executable
+  identity is also checked before and after hashing.
+
 ## [0.1.0-alpha.1] - 2026-09-01
 
 Initial public engineering alpha, published as part of the source-only

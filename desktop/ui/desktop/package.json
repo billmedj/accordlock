@@ -37,7 +37,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
     "test": "vitest",
-    "test:run": "vitest run && node --test scripts/sanitize-windows-build-paths.test.js",
+    "test:run": "vitest run && node --test scripts/sanitize-windows-build-paths.test.js scripts/prepare-platform-binaries.test.js",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "test:integration": "vitest run --config vitest.integration.config.ts",

@@ -8,12 +8,12 @@
       "sourceRepository": "https://github.com/billmedj/accordlock-core.git",
       "commit": "27301d159feccf53bc565a5de68c1c307d9bff09",
       "tree": "3a02ebe252285cacf180ca9c46976477ec71cfa7",
-      "assembledTree": "39bbb72c6a4b9dcd6dbbed24981260544d4dfbe8",
+      "assembledTree": "4349ead49d678cd083e19c0ebf4dbfbdc60cf83f",
       "trackedTreeExclusions": [],
       "postImportAdjustments": [
         {
           "path": "CHANGELOG.md",
-          "reason": "Published the sanitized runtime change record under the source-only engineering-alpha release identity."
+          "reason": "Published the sanitized runtime change record and documented the dependency and packaged-graph security fixes."
         },
         {
           "path": "CITATION.cff",
@@ -21,7 +21,7 @@
         },
         {
           "path": "Cargo.lock",
-          "reason": "Recorded the explicit Unix errno dependency used to distinguish an absent process group from an ambiguous cleanup failure."
+          "reason": "Recorded the explicit Unix errno dependency used for process-group retirement classification and updated h2 to the RustSec-fixed release."
         },
         {
           "path": "Cargo.toml",
@@ -64,6 +64,14 @@
           "reason": "Regenerated the exact source manifest for the complete public runtime component after the recorded public adjustments."
         },
         {
+          "path": "scripts/check_profiled_rustsec_audit.py",
+          "reason": "Added a fail-closed RustSec check that audits the complete desktop lockfile and proves whether each finding is reachable from the exact packaged target graphs."
+        },
+        {
+          "path": "tests/test_profiled_rustsec_audit.py",
+          "reason": "Added regression coverage for complete-lock scanning, forbidden filters and ignores, exact package identity, profile reachability, feature binding, and packaging-command binding."
+        },
+        {
           "path": "scripts/rustsec-advisory-db.commit",
           "reason": "Advanced the reproducibly pinned RustSec advisory database to the audited current revision used by release security checks."
         }
@@ -94,6 +102,37 @@
               "reason": "Advanced the reproducibly pinned RustSec advisory database to the audited current revision."
             }
           ]
+        },
+        {
+          "baseTree": "39bbb72c6a4b9dcd6dbbed24981260544d4dfbe8",
+          "resultTree": "4349ead49d678cd083e19c0ebf4dbfbdc60cf83f",
+          "changes": [
+            {
+              "path": "CHANGELOG.md",
+              "effect": "modified",
+              "reason": "Documented the Rust dependency remediations, exact packaged-graph audit, and Windows path-identity correction."
+            },
+            {
+              "path": "Cargo.lock",
+              "effect": "modified",
+              "reason": "Updated h2 from 0.4.15 to the RustSec-fixed 0.4.16 release without unrelated runtime dependency changes."
+            },
+            {
+              "path": "SOURCE_MANIFEST.sha256",
+              "effect": "modified",
+              "reason": "Regenerated all 420 exact runtime source hashes after adding the audit implementation and its tests."
+            },
+            {
+              "path": "scripts/check_profiled_rustsec_audit.py",
+              "effect": "added",
+              "reason": "Added deterministic target-graph resolution and complete-lock RustSec correlation for the packaged desktop sidecar."
+            },
+            {
+              "path": "tests/test_profiled_rustsec_audit.py",
+              "effect": "added",
+              "reason": "Added fail-closed regression tests for the packaged-graph RustSec boundary."
+            }
+          ]
         }
       ]
     },
@@ -103,7 +142,7 @@
       "upstreamRepository": "https://github.com/aaif-goose/goose.git",
       "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
       "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
-      "assembledTree": "7734083400d8ee2b198c41c769f8690983f4ebbf",
+      "assembledTree": "e4d10966c4fd27b264735b428099744c890ee1a6",
       "trackedTreeExclusions": [
         {
           "path": "documentation/",
@@ -120,12 +159,16 @@
       ],
       "postImportAdjustments": [
         {
+          "path": "ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json",
+          "reason": "Pinned the exact package, binary, features, native host-target pairs, productive build scripts, package counts, and dependency-graph digests used by the distributed desktop sidecar."
+        },
+        {
           "path": "GOOSE_UPSTREAM_MANIFEST.txt",
           "reason": "Pinned every file mode and Git blob identity from the exact Goose v1.47.0 upstream tree, including the two explicitly excluded documentation subtrees."
         },
         {
           "path": "MODIFICATIONS.md",
-          "reason": "Recorded the deterministic file-by-file inventory of inherited, modified, AccordLock-only, and omitted upstream paths, including the removed PCTX code-execution subsystem and strict-data notice exceptions."
+          "reason": "Recorded the deterministic file-by-file inventory of 369 modified, 1108 unchanged, 216 AccordLock-only, and 37 omitted upstream paths."
         },
         {
           "path": "Cargo.toml",
@@ -133,7 +176,7 @@
         },
         {
           "path": "Cargo.lock",
-          "reason": "Removed the complete PCTX dependency graph, including the obsolete OpenTelemetry 0.31 branch, without unrelated package upgrades."
+          "reason": "Removed the complete PCTX dependency graph and updated h2 and event-listener to their RustSec-fixed releases without changing the protected product feature set."
         },
         {
           "path": "crates/goose/Cargo.toml",
@@ -141,7 +184,11 @@
         },
         {
           "path": "crates/goose-cli/Cargo.toml",
-          "reason": "Removed the upstream code-mode feature from the CLI distribution feature graph."
+          "reason": "Removed the upstream code-mode feature and made bat conditional on the existing TUI feature so the protected no-default-features profile excludes bat and bincode."
+        },
+        {
+          "path": "crates/goose-cli/src/session/output.rs",
+          "reason": "Preserved rich bat rendering for TUI builds and added the plain-text output path used when the protected distribution omits that optional dependency."
         },
         {
           "path": "CUSTOM_DISTROS.md",
@@ -185,7 +232,7 @@
         },
         {
           "path": "scripts/check_upstream_modifications.py",
-          "reason": "Added a network-free comparison of the committed desktop tree to the exact pinned Goose manifest, with baseline counts, modification notices, explicit exceptions, and deterministic report enforcement."
+          "reason": "Added a network-free comparison of the committed desktop tree to the exact pinned Goose manifest and advanced its deterministic inventory for the packaged Rust profile, output path, and packaging test."
         },
         {
           "path": "scripts/tests/test_upstream_modifications.py",
@@ -200,28 +247,48 @@
           "reason": "Documented the Windows system-only extension helper contract and explicit prerequisite failures."
         },
         {
+          "path": "ui/desktop/src/accordlockTerminalPrograms.ts",
+          "reason": "Accepted Windows short and long spellings only when native metadata proves they are the same executable, then revalidated that identity after hashing."
+        },
+        {
+          "path": "ui/desktop/src/desktopFileAccess.ts",
+          "reason": "Canonicalized workspace directories before containment checks and required native device and inode identity to reject redirection or replacement."
+        },
+        {
+          "path": "ui/desktop/src/desktopFileAccess.test.ts",
+          "reason": "Bound desktop filesystem expectations to the native canonical path representation used on Windows runners."
+        },
+        {
           "path": "RELEASE.md",
-          "reason": "Separated the exact-commit source-only engineering-alpha gates from later signed-binary and production release gates."
+          "reason": "Separated source-only alpha gates from binary release gates and required an ephemeral exclusive runner, clean locked sources, and fresh native build targets for a later signed release."
         },
         {
           "path": "RELEASE_CHECKLIST.md",
-          "reason": "Bound binary acceptance to the monorepo commit and component trees while explicitly excluding its unchecked items from the source-only alpha claim."
+          "reason": "Bound binary acceptance to the monorepo commit and component trees and added explicit checks for exclusive build execution, clean locked sources, canonical staging, and fresh native targets."
         },
         {
           "path": "scripts/build-windows.ps1",
-          "reason": "Updated release-orchestration copy and examples without weakening the existing fail-closed signing and manifest requirements."
+          "reason": "Bound Windows release compilation to an x64 host and target, fresh per-component Cargo targets, canonical staging, checksum-pinned wrappers, and repeated clean source-lock validation before signing and Forge."
         },
         {
           "path": "scripts/build-macos.ps1",
-          "reason": "Replaced the vulnerable JavaScript DMG builder with native hdiutil packaging, final post-stapling signature verification, Gatekeeper assessment, structural verification, and mounted-content checks."
+          "reason": "Bound macOS release compilation to the native target, fresh per-component Cargo targets, canonical staging, checksum-pinned wrappers, repeated clean source-lock validation, and native signed and notarized DMG verification."
         },
         {
           "path": "ui/desktop/forge.config.ts",
-          "reason": "Removed the JavaScript DMG maker while retaining the supported signed application and cross-platform package configuration."
+          "reason": "Removed the JavaScript DMG maker and made Forge revalidate the exact canonical Windows or macOS staged payload before every package, independently of signing mode."
         },
         {
           "path": "ui/desktop/package.json",
-          "reason": "Updated the Electron Forge, MCP, updater, utility, and packaging dependency surface and removed unused server dependencies."
+          "reason": "Updated the audited desktop dependency surface and included the cross-platform staged-payload contract tests in the standard test command."
+        },
+        {
+          "path": "ui/desktop/scripts/prepare-platform-binaries.js",
+          "reason": "Replaced permissive platform cleanup with exact Windows and macOS payload allowlists, canonical non-link staging checks, pinned support-wrapper hashes, and x64 PE validation."
+        },
+        {
+          "path": "ui/desktop/scripts/prepare-platform-binaries.test.js",
+          "reason": "Added adversarial tests for payload contamination, missing files, wrong architecture, symlinks, junction staging roots, wrapper hashes, Forge revalidation, and fresh native build targets."
         },
         {
           "path": "ui/package.json",
@@ -459,6 +526,97 @@
               "path": "ui/sdk/package.json",
               "effect": "modified",
               "reason": "Updated MCP and schema-generation SDK dependencies with inherited-file attribution."
+            }
+          ]
+        },
+        {
+          "baseTree": "7734083400d8ee2b198c41c769f8690983f4ebbf",
+          "resultTree": "e4d10966c4fd27b264735b428099744c890ee1a6",
+          "changes": [
+            {
+              "path": "ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json",
+              "effect": "added",
+              "reason": "Pinned the exact native host-target dependency graphs and productive packaging scripts for the distributed sidecar."
+            },
+            {
+              "path": "Cargo.lock",
+              "effect": "modified",
+              "reason": "Updated h2 to 0.4.16 and event-listener to 5.4.2, the RustSec-fixed releases used by the distributed graph."
+            },
+            {
+              "path": "MODIFICATIONS.md",
+              "effect": "modified",
+              "reason": "Regenerated the exact Goose inheritance inventory for 369 modified, 1108 unchanged, 216 AccordLock-only, and 37 omitted files."
+            },
+            {
+              "path": "RELEASE.md",
+              "effect": "modified",
+              "reason": "Required an ephemeral exclusive build runner, clean locked checkouts, and fresh native targets for future binary releases."
+            },
+            {
+              "path": "RELEASE_CHECKLIST.md",
+              "effect": "modified",
+              "reason": "Added acceptance checks for exclusive release execution, canonical staging, source revalidation, and fresh native build targets."
+            },
+            {
+              "path": "crates/goose-cli/Cargo.toml",
+              "effect": "modified",
+              "reason": "Made bat optional behind the existing TUI feature so the protected distribution excludes the unmaintained bincode branch."
+            },
+            {
+              "path": "crates/goose-cli/src/session/output.rs",
+              "effect": "modified",
+              "reason": "Preserved rich TUI rendering and supplied plain-text output when the optional renderer is absent."
+            },
+            {
+              "path": "scripts/build-macos.ps1",
+              "effect": "modified",
+              "reason": "Required a native host-target pair, compiled both sidecars in fresh isolated targets, verified canonical staging, and rechecked locked clean sources before signing and packaging."
+            },
+            {
+              "path": "scripts/build-windows.ps1",
+              "effect": "modified",
+              "reason": "Required Windows x64 end to end, compiled both sidecars in fresh isolated targets, removed wildcard DLL collection, verified canonical staging, and rechecked locked clean sources before signing and packaging."
+            },
+            {
+              "path": "scripts/check_upstream_modifications.py",
+              "effect": "modified",
+              "reason": "Advanced the deterministic upstream path-set counts and digests to include the new packaging contract test."
+            },
+            {
+              "path": "ui/desktop/forge.config.ts",
+              "effect": "modified",
+              "reason": "Revalidated the exact canonical staged payload for Windows and macOS immediately before Forge packaging."
+            },
+            {
+              "path": "ui/desktop/package.json",
+              "effect": "modified",
+              "reason": "Included the cross-platform staged-payload contract test in the standard desktop test command."
+            },
+            {
+              "path": "ui/desktop/scripts/prepare-platform-binaries.js",
+              "effect": "modified",
+              "reason": "Enforced exact platform payloads, canonical non-link staging, pinned wrapper hashes, regular files, and x64 PE binaries."
+            },
+            {
+              "path": "ui/desktop/scripts/prepare-platform-binaries.test.js",
+              "effect": "added",
+              "reason": "Added adversarial regression coverage for both platform payload and release-build contracts."
+            },
+            {
+              "path": "ui/desktop/src/accordlockTerminalPrograms.ts",
+              "effect": "modified",
+              "reason": "Replaced lexical executable-path equality with stable native file identity and revalidated it after hashing."
+            },
+            {
+              "path": "ui/desktop/src/desktopFileAccess.test.ts",
+              "effect": "modified",
+              "reason": "Used native canonical paths in desktop filesystem expectations, including Windows short-path aliases."
+            },
+            {
+              "path": "ui/desktop/src/desktopFileAccess.ts",
+              "effect": "modified",
+              "reason": "Canonicalized directories before containment checks and required stable native directory identity."
             }
           ]
         }

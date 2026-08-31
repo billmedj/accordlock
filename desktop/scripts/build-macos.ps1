@@ -80,9 +80,108 @@ function Get-SourceIdentity {
     }
 }
 
+function Assert-ReleaseSourceIdentity {
+    param(
+        [Parameter(Mandatory)][string]$Repository,
+        [Parameter(Mandatory)][string]$Component,
+        [Parameter(Mandatory)][string]$ExpectedCommit
+    )
+
+    $identity = Get-SourceIdentity `
+        -Repository $Repository `
+        -Component $Component `
+        -AllowUncommittedDevelopment $false
+    if ($identity.Commit -cne $ExpectedCommit -or $identity.Dirty) {
+        throw "$Component source changed after the release source lock was verified."
+    }
+}
+
+function Assert-StagingDirectory {
+    param(
+        [Parameter(Mandatory)][string]$DesktopRoot,
+        [Parameter(Mandatory)][string]$Directory
+    )
+
+    $expected = [IO.Path]::GetFullPath((Join-Path $DesktopRoot 'src/bin'))
+    $requested = [IO.Path]::GetFullPath($Directory)
+    if ($requested -cne $expected) {
+        throw "Desktop binary staging must use exactly '$expected'."
+    }
+    $item = Get-Item -LiteralPath $requested -Force -ErrorAction Stop
+    $resolved = (Resolve-Path -LiteralPath $requested -ErrorAction Stop).Path
+    if (-not $item.PSIsContainer -or
+        -not [string]::IsNullOrEmpty($item.LinkType) -or
+        (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) -or
+        $resolved -cne $expected) {
+        throw 'Desktop binary staging must be one canonical regular non-link directory.'
+    }
+}
+
+function New-AccordLockCargoTargetDirectory {
+    param([Parameter(Mandatory)][string]$SourceRoot)
+
+    $resolvedSourceRoot = (Resolve-Path -LiteralPath $SourceRoot -ErrorAction Stop).Path
+    $targetParent = [IO.Path]::GetFullPath((Join-Path $resolvedSourceRoot 'target'))
+    if (-not (Test-Path -LiteralPath $targetParent)) {
+        New-Item -ItemType Directory -Path $targetParent | Out-Null
+    }
+    $targetParentItem = Get-Item -LiteralPath $targetParent -Force -ErrorAction Stop
+    if ($targetParentItem.PSIsContainer -eq $false -or
+        -not [string]::IsNullOrEmpty($targetParentItem.LinkType) -or
+        (($targetParentItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)) {
+        throw "Cargo target parent must be one regular non-link directory: '$targetParent'."
+    }
+
+    $leafName = "accordlock-release-cargo-$([guid]::NewGuid().ToString('N'))"
+    $candidate = [IO.Path]::GetFullPath((Join-Path $targetParent $leafName))
+    if (Test-Path -LiteralPath $candidate) {
+        throw "Refusing to reuse a pre-existing release Cargo target directory: '$candidate'."
+    }
+    New-Item -ItemType Directory -Path $candidate | Out-Null
+    $candidateItem = Get-Item -LiteralPath $candidate -Force -ErrorAction Stop
+    if ($candidateItem.PSIsContainer -eq $false -or
+        -not [string]::IsNullOrEmpty($candidateItem.LinkType) -or
+        (($candidateItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) -or
+        @(Get-ChildItem -LiteralPath $candidate -Force).Count -ne 0) {
+        throw "Release Cargo target directory must be one new empty non-link directory: '$candidate'."
+    }
+    return $candidateItem.FullName
+}
+
+function Remove-AccordLockCargoTargetDirectory {
+    param(
+        [Parameter(Mandatory)][string]$Directory,
+        [Parameter(Mandatory)][string]$SourceRoot
+    )
+
+    $resolvedSourceRoot = (Resolve-Path -LiteralPath $SourceRoot -ErrorAction Stop).Path
+    $targetParent = [IO.Path]::GetFullPath((Join-Path $resolvedSourceRoot 'target'))
+    $resolvedDirectory = [IO.Path]::GetFullPath($Directory)
+    $leafName = Split-Path -Leaf $resolvedDirectory
+    if ([IO.Path]::GetDirectoryName($resolvedDirectory) -cne $targetParent -or
+        $leafName -cnotmatch '^accordlock-release-cargo-[0-9a-f]{32}$') {
+        throw 'Refusing to remove a Cargo target outside the controlled release directory.'
+    }
+    if (-not (Test-Path -LiteralPath $resolvedDirectory)) {
+        return
+    }
+    $targetParentItem = Get-Item -LiteralPath $targetParent -Force -ErrorAction Stop
+    $item = Get-Item -LiteralPath $resolvedDirectory -Force -ErrorAction Stop
+    if ($targetParentItem.PSIsContainer -eq $false -or
+        -not [string]::IsNullOrEmpty($targetParentItem.LinkType) -or
+        (($targetParentItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) -or
+        $item.PSIsContainer -eq $false -or
+        -not [string]::IsNullOrEmpty($item.LinkType) -or
+        (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)) {
+        throw 'Refusing to remove a non-regular release Cargo target directory.'
+    }
+    Remove-Item -LiteralPath $resolvedDirectory -Recurse -Force
+}
+
 function Invoke-ReleaseCargoBuild {
     param(
         [Parameter(Mandatory)][string]$SourceRoot,
+        [Parameter(Mandatory)][string]$TargetDirectory,
         [Parameter(Mandatory)][string[]]$Arguments
     )
 
@@ -101,7 +200,7 @@ function Invoke-ReleaseCargoBuild {
     }
 
     $resolvedSource = [IO.Path]::GetFullPath($SourceRoot)
-    $targetDirectory = Join-Path $resolvedSource 'target'
+    $resolvedTargetDirectory = [IO.Path]::GetFullPath($TargetDirectory)
     $remaps = [ordered]@{ $resolvedSource = '/_accordlock/source' }
     $userProfile = [Environment]::GetFolderPath([Environment+SpecialFolder]::UserProfile)
     if (-not [string]::IsNullOrWhiteSpace($userProfile)) {
@@ -130,8 +229,8 @@ function Invoke-ReleaseCargoBuild {
         }
         [Environment]::SetEnvironmentVariable('CFLAGS', $nativeFlags, 'Process')
         [Environment]::SetEnvironmentVariable('CXXFLAGS', $nativeFlags, 'Process')
-        [Environment]::SetEnvironmentVariable('CARGO_TARGET_DIR', $targetDirectory, 'Process')
-        & cargo @Arguments --target-dir $targetDirectory
+        [Environment]::SetEnvironmentVariable('CARGO_TARGET_DIR', $resolvedTargetDirectory, 'Process')
+        & cargo @Arguments --target-dir $resolvedTargetDirectory
         if ($LASTEXITCODE -ne 0) {
             throw "Cargo release build failed with exit code $LASTEXITCODE."
         }
@@ -291,6 +390,18 @@ foreach ($commandName in @('git', 'cargo', 'rustc', 'node', 'corepack')) {
         throw "$commandName is required for the macOS desktop build."
     }
 }
+$rustcVerboseVersion = @(& rustc -vV)
+if ($LASTEXITCODE -ne 0) {
+    throw 'Could not inspect the Rust compiler host for macOS packaging.'
+}
+$rustcHostLines = @($rustcVerboseVersion | Where-Object { $_ -match '^host:\s*(\S+)\s*$' })
+if ($rustcHostLines.Count -ne 1) {
+    throw 'Rust compiler output did not contain exactly one host triple.'
+}
+$rustcHost = ([regex]::Match($rustcHostLines[0], '^host:\s*(\S+)\s*$')).Groups[1].Value
+if ($rustcHost -cne $targetTriple) {
+    throw "macOS packaging requires a native host/target pair: host=$rustcHost target=$targetTriple."
+}
 foreach ($program in @('/usr/bin/codesign', '/usr/bin/lipo', '/usr/bin/xcrun', '/usr/bin/hdiutil', '/usr/bin/tar', '/usr/bin/unzip')) {
     if (-not (Test-Path -LiteralPath $program -PathType Leaf)) {
         throw "Required macOS tool is missing: '$program'."
@@ -342,39 +453,77 @@ try {
     [Environment]::SetEnvironmentVariable('CI', 'true', 'Process')
 
     Write-Host "Building AccordLock macOS $Architecture sidecars from locked sources..." -ForegroundColor Cyan
-    Push-Location $GooseRoot
+    $gooseCargoTargetDirectory = $null
+    $runtimeCargoTargetDirectory = $null
     try {
-        Invoke-ReleaseCargoBuild -SourceRoot $GooseRoot -Arguments @(
-            'build', '--locked', '--release', '--target', $targetTriple,
-            '-p', 'goose-cli', '--bin', 'goose', '--no-default-features',
-            '--features', 'accordlock-distribution,rustls-tls,system-keyring'
-        )
-    }
-    finally {
-        Pop-Location
-    }
-    Push-Location $resolvedRuntimeRepo
-    try {
-        Invoke-ReleaseCargoBuild -SourceRoot $resolvedRuntimeRepo -Arguments @(
-            'build', '--locked', '--release', '--target', $targetTriple,
-            '-p', 'accordlock-agent-runtime', '--bin', 'accordlock-agent-runtime',
-            '-p', 'accordlock-preflight-runner', '--bin', 'accordlock-preflight-runner'
-        )
-    }
-    finally {
-        Pop-Location
-    }
+        $gooseCargoTargetDirectory = if ($Release) {
+            New-AccordLockCargoTargetDirectory -SourceRoot $GooseRoot
+        } else {
+            [IO.Path]::GetFullPath((Join-Path $GooseRoot 'target'))
+        }
+        $runtimeCargoTargetDirectory = if ($Release) {
+            New-AccordLockCargoTargetDirectory -SourceRoot $resolvedRuntimeRepo
+        } else {
+            [IO.Path]::GetFullPath((Join-Path $resolvedRuntimeRepo 'target'))
+        }
 
-    New-Item -ItemType Directory -Force -Path $binDirectory | Out-Null
-    $gooseBinary = Join-Path $GooseRoot "target/$targetTriple/release/goose"
-    $runtimeBinary = Join-Path $resolvedRuntimeRepo "target/$targetTriple/release/accordlock-agent-runtime"
-    $preflightBinary = Join-Path $resolvedRuntimeRepo "target/$targetTriple/release/accordlock-preflight-runner"
-    foreach ($binary in @($gooseBinary, $runtimeBinary, $preflightBinary)) {
-        $null = Assert-RegularFile -Path $binary -Description 'A compiled sidecar'
+        Push-Location $GooseRoot
+        try {
+            Invoke-ReleaseCargoBuild `
+                -SourceRoot $GooseRoot `
+                -TargetDirectory $gooseCargoTargetDirectory `
+                -Arguments @(
+                    'build', '--locked', '--release', '--target', $targetTriple,
+                    '-p', 'goose-cli', '--bin', 'goose', '--no-default-features',
+                    '--features', 'accordlock-distribution,rustls-tls,system-keyring'
+                )
+        }
+        finally {
+            Pop-Location
+        }
+        Push-Location $resolvedRuntimeRepo
+        try {
+            Invoke-ReleaseCargoBuild `
+                -SourceRoot $resolvedRuntimeRepo `
+                -TargetDirectory $runtimeCargoTargetDirectory `
+                -Arguments @(
+                    'build', '--locked', '--release', '--target', $targetTriple,
+                    '-p', 'accordlock-agent-runtime', '--bin', 'accordlock-agent-runtime',
+                    '-p', 'accordlock-preflight-runner', '--bin', 'accordlock-preflight-runner'
+                )
+        }
+        finally {
+            Pop-Location
+        }
+
+        New-Item -ItemType Directory -Force -Path $binDirectory | Out-Null
+        Assert-StagingDirectory -DesktopRoot $DesktopRoot -Directory $binDirectory
+        $gooseBinary = Join-Path $gooseCargoTargetDirectory "$targetTriple/release/goose"
+        $runtimeBinary = Join-Path $runtimeCargoTargetDirectory "$targetTriple/release/accordlock-agent-runtime"
+        $preflightBinary = Join-Path $runtimeCargoTargetDirectory "$targetTriple/release/accordlock-preflight-runner"
+        foreach ($binary in @($gooseBinary, $runtimeBinary, $preflightBinary)) {
+            $null = Assert-RegularFile -Path $binary -Description 'A compiled sidecar'
+        }
+        Copy-FreshFile -Source $gooseBinary -Destination (Join-Path $binDirectory 'goose')
+        Copy-FreshFile -Source $runtimeBinary -Destination (Join-Path $binDirectory 'accordlock-agent-runtime')
+        Copy-FreshFile -Source $preflightBinary -Destination (Join-Path $binDirectory 'accordlock-preflight-runner')
     }
-    Copy-FreshFile -Source $gooseBinary -Destination (Join-Path $binDirectory 'goose')
-    Copy-FreshFile -Source $runtimeBinary -Destination (Join-Path $binDirectory 'accordlock-agent-runtime')
-    Copy-FreshFile -Source $preflightBinary -Destination (Join-Path $binDirectory 'accordlock-preflight-runner')
+    finally {
+        try {
+            if ($Release -and $runtimeCargoTargetDirectory) {
+                Remove-AccordLockCargoTargetDirectory `
+                    -Directory $runtimeCargoTargetDirectory `
+                    -SourceRoot $resolvedRuntimeRepo
+            }
+        }
+        finally {
+            if ($Release -and $gooseCargoTargetDirectory) {
+                Remove-AccordLockCargoTargetDirectory `
+                    -Directory $gooseCargoTargetDirectory `
+                    -SourceRoot $GooseRoot
+            }
+        }
+    }
 
     $gooseDigest = (Get-FileHash -LiteralPath (Join-Path $binDirectory 'goose') -Algorithm SHA256).Hash.ToLowerInvariant()
     $runtimeDigest = (Get-FileHash -LiteralPath (Join-Path $binDirectory 'accordlock-agent-runtime') -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -395,6 +544,19 @@ try {
     })
 
     if ($Release) {
+        # Revalidate after compilation, immediately before release signing.
+        # This detects persistent or accidental checkout drift. The release
+        # boundary assumes an ephemeral, exclusive CI runner; a compromised
+        # host able to mutate and restore files concurrently is out of scope.
+        Assert-ReleaseSourceIdentity `
+            -Repository $GooseRoot `
+            -Component 'Goose' `
+            -ExpectedCommit $releaseLock.components.accordlock_goose_distribution.commit
+        Assert-ReleaseSourceIdentity `
+            -Repository $resolvedRuntimeRepo `
+            -Component 'AccordLock runtime' `
+            -ExpectedCommit $releaseLock.components.accordlock_core.commit
+
         foreach ($binaryName in @('goose', 'accordlock-agent-runtime', 'accordlock-preflight-runner')) {
             $arguments = @('--force', '--timestamp', '--options', 'runtime', '--sign', $env:APPLE_SIGNING_IDENTITY)
             if (-not [string]::IsNullOrWhiteSpace($env:KEYCHAIN_PATH)) {
@@ -419,6 +581,18 @@ try {
         Invoke-Checked -Program 'node' -Arguments @('scripts/prepare-platform-binaries.js') -Failure 'macOS binary staging failed.'
         Invoke-Checked -Program 'corepack' -Arguments @('pnpm', 'run', 'build-goose-sdk') -Failure 'Desktop SDK build failed.'
         Invoke-Checked -Program 'corepack' -Arguments @('pnpm', 'run', 'i18n:compile') -Failure 'English interface compilation failed.'
+
+        if ($Release) {
+            # Forge is a second release boundary after desktop asset generation.
+            Assert-ReleaseSourceIdentity `
+                -Repository $GooseRoot `
+                -Component 'Goose' `
+                -ExpectedCommit $releaseLock.components.accordlock_goose_distribution.commit
+            Assert-ReleaseSourceIdentity `
+                -Repository $resolvedRuntimeRepo `
+                -Component 'AccordLock runtime' `
+                -ExpectedCommit $releaseLock.components.accordlock_core.commit
+        }
 
         if (Test-Path -LiteralPath $outputRoot) {
             Remove-Item -LiteralPath $outputRoot -Recurse -Force

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 2,
+  "package": "goose-cli",
+  "binary": "goose",
+  "manifestPath": "crates/goose-cli/Cargo.toml",
+  "lockPath": "Cargo.lock",
+  "defaultFeatures": false,
+  "features": [
+    "accordlock-distribution",
+    "rustls-tls",
+    "system-keyring"
+  ],
+  "expectedRootFeatures": [
+    "accordlock-distribution",
+    "disable-update",
+    "rustls-tls",
+    "system-keyring"
+  ],
+  "edgeKinds": [
+    "normal",
+    "build"
+  ],
+  "buildScripts": {
+    "macos": {
+      "path": "scripts/build-macos.ps1",
+      "sha256": "6e5f16a57db7a62682791bc30a0989f6399e00f311cd227f01d7f1961c16175b"
+    },
+    "windows": {
+      "path": "scripts/build-windows.ps1",
+      "sha256": "0fa99e1d50f1d9a045fde3b9128b1497fcc927352b215770927119c6aa71baf9"
+    }
+  },
+  "hostTargets": [
+    {
+      "host": "aarch64-apple-darwin",
+      "target": "aarch64-apple-darwin",
+      "runner": "macos-15",
+      "packageCount": 536,
+      "graphSha256": "cd766ca748903b007cdefc24106e55602afd1d5834174de9b04daf855b50949e"
+    },
+    {
+      "host": "x86_64-apple-darwin",
+      "target": "x86_64-apple-darwin",
+      "runner": "macos-15-intel",
+      "packageCount": 536,
+      "graphSha256": "9e330aacff09e97b5d9488e128463b452e1fc15236f2f4cf0cda377e293e1ce8"
+    },
+    {
+      "host": "x86_64-pc-windows-msvc",
+      "target": "x86_64-pc-windows-msvc",
+      "runner": "windows-2025",
+      "packageCount": 539,
+      "graphSha256": "c6039cc68779b34ec17d507183aac5f9b51b24ab8177445b2dc292caf342ad11"
+    }
+  ]
+}

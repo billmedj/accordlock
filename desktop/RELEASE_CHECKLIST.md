@@ -71,6 +71,12 @@ does not claim that the items below have passed.
 
 ## Package integrity
 
+- [ ] The candidate was built on an ephemeral, exclusive runner with no
+      concurrent writer to either source checkout; both checkouts remained on
+      the locked commits and clean through the final pre-package check.
+- [ ] Native release sidecars came from newly created Cargo target directories;
+      the staging directory was a real in-repository directory, and all
+      temporary target directories were removed after staging.
 - [ ] `accordlock-artifact-manifest.json` lists every shipped artifact with the
       correct digest and source identity.
 - [ ] `SHA256SUMS` verifies without omissions or extra files.
