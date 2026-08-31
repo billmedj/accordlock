@@ -5,6 +5,9 @@
 **/out/
 **/build/
 **/.turbo/
+**/__pycache__/
+**/.pytest_cache/
+*.py[cod]
 
 # Local runtime state
 **/.accordlock/
@@ -24,4 +27,3 @@
 .DS_Store
 Thumbs.db
 Desktop.ini
-

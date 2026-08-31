@@ -1,0 +1,659 @@
+{
+  "schema_version": 1,
+  "metadata": {
+    "name": "AccordLock assurance claims",
+    "purpose": "Trace public safety claims to abstract proofs, checked state-machine invariants, runtime source, and executable implementation tests.",
+    "assurance_levels": [
+      "Lean establishes the stated property only for the referenced abstract definitions.",
+      "TLA+ references identify configured bounded invariants; this linter does not run TLC.",
+      "Rust references establish source and test traceability; this linter does not execute Cargo tests.",
+      "No refinement proof from the abstract models to the production implementation is claimed."
+    ],
+    "source_versions": [
+      {
+        "name": "audit",
+        "path": "crates/accordlock-agent-runtime/src/audit.rs",
+        "constant": "SESSION_AUDIT_PAGE_SCHEMA_VERSION",
+        "expected": 6,
+        "documents": [
+          "README.md",
+          "claims.yaml"
+        ]
+      }
+    ]
+  },
+  "claims": [
+    {
+      "id": "authorization.exact-binding",
+      "title": "Exact authorization binding",
+      "statement": "Execution authority is bound to one request, plan, action, argument set, and target-state commitment; changing a bound value invalidates the authorization context.",
+      "scope": "Abstract authorization and manifest definitions, current runtime transaction objects, and exact-binding implementation tests.",
+      "lean": [
+        {
+          "path": "formal/AccordLockFormal/AuthorityEpoch.lean",
+          "theorems": [
+            "bound_request",
+            "bound_plan",
+            "bound_action",
+            "bound_arguments",
+            "bound_target_state"
+          ]
+        },
+        {
+          "path": "formal/AccordLockFormal/AuthorizationInstance.lean",
+          "theorems": [
+            "matching_manifest_preserves_request",
+            "matching_manifest_preserves_plan",
+            "matching_manifest_preserves_action",
+            "matching_manifest_preserves_arguments",
+            "changed_plan_invalidates_manifest",
+            "changed_arguments_invalidate_manifest"
+          ]
+        },
+        {
+          "path": "formal/AccordLockFormal/EndToEnd.lean",
+          "theorems": [
+            "ready_request_has_exact_action",
+            "ready_request_has_exact_arguments",
+            "ready_request_has_current_target"
+          ]
+        }
+      ],
+      "tla": [
+        {
+          "model": "models/AdmissionAuthorization.tla",
+          "config": "models/AdmissionAuthorization.cfg",
+          "invariants": [
+            "WriteAndAuthorizationAgree",
+            "AuthorizationBoundToClaimFenceAndProvider",
+            "IndexesMatchAuthorization"
+          ]
+        }
+      ],
+      "runtime": [
+        {
+          "path": "crates/accordlock-agent-protocol/src/model.rs",
+          "description": "Defines the signed request, decision, authorization, and execution-record transaction objects."
+        },
+        {
+          "path": "crates/accordlock-agent-runtime/src/execution_trace.rs",
+          "description": "Builds and revalidates complete execution lineage across runtime objects."
+        }
+      ],
+      "tests": [
+        {
+          "path": "crates/accordlock-agent-protocol/tests/security_profile.rs",
+          "name": "authorization_repeats_and_verifies_every_security_binding"
+        },
+        {
+          "path": "crates/accordlock-evaluation/tests/intent_conformance.rs",
+          "name": "stage_replay_and_artifact_substitution_are_rejected"
+        },
+        {
+          "path": "crates/accordlock-agent-runtime/src/execution_trace.rs",
+          "name": "substituted_objects_and_lineage_fields_are_rejected"
+        }
+      ],
+      "limitations": [
+        "Digest collision resistance and correctness of serialization libraries are assumptions outside the Lean proof.",
+        "The manifest does not prove that every external system exposes the target state represented by the commitment."
+      ]
+    },
+    {
+      "id": "authorization.current-context",
+      "title": "Current authority and target state",
+      "statement": "A stale policy epoch, configuration epoch, target-state commitment, revocation state, or validity window cannot satisfy the dispatch precondition.",
+      "scope": "Abstract freshness predicates and runtime revalidation performed before authorization consumption and dispatch.",
+      "lean": [
+        {
+          "path": "formal/AccordLockFormal/AuthorityEpoch.lean",
+          "theorems": [
+            "stale_policy_epoch_rejected",
+            "stale_configuration_epoch_rejected",
+            "changed_target_state_rejected",
+            "expired_authorization_inactive",
+            "authorization_inactive_before_issuance"
+          ]
+        },
+        {
+          "path": "formal/AccordLockFormal/EndToEnd.lean",
+          "theorems": [
+            "stale_policy_blocks_dispatch",
+            "changed_target_blocks_dispatch"
+          ]
+        }
+      ],
+      "tla": [
+        {
+          "model": "models/AuthorizationLifecycle.tla",
+          "config": "models/AuthorizationLifecycle.cfg",
+          "invariants": [
+            "IssuanceWindowWasNonempty",
+            "ConsumptionUsedStampedEpoch"
+          ]
+        },
+        {
+          "model": "models/AdmissionAuthorization.tla",
+          "config": "models/AdmissionAuthorization.cfg",
+          "invariants": [
+            "RecoveryIsCurrentOnly"
+          ]
+        }
+      ],
+      "runtime": [
+        {
+          "path": "crates/accordlock-agent-protocol/src/model.rs",
+          "description": "Carries the authority context and validity bounds in signed transaction objects."
+        },
+        {
+          "path": "crates/accordlock-state/src/memory.rs",
+          "description": "Implements current-state, trusted-time, revocation, and authority rechecks in the in-memory state engine."
+        }
+      ],
+      "tests": [
+        {
+          "path": "crates/accordlock-agent-protocol/tests/security_profile.rs",
+          "name": "memory_store_rejects_expiration_and_clock_rollback"
+        },
+        {
+          "path": "crates/accordlock-state/src/memory.rs",
+          "name": "authority_change_invalidates_the_issued_authorization"
+        },
+        {
+          "path": "crates/accordlock-state/src/memory.rs",
+          "name": "dispatch_snapshot_rejects_authority_change_and_revocation"
+        }
+      ],
+      "limitations": [
+        "The models assume an authenticated current-state observation; authentication and clock sources remain implementation obligations.",
+        "Bounded model checking does not establish the invariants over an unbounded state space."
+      ]
+    },
+    {
+      "id": "authorization.single-use",
+      "title": "Single-use execution authority",
+      "statement": "A consumed execution authorization cannot be used again and cannot amplify the authority context to which it was issued.",
+      "scope": "Abstract grant usability, atomic authorization consumption, replay tombstones, and concurrent-consumption tests.",
+      "lean": [
+        {
+          "path": "formal/AccordLockFormal/CapabilityIntegrity.lean",
+          "theorems": [
+            "usable_grant_matches_authorization",
+            "usable_grant_cannot_amplify_context",
+            "consumed_grant_rejected",
+            "grant_cannot_be_replayed",
+            "wrong_authorization_rejected"
+          ]
+        },
+        {
+          "path": "formal/AccordLockFormal/EndToEnd.lean",
+          "theorems": [
+            "consumed_ready_grant_blocks_dispatch"
+          ]
+        }
+      ],
+      "tla": [
+        {
+          "model": "models/AuthorizationLifecycle.tla",
+          "config": "models/AuthorizationLifecycle.cfg",
+          "invariants": [
+            "AtMostOnce",
+            "ReceiptAndOutboxAreAtomic",
+            "NoEffectBeforeConsumption"
+          ]
+        }
+      ],
+      "runtime": [
+        {
+          "path": "crates/accordlock-agent-protocol/src/store.rs",
+          "description": "Defines atomic one-shot authorization storage and replay classification."
+        },
+        {
+          "path": "crates/accordlock-state/src/memory.rs",
+          "description": "Implements concurrent durable-state semantics for issuance, consumption, receipts, and replay rejection."
+        }
+      ],
+      "tests": [
+        {
+          "path": "crates/accordlock-agent-protocol/tests/security_profile.rs",
+          "name": "memory_store_is_atomic_one_shot_and_preserves_replay_tombstone"
+        },
+        {
+          "path": "crates/accordlock-state/src/memory.rs",
+          "name": "concurrent_consumption_has_exactly_one_winner"
+        },
+        {
+          "path": "crates/accordlock-state/src/memory.rs",
+          "name": "grant_use_is_consumed_once_across_distinct_authorizations"
+        }
+      ],
+      "limitations": [
+        "The Lean model does not prove database isolation or crash recovery of a concrete storage backend.",
+        "Replay resistance assumes authorization identifiers and commitments are generated and compared correctly."
+      ]
+    },
+    {
+      "id": "evidence.restrict-only",
+      "title": "Restrict-only evidence aggregation",
+      "statement": "Adding evidence can preserve or increase a decision's restriction level; it cannot turn a stricter decision into a less restrictive decision.",
+      "scope": "Abstract decision aggregation and the deterministic implementation of policy-evidence aggregation.",
+      "lean": [
+        {
+          "path": "formal/AccordLockFormal/EvidenceMonotonicity.lean",
+          "theorems": [
+            "supporting_evidence_preserves",
+            "denial_is_absorbing",
+            "evidence_cannot_reduce_strictness",
+            "evidence_sequence_cannot_reduce_strictness"
+          ]
+        }
+      ],
+      "tla": [],
+      "runtime": [
+        {
+          "path": "crates/accordlock-evaluation/src/policy.rs",
+          "description": "Aggregates policy and evidence outcomes using a monotone restriction order."
+        }
+      ],
+      "tests": [
+        {
+          "path": "crates/accordlock-evaluation/tests/intent_conformance.rs",
+          "name": "aggregate_decision_is_monotone_for_every_baseline"
+        },
+        {
+          "path": "crates/accordlock-evaluation/src/policy.rs",
+          "name": "aggregate_takes_the_monotone_maximum"
+        },
+        {
+          "path": "crates/accordlock-evaluation/tests/policy_profile.rs",
+          "name": "valid_scores_and_reservations_do_not_override_policy_approval"
+        }
+      ],
+      "limitations": [
+        "No TLA+ model is claimed for semantic evidence aggregation.",
+        "This property constrains aggregation behavior; it does not establish that an evidence provider is semantically correct."
+      ]
+    },
+    {
+      "id": "evidence.explicit-abstention",
+      "title": "Explicit abstention",
+      "statement": "Missing, unknown, inconclusive, or insufficiently calibrated evidence requires review and cannot become automatic authorization within the same evaluation.",
+      "scope": "Abstract unknown-evidence semantics, evidence-provider contracts, and current intent-conformance evaluation behavior.",
+      "lean": [
+        {
+          "path": "formal/AccordLockFormal/EvidenceMonotonicity.lean",
+          "theorems": [
+            "unknown_evidence_never_allows",
+            "review_evidence_sequence_never_allows",
+            "unknown_in_sequence_never_allows"
+          ]
+        },
+        {
+          "path": "formal/AccordLockFormal/EndToEnd.lean",
+          "theorems": [
+            "unknown_evidence_blocks_automatic_dispatch"
+          ]
+        }
+      ],
+      "tla": [],
+      "runtime": [
+        {
+          "path": "crates/accordlock-evaluation/src/intent.rs",
+          "description": "Defines uncertain intent-conformance outcomes and requirement-level findings."
+        },
+        {
+          "path": "crates/accordlock-evaluation/src/provider.rs",
+          "description": "Defines the authenticated, non-authorizing evidence-provider boundary."
+        },
+        {
+          "path": "crates/accordlock-evaluation/src/policy.rs",
+          "description": "Maps inconclusive evaluation to required review rather than automatic execution."
+        }
+      ],
+      "tests": [
+        {
+          "path": "crates/accordlock-evaluation/tests/intent_conformance.rs",
+          "name": "uncalibrated_model_scores_remain_uncertain_even_when_maximal"
+        },
+        {
+          "path": "crates/accordlock-evaluation/tests/intent_conformance.rs",
+          "name": "missing_stage_and_expired_calibration_require_review"
+        },
+        {
+          "path": "crates/accordlock-evaluation/tests/intent_conformance.rs",
+          "name": "authoritative_empty_snapshot_is_review_required_not_invalid"
+        }
+      ],
+      "limitations": [
+        "Abstention is a safety behavior, not evidence that free-form intent has been understood correctly.",
+        "The current general free-text path has no production-qualified semantic evidence provider."
+      ]
+    },
+    {
+      "id": "evidence.contradiction-dominance",
+      "title": "Contradiction dominance",
+      "statement": "A qualified contradiction produces denial and cannot be erased by later supporting or inconclusive findings in the same aggregation sequence.",
+      "scope": "Abstract evidence ordering and deterministic policy aggregation after evidence has passed provenance and calibration checks.",
+      "lean": [
+        {
+          "path": "formal/AccordLockFormal/EvidenceMonotonicity.lean",
+          "theorems": [
+            "contradiction_denies",
+            "denial_is_absorbing",
+            "denial_absorbs_evidence_sequence",
+            "contradiction_in_front_denies"
+          ]
+        },
+        {
+          "path": "formal/AccordLockFormal/EndToEnd.lean",
+          "theorems": [
+            "contradictory_evidence_blocks_automatic_dispatch"
+          ]
+        }
+      ],
+      "tla": [],
+      "runtime": [
+        {
+          "path": "crates/accordlock-evaluation/src/intent.rs",
+          "description": "Represents qualified contradiction as a nonconformant finding."
+        },
+        {
+          "path": "crates/accordlock-evaluation/src/policy.rs",
+          "description": "Maps a validated contradiction to a denial that remains absorbing."
+        }
+      ],
+      "tests": [
+        {
+          "path": "crates/accordlock-evaluation/tests/intent_conformance.rs",
+          "name": "one_contradiction_dominates_all_favorable_scores"
+        },
+        {
+          "path": "crates/accordlock-evaluation/src/policy.rs",
+          "name": "inconclusive_evaluation_requires_approval_and_violation_blocks"
+        }
+      ],
+      "limitations": [
+        "No TLA+ model is claimed for contradiction aggregation.",
+        "The property assumes the contradiction was produced by an admitted evidence method with valid provenance."
+      ]
+    },
+    {
+      "id": "execution.unknown-outcome",
+      "title": "Unknown outcome and reconciliation",
+      "statement": "A lost or ambiguous response records an unknown effect outcome, blocks blind mutation retry, and requires reconciliation before the system can establish whether another attempt is safe.",
+      "scope": "Abstract effect knowledge, broker-journal mutation authority, dispatch recovery, and ambiguous-provider implementation paths.",
+      "lean": [
+        {
+          "path": "formal/AccordLockFormal/EffectKnowledge.lean",
+          "theorems": [
+            "lost_response_records_unknown",
+            "unknown_effect_blocks_retry",
+            "only_unknown_effect_requires_reconciliation",
+            "applied_observation_resolves_unknown",
+            "negative_observation_resolves_unknown"
+          ]
+        },
+        {
+          "path": "formal/AccordLockFormal/TransactionLifecycle.lean",
+          "theorems": [
+            "cannot_blindly_redispatch_unknown_effect",
+            "reconciliation_restores_effect_knowledge",
+            "lost_response_recovery_path"
+          ]
+        }
+      ],
+      "tla": [
+        {
+          "model": "models/BrokerJournal.tla",
+          "config": "models/BrokerJournal.cfg",
+          "invariants": [
+            "AtMostOneMutationSendPerOperation",
+            "NoSendAuthorityAfterCrash",
+            "PendingReconciliationStateIsSound",
+            "ResultPhaseIsSound"
+          ]
+        }
+      ],
+      "runtime": [
+        {
+          "path": "crates/accordlock-dispatch/src/machine.rs",
+          "description": "Defines dispatch state transitions and recovery-only paths after ambiguous outcomes."
+        },
+        {
+          "path": "crates/accordlock-executor/src/lib.rs",
+          "description": "Classifies pre-send failure, ambiguous send, and authenticated effect evidence."
+        },
+        {
+          "path": "crates/accordlock-state/src/broker.rs",
+          "description": "Defines durable broker-journal state and reconciliation authority."
+        }
+      ],
+      "tests": [
+        {
+          "path": "crates/accordlock-dispatch/tests/lifecycle.rs",
+          "name": "unknown_token_issue_cannot_retry_and_holds_reservation"
+        },
+        {
+          "path": "crates/accordlock-dispatch/tests/lifecycle.rs",
+          "name": "crash_after_create_send_can_only_reconcile_not_send_again"
+        },
+        {
+          "path": "crates/accordlock-executor/src/lib.rs",
+          "name": "ambiguous_send_quarantines_resource_even_for_higher_fence"
+        }
+      ],
+      "limitations": [
+        "The abstract model does not prove that a concrete endpoint observation is authentic or complete.",
+        "Reconciliation is operation-specific and cannot always establish non-application."
+      ]
+    },
+    {
+      "id": "execution.lifecycle-ordering",
+      "title": "Transaction lifecycle ordering",
+      "statement": "Preparation precedes authorization, authorization precedes claim, claim precedes dispatch, and a finalized transaction cannot regain dispatch authority.",
+      "scope": "Abstract transaction phases, the durable control queue, worker role separation, and exact-lineage recovery tests.",
+      "lean": [
+        {
+          "path": "formal/AccordLockFormal/TransactionLifecycle.lean",
+          "theorems": [
+            "authorization_requires_prepared",
+            "claim_requires_authorization",
+            "dispatch_requires_claim",
+            "cannot_dispatch_before_claim",
+            "finalized_is_terminal"
+          ]
+        },
+        {
+          "path": "formal/AccordLockFormal/EndToEnd.lean",
+          "theorems": [
+            "finalized_transaction_cannot_dispatch"
+          ]
+        }
+      ],
+      "tla": [
+        {
+          "model": "models/DurableControlQueue.tla",
+          "config": "models/DurableControlQueue.cfg",
+          "invariants": [
+            "PhaseLinksAreOrdered",
+            "EachPhaseArtifactIsOnceOnlyAndExact",
+            "AtomicEvaluationCommit",
+            "AtomicIssueAndConsumptionCommits",
+            "AuthorizedProjectionAdvancesOnlyThroughRuntimeEdges"
+          ]
+        }
+      ],
+      "runtime": [
+        {
+          "path": "crates/accordlock-control/src/lib.rs",
+          "description": "Separates evaluator, issuer, and consumer roles over exact durable phase artifacts."
+        },
+        {
+          "path": "crates/accordlock-state/src/memory.rs",
+          "description": "Implements the control queue and phase-linked transaction state for the in-memory backend."
+        }
+      ],
+      "tests": [
+        {
+          "path": "crates/accordlock-control/src/lib.rs",
+          "name": "issuer_and_consumer_workers_complete_the_exact_durable_lineage"
+        },
+        {
+          "path": "crates/accordlock-state/src/memory.rs",
+          "name": "v13_queue_enforces_phase_selector_exact_recovery_and_fenced_takeover"
+        },
+        {
+          "path": "crates/accordlock-agent-protocol/tests/security_profile.rs",
+          "name": "execution_record_closes_the_exact_chain"
+        }
+      ],
+      "limitations": [
+        "TLA+ transitions abstract database transactions and do not prove SQL isolation or crash recovery.",
+        "The claim is a safety-ordering claim and does not establish fairness or liveness."
+      ]
+    },
+    {
+      "id": "resources.componentwise-admission",
+      "title": "Componentwise resource admission",
+      "statement": "An admitted resource request fits every configured resource dimension, and concurrent work cannot obtain overlapping exclusive reservations for the same physical resource.",
+      "scope": "Abstract resource vectors, policy-level quota checks, physical reservation state, and concurrency tests.",
+      "lean": [
+        {
+          "path": "formal/AccordLockFormal/ResourceReservation.lean",
+          "theorems": [
+            "resource_fit_is_transitive",
+            "combined_local_limits_compose",
+            "component_within_shared_capacity",
+            "two_reservations_respect_combined_limits"
+          ]
+        },
+        {
+          "path": "formal/AccordLockFormal/EndToEnd.lean",
+          "theorems": [
+            "ready_request_respects_resources",
+            "resource_overflow_blocks_dispatch"
+          ]
+        }
+      ],
+      "tla": [
+        {
+          "model": "models/PhysicalReservation.tla",
+          "config": "models/PhysicalReservation.cfg",
+          "invariants": [
+            "ClaimHasExactReservation",
+            "ReservationHasClaim",
+            "PhysicalReservationExclusive",
+            "FenceIsPositiveAndExclusive"
+          ]
+        }
+      ],
+      "runtime": [
+        {
+          "path": "crates/accordlock-evaluation/src/policy.rs",
+          "description": "Evaluates integer resource requests against exact quotas and parent-chained reservations."
+        },
+        {
+          "path": "crates/accordlock-state/src/memory.rs",
+          "description": "Implements exclusive physical-resource reservation and fenced concurrent claims."
+        }
+      ],
+      "tests": [
+        {
+          "path": "crates/accordlock-evaluation/tests/policy_profile.rs",
+          "name": "reservations_are_integer_bounded_and_parent_chained"
+        },
+        {
+          "path": "crates/accordlock-evaluation/src/policy.rs",
+          "name": "resources_require_exact_quota_and_reservation"
+        },
+        {
+          "path": "crates/accordlock-dispatch/tests/lifecycle.rs",
+          "name": "only_one_transaction_reserves_a_physical_resource"
+        }
+      ],
+      "limitations": [
+        "The abstract vector has a fixed set of dimensions and does not prove measurement accuracy of an external resource provider.",
+        "Exclusive reservation is a safety property; progress after failure depends on the concrete retirement protocol."
+      ]
+    },
+    {
+      "id": "dispatch.combined-boundary",
+      "title": "Combined dispatch boundary",
+      "statement": "Dispatch requires current exact authority, a matching action manifest, a usable single-use grant, an ordered transaction state, an allow decision, and sufficient resources at the same decision boundary.",
+      "scope": "The composed abstract dispatch predicate, durable admission/control invariants, runtime kernel and control paths, and complete-lineage tests.",
+      "lean": [
+        {
+          "path": "formal/AccordLockFormal/EndToEnd.lean",
+          "theorems": [
+            "ready_request_is_current",
+            "ready_request_is_active",
+            "ready_manifest_matches",
+            "ready_grant_is_usable",
+            "ready_request_has_exact_action",
+            "ready_request_has_exact_arguments",
+            "ready_request_has_current_target",
+            "ready_request_respects_resources",
+            "intent_bound_dispatch_invariant"
+          ]
+        }
+      ],
+      "tla": [
+        {
+          "model": "models/DurableControlQueue.tla",
+          "config": "models/DurableControlQueue.cfg",
+          "invariants": [
+            "NoDecisionBeforeEvaluationClaim",
+            "PhaseLinksAreOrdered",
+            "AtomicIssueAndConsumptionCommits",
+            "AuthorizedProjectionAdvancesOnlyThroughRuntimeEdges"
+          ]
+        },
+        {
+          "model": "models/AdmissionAuthorization.tla",
+          "config": "models/AdmissionAuthorization.cfg",
+          "invariants": [
+            "WriteAndAuthorizationAgree",
+            "AuthorizationBoundToClaimFenceAndProvider",
+            "RejectedAttemptsCreateNoRows"
+          ]
+        }
+      ],
+      "runtime": [
+        {
+          "path": "crates/accordlock-kernel/src/lib.rs",
+          "description": "Evaluates the structural authorization decision without owning external credentials or provider I/O."
+        },
+        {
+          "path": "crates/accordlock-control/src/lib.rs",
+          "description": "Moves exact durable artifacts through evaluation, issuance, and consumption roles."
+        },
+        {
+          "path": "crates/accordlock-runner-engine/src/state.rs",
+          "description": "Derives runner work from server-selected durable state and exact phase commitments."
+        },
+        {
+          "path": "crates/accordlock-agent-runtime/src/execution_trace.rs",
+          "description": "Revalidates the complete desktop execution lineage after completion."
+        }
+      ],
+      "tests": [
+        {
+          "path": "crates/accordlock-evaluation/tests/policy_profile.rs",
+          "name": "policy_decision_digest_binds_every_runner_handoff_field"
+        },
+        {
+          "path": "crates/accordlock-agent-runtime/src/execution_trace.rs",
+          "name": "lineage_binds_every_complete_transaction_stage"
+        },
+        {
+          "path": "crates/accordlock-enforcement/src/tests.rs",
+          "name": "private_mechanical_path_establishes_effect_and_reports_conservative_retirement"
+        }
+      ],
+      "limitations": [
+        "This is not an end-to-end refinement proof from Lean or TLA+ to Rust, SQL, the desktop application, or an external provider.",
+        "Cryptographic primitives, operating-system isolation, network behavior, and provider correctness remain trusted or separately tested components."
+      ]
+    }
+  ]
+}
