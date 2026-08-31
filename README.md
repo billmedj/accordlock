@@ -194,3 +194,5 @@ AccordLock's configuration-provenance model is informed by the published paper *
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing a security boundary. Vulnerabilities should not be filed as public issues; follow [SECURITY.md](SECURITY.md).
 
 The complete functional source is public under the [Apache License 2.0](LICENSE). AccordLock is derived in part from Goose and preserves its notices and third-party attribution. See [NOTICE](NOTICE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+Community expectations, support scope, decision rights, and brand use are documented in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [SUPPORT.md](SUPPORT.md), [GOVERNANCE.md](GOVERNANCE.md), and [TRADEMARKS.md](TRADEMARKS.md).

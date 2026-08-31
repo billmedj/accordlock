@@ -8,7 +8,18 @@
       "sourceRepository": "https://github.com/billmedj/accordlock-core.git",
       "commit": "27301d159feccf53bc565a5de68c1c307d9bff09",
       "tree": "3a02ebe252285cacf180ca9c46976477ec71cfa7",
-      "trackedTreeExclusions": []
+      "assembledTree": "4b3c9bf57d2a6f3a2d65cedb904cb14acd15d1bc",
+      "trackedTreeExclusions": [],
+      "postImportAdjustments": [
+        {
+          "path": "scripts/validate_repository.py",
+          "reason": "Excluded generated dependency and build trees when validating a source-archive component inside the monorepo."
+        },
+        {
+          "path": "tests/test_repository_validator.py",
+          "reason": "Added a regression test for source-archive validation inside the monorepo."
+        }
+      ]
     },
     {
       "path": "desktop",
@@ -16,6 +27,7 @@
       "upstreamRepository": "https://github.com/aaif-goose/goose.git",
       "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
       "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
+      "assembledTree": "068591d568270bdbf8a13798b564c5f889520b38",
       "trackedTreeExclusions": [
         {
           "path": "documentation/",
@@ -33,7 +45,7 @@
       "postImportAdjustments": [
         {
           "path": "scripts/check_accordlock_publication.py",
-          "reason": "Removed checks for the two intentionally excluded upstream documentation surfaces."
+          "reason": "Removed checks for the two intentionally excluded upstream documentation surfaces and scoped Git-visible file enumeration to the desktop component when run inside the monorepo."
         }
       ]
     }

@@ -1,0 +1,25 @@
+AccordLock
+Copyright 2026 Bilal Medjani
+
+This product includes software developed by Bilal Medjani and AccordLock
+contributors.
+
+AccordLock Desktop is a modified distribution of Goose. Goose is developed by
+its upstream contributors. AccordLock does not claim authorship of Goose,
+endorsement by its maintainers, or ownership of upstream contributions.
+Copyright and license notices in the Goose-derived files remain applicable,
+including Copyright 2024 Block, Inc.
+
+The Apache License 2.0 applies to software and documentation in this repository
+unless a file states otherwise. It does not grant permission to use the
+AccordLock name, logo, or other brand identifiers. See TRADEMARKS.md.
+
+Portions of CODE_OF_CONDUCT.md are adapted from Contributor Covenant version
+2.1, originally authored by Coraline Ada Ehmke and stewarded by the
+Organization for Ethical Source. That material is licensed under the Creative
+Commons Attribution 4.0 International License. CODE_OF_CONDUCT.md identifies
+the source and AccordLock changes.
+
+Portions of the initial implementation and documentation were produced with
+AI-assisted tooling under human direction and review. Human contributors remain
+responsible for licensing, confidentiality, verification, and submitted work.

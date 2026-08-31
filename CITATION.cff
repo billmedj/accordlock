@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use AccordLock, cite the exact software release or commit. Cite Whence separately when discussing configuration provenance."
+title: "AccordLock"
+type: software
+authors:
+  - family-names: "Medjani"
+    given-names: "Bilal"
+version: "0.1.0-alpha.1"
+repository-code: "https://github.com/billmedj/accordlock"
+license: "Apache-2.0"
+abstract: >-
+  An open desktop agent and transactional execution runtime that binds
+  consequential tool actions to an approved task, current state, admitted
+  evidence, available authority, and shared constraints before execution.
+keywords:
+  - autonomous agents
+  - execution integrity
+  - transactional authorization
+  - AI security
+  - Kubernetes
+references:
+  - type: article
+    authors:
+      - family-names: "Medjani"
+        given-names: "Bilal"
+    title: "Whence: The Fourth Coordinate of Computational Authority — An Algebra of Configuration Provenance for State Machines with Mutable Authority"
+    year: 2026
+    publisher:
+      name: "Zenodo"
+    doi: "10.5281/zenodo.20905713"
+    url: "https://doi.org/10.5281/zenodo.20905713"
