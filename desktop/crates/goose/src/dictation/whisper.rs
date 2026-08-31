@@ -3,8 +3,11 @@
 //! This module provides local audio transcription using OpenAI's Whisper model
 //! via the Candle ML framework. It supports loading GGUF quantized models for
 //! efficient CPU inference.
-//! Heavily "inspired" by the Candle Whisper example:
-//! https://github.com/huggingface/candle/tree/main/candle-examples/whisper
+//! Contains adapted portions of the Hugging Face Candle Whisper example at
+//! tag 0.11.0:
+//! https://github.com/huggingface/candle/blob/0.11.0/candle-examples/examples/whisper/main.rs
+//! Those portions are used under Apache-2.0, one of Candle's offered licenses.
+//! This file has been substantially modified for local dictation in Goose.
 
 use crate::config::paths::Paths;
 

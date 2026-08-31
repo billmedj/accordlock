@@ -39,6 +39,16 @@ generate a dependency license inventory and software bill of materials for the
 exact release artifact. This source-level notice is not a substitute for that
 artifact-specific review.
 
+## Embedded desktop assets
+
+The desktop component embeds pinned browser distributions for visualization
+and source data for optional local Whisper transcription. Exact versions,
+upstream artifacts, SHA-256 digests, modification relationships, attributions,
+and complete required license texts are recorded in
+[`desktop/THIRD_PARTY_NOTICES.md`](desktop/THIRD_PARTY_NOTICES.md). That file,
+the desktop `LICENSE`, and the desktop `NOTICE` are included in packaged
+applications by `desktop/ui/desktop/forge.config.ts`.
+
 ## Evaluation tools
 
 TLA+ tools, Lean, Rust, Node.js, Python, Docker, Kubernetes, and `kind` are not

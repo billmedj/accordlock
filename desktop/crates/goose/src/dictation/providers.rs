@@ -20,6 +20,9 @@ static LOCAL_TRANSCRIBER: once_cell::sync::Lazy<
 > = once_cell::sync::Lazy::new(|| Mutex::new(None));
 
 #[cfg(feature = "local-inference")]
+// Byte-for-byte copy of openai/whisper-tiny tokenizer.json at the pinned
+// Hugging Face snapshot documented in whisper_data/README.md. The snapshot is
+// Apache-2.0; the OpenAI Whisper MIT notice is retained in THIRD_PARTY_NOTICES.md.
 const WHISPER_TOKENIZER_JSON: &str = include_str!("whisper_data/tokens.json");
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize)]
