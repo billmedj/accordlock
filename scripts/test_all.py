@@ -171,6 +171,12 @@ def run_desktop_checks() -> None:
         DESKTOP,
         environment,
     )
+    _run(
+        "desktop-upstream-modifications",
+        [sys.executable, "scripts/check_upstream_modifications.py"],
+        DESKTOP,
+        environment,
+    )
     _run("desktop-format", [cargo, "fmt", "--all", "--", "--check"], DESKTOP, environment)
     _run(
         "desktop-backend-tests",

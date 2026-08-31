@@ -351,6 +351,13 @@ def main() -> int:
         )
         findings.extend(
             _run_guard(
+                "desktop-upstream-modifications",
+                [python, "scripts/check_upstream_modifications.py"],
+                ROOT / "desktop",
+            )
+        )
+        findings.extend(
+            _run_guard(
                 "assurance-map",
                 [python, "assurance/verify.py", "--root", "runtime", "--json"],
                 ROOT,
