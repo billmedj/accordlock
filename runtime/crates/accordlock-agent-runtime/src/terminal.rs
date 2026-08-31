@@ -660,21 +660,25 @@ impl PreparedTerminalOperation {
         let mut child = command
             .spawn()
             .map_err(|_| TerminalToolError::SpawnFailed)?;
+        let process_group_id = child.id();
         if executable.revalidate().is_err() {
             return Err(cleanup_or(
                 &mut *child,
+                process_group_id,
                 TerminalToolError::ExecutionStateChanged,
             ));
         }
         let Some(stdout) = child.stdout().take() else {
             return Err(cleanup_or(
                 &mut *child,
+                process_group_id,
                 TerminalToolError::OutputCaptureFailed,
             ));
         };
         let Some(stderr) = child.stderr().take() else {
             return Err(cleanup_or(
                 &mut *child,
+                process_group_id,
                 TerminalToolError::OutputCaptureFailed,
             ));
         };
@@ -684,20 +688,28 @@ impl PreparedTerminalOperation {
         let status = loop {
             match try_wait_leader(&mut *child) {
                 Ok(Some(status)) => {
-                    // A authorized program is never allowed to leave background work behind.
+                    // An authorized program is never allowed to leave background work behind.
                     // The parent status is not considered terminal until its complete job/group
                     // has been terminated and, where the OS supports it, reaped.
-                    cleanup_process_tree(&mut *child, true)?;
+                    cleanup_process_tree(&mut *child, process_group_id, true)?;
                     break status;
                 }
                 Ok(None) if started.elapsed() < self.timeout => {
                     thread::sleep(Duration::from_millis(10));
                 }
                 Ok(None) => {
-                    return Err(cleanup_or(&mut *child, TerminalToolError::TimedOut));
+                    return Err(cleanup_or(
+                        &mut *child,
+                        process_group_id,
+                        TerminalToolError::TimedOut,
+                    ));
                 }
                 Err(_) => {
-                    return Err(cleanup_or(&mut *child, TerminalToolError::WaitFailed));
+                    return Err(cleanup_or(
+                        &mut *child,
+                        process_group_id,
+                        TerminalToolError::WaitFailed,
+                    ));
                 }
             }
         };
@@ -760,13 +772,20 @@ fn try_wait_leader(
     }
 }
 
-fn cleanup_or(child: &mut dyn ChildWrapper, original: TerminalToolError) -> TerminalToolError {
-    cleanup_process_tree(child, false).err().unwrap_or(original)
+fn cleanup_or(
+    child: &mut dyn ChildWrapper,
+    process_group_id: u32,
+    original: TerminalToolError,
+) -> TerminalToolError {
+    cleanup_process_tree(child, process_group_id, false)
+        .err()
+        .unwrap_or(original)
 }
 
 #[cfg(windows)]
 fn cleanup_process_tree(
     child: &mut dyn ChildWrapper,
+    _process_group_id: u32,
     _leader_exited: bool,
 ) -> Result<(), TerminalToolError> {
     // JobObjectChild::kill terminates the complete job and wait() observes the
@@ -779,8 +798,11 @@ fn cleanup_process_tree(
 #[cfg(unix)]
 fn cleanup_process_tree(
     child: &mut dyn ChildWrapper,
+    process_group_id: u32,
     leader_exited: bool,
 ) -> Result<(), TerminalToolError> {
+    #[cfg(not(target_os = "linux"))]
+    let _ = process_group_id;
     // ProcessGroupChild::kill sends SIGKILL to the entire group. If the group
     // has already disappeared after an observed leader exit, NotFound is
     // positive evidence that no member remains in that group. Before an
@@ -796,17 +818,71 @@ fn cleanup_process_tree(
 
     // `wait()` can return after the leader has been reaped. Keep issuing the
     // group-wide kill until the kernel reports that the group no longer
-    // exists, so a natural leader exit cannot turn descendants into background
-    // work. This is process containment, not a filesystem/network sandbox.
+    // contains executable work, so a natural leader exit cannot turn
+    // descendants into background work. Linux can retain killed descendants
+    // as zombies after they have been reparented outside this process' reap
+    // authority. A zombie cannot execute, fork, or perform I/O; requiring
+    // `killpg` to return ESRCH would therefore turn successful containment into
+    // an ambiguous result. An unreadable or malformed `/proc` view still fails
+    // closed. This is process containment, not a filesystem/network sandbox.
     let deadline = Instant::now() + PROCESS_GROUP_CLEANUP_GRACE;
     loop {
         match child.start_kill() {
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
             Err(_) => return Err(TerminalToolError::ProcessTreeCleanupFailed),
-            Ok(()) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
-            Ok(()) => return Err(TerminalToolError::ProcessTreeCleanupFailed),
+            Ok(()) => {}
+        }
+        #[cfg(target_os = "linux")]
+        match linux_process_group_has_live_members(process_group_id) {
+            Ok(false) => return Ok(()),
+            Ok(true) => {}
+            Err(()) => return Err(TerminalToolError::ProcessTreeCleanupFailed),
+        }
+        if Instant::now() >= deadline {
+            return Err(TerminalToolError::ProcessTreeCleanupFailed);
+        }
+        thread::sleep(Duration::from_millis(5));
+    }
+}
+
+#[cfg(any(target_os = "linux", test))]
+fn proc_stat_state_and_group(stat: &str) -> Option<(u8, u32)> {
+    // `/proc/<pid>/stat` encloses `comm` in parentheses; that field may contain
+    // spaces and closing parentheses. Everything after the final `) ` starts
+    // with state, parent PID, then process-group ID.
+    let mut fields = stat.rsplit_once(") ")?.1.split_ascii_whitespace();
+    let state = fields.next()?.as_bytes();
+    let state = *state.first().filter(|_| state.len() == 1)?;
+    let _parent_pid = fields.next()?.parse::<u32>().ok()?;
+    let process_group = fields.next()?.parse::<u32>().ok()?;
+    Some((state, process_group))
+}
+
+#[cfg(target_os = "linux")]
+fn linux_process_group_has_live_members(process_group_id: u32) -> Result<bool, ()> {
+    let entries = std::fs::read_dir("/proc").map_err(|_| ())?;
+    for entry in entries {
+        let entry = entry.map_err(|_| ())?;
+        if entry
+            .file_name()
+            .to_str()
+            .and_then(|name| name.parse::<u32>().ok())
+            .is_none()
+        {
+            continue;
+        }
+        let stat_path = entry.path().join("stat");
+        let stat = match std::fs::read_to_string(stat_path) {
+            Ok(stat) => stat,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => continue,
+            Err(_) => return Err(()),
+        };
+        let (state, group) = proc_stat_state_and_group(&stat).ok_or(())?;
+        if group == process_group_id && state != b'Z' {
+            return Ok(true);
         }
     }
+    Ok(false)
 }
 
 pub(crate) fn execute_governed(
@@ -1288,13 +1364,13 @@ fn canonical_program(program: &TerminalProgram) -> Result<PathBuf, TerminalToolE
 
 fn open_pinned_program(program: &TerminalProgram) -> Result<OpenedExecutable, TerminalToolError> {
     let executable = open_executable(&program.executable)?;
-    validate_native_executable(&executable.file)?;
     if executable.digest != program.executable_sha256
         || executable.identity != program.executable_identity
         || executable.identity_handle != *program.executable_handle
     {
         return Err(TerminalToolError::ProgramChanged);
     }
+    validate_native_executable(&executable.file)?;
     Ok(executable)
 }
 
@@ -1573,6 +1649,19 @@ mod tests {
 
         assert_eq!(output.text, "ok\u{fffd}[31mred\u{fffd}hidden\n");
         assert!(!output.encoding_lossy);
+    }
+
+    #[test]
+    fn linux_proc_stat_parser_distinguishes_live_members_from_zombies() {
+        assert_eq!(
+            proc_stat_state_and_group("123 (worker) R 1 42 42 0"),
+            Some((b'R', 42))
+        );
+        assert_eq!(
+            proc_stat_state_and_group("124 (worker) name) Z 1 42 42 0"),
+            Some((b'Z', 42))
+        );
+        assert_eq!(proc_stat_state_and_group("malformed"), None);
     }
 
     #[test]

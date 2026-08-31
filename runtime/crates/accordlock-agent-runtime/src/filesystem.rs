@@ -1814,10 +1814,12 @@ fn sync_directory(directory: &Dir) -> Result<(), FilesystemRecoveryError> {
     // several Unix filesystems. Attempt it when supported; the verified
     // recovery blob is retained and every durable replay rechecks the target
     // when the platform rejects directory flushing.
-    match directory
-        .try_clone()
-        .and_then(|clone| clone.into_std_file().sync_all())
-    {
+    //
+    // `cap_std::Dir` deliberately uses an `O_PATH` capability on Linux. That
+    // descriptor is valid for path resolution but `fsync(2)` rejects it with
+    // `EBADF`. Reopen `.` through the existing capability so the flush uses a
+    // normal directory descriptor without introducing ambient path authority.
+    match directory.open(".").and_then(|opened| opened.sync_all()) {
         Ok(()) => Ok(()),
         Err(error)
             if matches!(

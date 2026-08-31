@@ -8,9 +8,17 @@
       "sourceRepository": "https://github.com/billmedj/accordlock-core.git",
       "commit": "27301d159feccf53bc565a5de68c1c307d9bff09",
       "tree": "3a02ebe252285cacf180ca9c46976477ec71cfa7",
-      "assembledTree": "15ebc9a510538c15e3753a5d48495514056f4662",
+      "assembledTree": "506ec231088c0e2f3b6bdb398b4cc4fb2e51ce64",
       "trackedTreeExclusions": [],
       "postImportAdjustments": [
+        {
+          "path": "crates/accordlock-agent-runtime/src/filesystem.rs",
+          "reason": "Reopened the existing directory capability with a normal descriptor before durable flush so Linux does not pass an O_PATH handle to fsync."
+        },
+        {
+          "path": "crates/accordlock-agent-runtime/src/terminal.rs",
+          "reason": "Preserved stable executable-change classification and verified Linux process-group retirement without treating non-executable zombies as live descendants."
+        },
         {
           "path": "scripts/validate_repository.py",
           "reason": "Excluded generated dependency, build, Lean, and TLC state trees when validating a source-archive component inside the monorepo."
