@@ -46,7 +46,7 @@ publish = false
 anyhow = "1.0.100"
 axum = "0.8.9"
 axum-server = { version = "0.8.0", features = ["tls-rustls"] }
-base64 = "0.22.1"
+base64 = "0.23.1"
 cap-fs-ext = "4.0.2"
 cap-std = "4.0.2"
 clap = { version = "4.5.48", features = ["derive"] }
