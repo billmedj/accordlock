@@ -21,10 +21,22 @@ class CheckFailure(RuntimeError):
 
 
 def _program(name: str) -> str:
+    configured = os.environ.get(f"ACCORDLOCK_{name.upper().replace('-', '_')}")
+    if configured:
+        path = Path(configured).expanduser().resolve()
+        if not path.is_file():
+            raise CheckFailure(f"configured {name} path is not a regular file: {path}")
+        return str(path)
     resolved = shutil.which(name)
-    if not resolved:
-        raise CheckFailure(f"required program is unavailable: {name}")
-    return resolved
+    if resolved:
+        return resolved
+    if os.name == "nt" and name == "cargo":
+        profile = os.environ.get("USERPROFILE")
+        if profile:
+            candidate = Path(profile) / ".cargo" / "bin" / "cargo.exe"
+            if candidate.is_file():
+                return str(candidate)
+    raise CheckFailure(f"required program is unavailable: {name}")
 
 
 def _run(label: str, command: list[str], cwd: Path = ROOT, env: dict[str, str] | None = None) -> None:
