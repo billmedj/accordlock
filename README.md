@@ -152,7 +152,7 @@ The launcher verifies its own safety profile and then demonstrates protected-pat
 PASS provider_free_demo cases=5 provider=NONE network=NOT_ATTEMPTED
 ```
 
-It requires Python 3.11+ and the Rust toolchain pinned by the repository. After dependencies are cached, prevent Cargo from using the network:
+It requires Python 3.11+ and the Rust toolchain pinned by the repository. Windows source builds also require Visual Studio Build Tools with the **Desktop development with C++** workload. After dependencies are cached, prevent Cargo from using the network:
 
 ```powershell
 python scripts/run_demo.py --offline --display markdown

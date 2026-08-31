@@ -26,6 +26,10 @@ Use `--offline` after Rust dependencies are cached. Add
 `--output-directory <path>` only when you want to retain the full JSON and
 Markdown reports; existing report files are never overwritten.
 
+Windows source builds require Visual Studio Build Tools with the
+**Desktop development with C++** workload in addition to the pinned Rust
+toolchain.
+
 ## Run against existing binaries
 
 Python 3.11 or newer is sufficient. The package has no runtime dependency outside the standard library.
