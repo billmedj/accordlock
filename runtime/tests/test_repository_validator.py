@@ -134,6 +134,7 @@ class RepositoryPublicationHygieneTests(unittest.TestCase):
                 ".local/tools/tool.jar",
                 "__pycache__/module.pyc",
                 "node_modules/package/index.js",
+                "models/states/19-0/states_0",
                 "target/debug/build-record.json",
             ):
                 generated = root / relative

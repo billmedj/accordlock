@@ -337,6 +337,13 @@ def main() -> int:
         )
         findings.extend(
             _run_guard(
+                "runtime-source-manifest",
+                [python, "scripts/source_manifest.py", "--git", "git"],
+                ROOT / "runtime",
+            )
+        )
+        findings.extend(
+            _run_guard(
                 "desktop-publication",
                 [python, "scripts/check_accordlock_publication.py"],
                 ROOT / "desktop",

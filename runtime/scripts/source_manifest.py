@@ -47,7 +47,14 @@ def repository_paths(repository: Path, git: str) -> list[str]:
         except UnicodeDecodeError as error:
             raise ManifestError("repository paths are not UTF-8") from error
     else:
-        excluded_roots = {".git", ".local", "target", "__pycache__"}
+        excluded_roots = {
+            ".git",
+            ".lake",
+            ".local",
+            "__pycache__",
+            "node_modules",
+            "target",
+        }
         values = [
             path.relative_to(repository).as_posix()
             for path in repository.rglob("*")
@@ -56,6 +63,7 @@ def repository_paths(repository: Path, git: str) -> list[str]:
                 part in excluded_roots or part.startswith(".tmp")
                 for part in path.relative_to(repository).parts
             )
+            and path.relative_to(repository).parts[:2] != ("models", "states")
         ]
     paths = [value for value in values if value and value != MANIFEST_NAME]
     if paths != sorted(paths) or len(paths) != len(set(paths)):

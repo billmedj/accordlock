@@ -308,6 +308,7 @@ def git_visible_files(root: Path) -> list[Path]:
                 part in excluded_roots or part.startswith(".tmp")
                 for part in path.relative_to(root).parts
             )
+            and path.relative_to(root).parts[:2] != ("models", "states")
         ]
 
     visible: list[Path] = []

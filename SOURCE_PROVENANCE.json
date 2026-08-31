@@ -8,16 +8,28 @@
       "sourceRepository": "https://github.com/billmedj/accordlock-core.git",
       "commit": "27301d159feccf53bc565a5de68c1c307d9bff09",
       "tree": "3a02ebe252285cacf180ca9c46976477ec71cfa7",
-      "assembledTree": "4b3c9bf57d2a6f3a2d65cedb904cb14acd15d1bc",
+      "assembledTree": "15ebc9a510538c15e3753a5d48495514056f4662",
       "trackedTreeExclusions": [],
       "postImportAdjustments": [
         {
           "path": "scripts/validate_repository.py",
-          "reason": "Excluded generated dependency and build trees when validating a source-archive component inside the monorepo."
+          "reason": "Excluded generated dependency, build, Lean, and TLC state trees when validating a source-archive component inside the monorepo."
         },
         {
           "path": "tests/test_repository_validator.py",
-          "reason": "Added a regression test for source-archive validation inside the monorepo."
+          "reason": "Added regression coverage for source-archive validation after dependency, Lean, and TLC runs inside the monorepo."
+        },
+        {
+          "path": "scripts/source_manifest.py",
+          "reason": "Made exact source-manifest enumeration exclude generated dependency, build, Lean, and TLC state trees in a monorepo source archive."
+        },
+        {
+          "path": "tests/test_source_manifest.py",
+          "reason": "Added regression coverage for generated-tree exclusion in monorepo source-manifest enumeration."
+        },
+        {
+          "path": "SOURCE_MANIFEST.sha256",
+          "reason": "Regenerated the exact source manifest for the complete public runtime component after the recorded public adjustments."
         }
       ]
     },

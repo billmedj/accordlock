@@ -28,6 +28,15 @@ class SourceManifestTests(unittest.TestCase):
             (root / "target" / "generated.bin").write_bytes(b"generated")
             (root / "__pycache__").mkdir()
             (root / "__pycache__" / "cached.pyc").write_bytes(b"cached")
+            for relative in (
+                ".lake/build/generated.c",
+                ".local/tools/tool.jar",
+                "node_modules/package/index.js",
+                "models/states/19-0/states_0",
+            ):
+                generated = root / relative
+                generated.parent.mkdir(parents=True, exist_ok=True)
+                generated.write_text("generated\n", encoding="utf-8")
             self.assertEqual(
                 CHECKER.repository_paths(root, "must-not-be-invoked"),
                 ["src/lib.rs"],

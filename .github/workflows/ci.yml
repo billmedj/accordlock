@@ -77,6 +77,10 @@ jobs:
         working-directory: runtime
         run: python -m unittest discover -s tests -v
 
+      - name: Verify the exact source manifest
+        working-directory: runtime
+        run: python scripts/source_manifest.py --git git
+
       - name: Build native demonstration entrypoints
         working-directory: runtime
         env:
@@ -86,6 +90,10 @@ jobs:
       - name: Run the native provider-free proof
         working-directory: runtime
         run: cargo run --locked -q -p accordlock-cli -- offline --compact
+
+      - name: Verify actual Rust compiler inputs
+        working-directory: runtime
+        run: python scripts/source_manifest.py --git git --dep-info-root target
 
       - name: Run demonstrations against native binaries
         env:

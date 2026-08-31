@@ -92,6 +92,12 @@ def run_runtime_checks() -> None:
         environment,
     )
     _run(
+        "runtime-compiler-inputs",
+        [python, "scripts/source_manifest.py", "--git", "git", "--dep-info-root", "target"],
+        RUNTIME,
+        environment,
+    )
+    _run(
         "native-provider-free-proof",
         [cargo, "run", "--locked", "-q", "-p", "accordlock-cli", "--", "offline", "--compact"],
         RUNTIME,
