@@ -782,6 +782,11 @@ fn cleanup_or(
         .unwrap_or(original)
 }
 
+#[cfg(unix)]
+fn process_group_is_absent(error: &std::io::Error) -> bool {
+    error.kind() == std::io::ErrorKind::NotFound || error.raw_os_error() == Some(libc::ESRCH)
+}
+
 #[cfg(windows)]
 fn cleanup_process_tree(
     child: &mut dyn ChildWrapper,
@@ -804,13 +809,15 @@ fn cleanup_process_tree(
     #[cfg(not(target_os = "linux"))]
     let _ = process_group_id;
     // ProcessGroupChild::kill sends SIGKILL to the entire group. If the group
-    // has already disappeared after an observed leader exit, NotFound is
-    // positive evidence that no member remains in that group. Before an
-    // observed exit the same result is ambiguous (for example, a group escape)
-    // and therefore fails closed without an unbounded wait.
+    // has already disappeared after an observed leader exit, an OS-level
+    // "not found" result is positive evidence that no member remains in that
+    // group. Rust currently exposes Unix ESRCH as `Uncategorized`, so the
+    // helper also checks the raw errno. Before an observed exit the same result
+    // is ambiguous (for example, a group escape) and therefore fails closed
+    // without an unbounded wait.
     match child.kill() {
         Ok(()) => {}
-        Err(error) if leader_exited && error.kind() == std::io::ErrorKind::NotFound => {
+        Err(error) if leader_exited && process_group_is_absent(&error) => {
             return Ok(());
         }
         Err(_) => return Err(TerminalToolError::ProcessTreeCleanupFailed),
@@ -828,7 +835,7 @@ fn cleanup_process_tree(
     let deadline = Instant::now() + PROCESS_GROUP_CLEANUP_GRACE;
     loop {
         match child.start_kill() {
-            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+            Err(error) if process_group_is_absent(&error) => return Ok(()),
             Err(_) => return Err(TerminalToolError::ProcessTreeCleanupFailed),
             Ok(()) => {}
         }
@@ -1662,6 +1669,16 @@ mod tests {
             Some((b'Z', 42))
         );
         assert_eq!(proc_stat_state_and_group("malformed"), None);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn unix_esrch_proves_an_observed_process_group_is_absent() {
+        let absent = std::io::Error::from_raw_os_error(libc::ESRCH);
+        let forbidden = std::io::Error::from_raw_os_error(libc::EPERM);
+
+        assert!(process_group_is_absent(&absent));
+        assert!(!process_group_is_absent(&forbidden));
     }
 
     #[test]

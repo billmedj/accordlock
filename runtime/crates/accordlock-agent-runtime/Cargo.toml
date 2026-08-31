@@ -39,6 +39,9 @@ uuid.workspace = true
 webpki-roots.workspace = true
 zeroize = "=1.9.0"
 
+[target.'cfg(unix)'.dependencies]
+libc.workspace = true
+
 [[bin]]
 name = "accordlock-agent-runtime"
 path = "src/main.rs"

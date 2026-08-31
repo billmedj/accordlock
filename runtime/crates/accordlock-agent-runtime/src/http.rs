@@ -1557,7 +1557,7 @@ mod tests {
             .await?;
         assert_eq!(executed.status(), StatusCode::OK);
         let executed = json_body(executed).await;
-        assert_eq!(executed["status"], "SUCCEEDED");
+        assert_eq!(executed["status"], "SUCCEEDED", "{executed:#}");
         assert_eq!(executed["reason_code"], "EXECUTED");
         assert!(
             executed["result"]["stdout"]

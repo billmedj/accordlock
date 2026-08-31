@@ -55,6 +55,7 @@ dependencies = [
  "clap",
  "hex",
  "httparse",
+ "libc",
  "process-wrap",
  "rusqlite",
  "rustls",
