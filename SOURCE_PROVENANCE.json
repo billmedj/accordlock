@@ -8,9 +8,17 @@
       "sourceRepository": "https://github.com/billmedj/accordlock-core.git",
       "commit": "27301d159feccf53bc565a5de68c1c307d9bff09",
       "tree": "3a02ebe252285cacf180ca9c46976477ec71cfa7",
-      "assembledTree": "074c36d8284837de9c9e3723f0d5fdb4a54f690b",
+      "assembledTree": "7cf66f417fcb68fda679714812a6121828ca7111",
       "trackedTreeExclusions": [],
       "postImportAdjustments": [
+        {
+          "path": "CHANGELOG.md",
+          "reason": "Published the sanitized runtime change record under the source-only engineering-alpha release identity."
+        },
+        {
+          "path": "CITATION.cff",
+          "reason": "Bound the runtime citation metadata to the dated source-only engineering-alpha release."
+        },
         {
           "path": "Cargo.lock",
           "reason": "Recorded the explicit Unix errno dependency used to distinguish an absent process group from an ambiguous cleanup failure."
@@ -63,7 +71,7 @@
       "upstreamRepository": "https://github.com/aaif-goose/goose.git",
       "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
       "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
-      "assembledTree": "b9b7a46e86777550e7cf76fb65b29a0244e3346f",
+      "assembledTree": "03081171a770204c6297766c092e70169a4bf2c6",
       "trackedTreeExclusions": [
         {
           "path": "documentation/",
@@ -90,6 +98,10 @@
         {
           "path": "CUSTOM_DISTROS.md",
           "reason": "Corrected the distribution attribution path so the retained upstream guidance resolves to AccordLock's public provenance record."
+        },
+        {
+          "path": "UPSTREAM.md",
+          "reason": "Distinguished the AccordLock product release identity from retained Goose workspace and package compatibility versions."
         },
         {
           "path": "THIRD_PARTY_NOTICES.md",
@@ -141,11 +153,11 @@
         },
         {
           "path": "RELEASE.md",
-          "reason": "Aligned the release boundary with the public monorepo and documented that the first technical preview is source-only."
+          "reason": "Separated the exact-commit source-only engineering-alpha gates from later signed-binary and production release gates."
         },
         {
           "path": "RELEASE_CHECKLIST.md",
-          "reason": "Replaced separate-repository identity wording with the monorepo commit and assembled component trees."
+          "reason": "Bound binary acceptance to the monorepo commit and component trees while explicitly excluding its unchecked items from the source-only alpha claim."
         },
         {
           "path": "scripts/build-windows.ps1",
