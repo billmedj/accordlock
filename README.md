@@ -125,7 +125,7 @@ See [the demo package](demos/README.md) for the adversarial walkthrough and Acco
 
 ## Verify the public source boundary
 
-One standard-library command checks required public files, source provenance, generated artifacts, credentials and personal paths, documentation links, pinned GitHub Actions, component publication guards, and the claim-to-evidence map:
+One standard-library command checks required public files, source provenance, generated artifacts, documentation links, pinned GitHub Actions, component publication guards, the claim-to-evidence map, and credentials or personal paths on AccordLock-authored publication surfaces:
 
 ```powershell
 python scripts/check_publication.py

@@ -4,6 +4,10 @@
 **Environment:** Windows 11, Rust 1.97.1, Python 3.13.1, Java 20.0.1  
 **Purpose:** record what was reproduced after the public monorepo was assembled
 
+**Recorded revision:** `a371189415d154ffb1c8d42707cbf0e44f78a50e`
+
+**Recorded component trees:** runtime `3a02ebe252285cacf180ca9c46976477ec71cfa7`; desktop `9f83e43814e4f513846b6423d3de55c211ddc3b0`
+
 This is a workstation validation record, not a release certificate. A public tag must reproduce the required gates from a clean checkout in CI and retain the resulting logs.
 
 ## Passed
