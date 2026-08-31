@@ -119,9 +119,6 @@ def _lake_program() -> str:
         if not path.is_file():
             raise CheckFailure("ACCORDLOCK_LAKE does not name a regular file")
         return str(path)
-    discovered = shutil.which("lake")
-    if discovered:
-        return discovered
     if os.name == "nt":
         profile = os.environ.get("USERPROFILE")
         if profile:
@@ -130,6 +127,9 @@ def _lake_program() -> str:
             candidate = Path(profile) / ".elan" / "toolchains" / directory / "bin" / "lake.exe"
             if candidate.is_file():
                 return str(candidate)
+    discovered = shutil.which("lake")
+    if discovered:
+        return discovered
     raise CheckFailure("lake is unavailable; install the toolchain from runtime/formal/lean-toolchain")
 
 

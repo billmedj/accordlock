@@ -38,7 +38,7 @@ TLC 2.19 from TLA+ tools v1.7.4
 | BrokerJournal | canonical | 1,520,004 | 250,052 | 27 |
 | TerminalRetirement | canonical | 4,371,625 | 279,978 | 16 |
 | DurableControlQueue | canonical | 20,165,021 | 839,417 | 21 |
-| DurableDispatchAcquisition | Max1 smoke configuration | 3,149,250 | 307,768 | 23 |
+| DurableDispatchAcquisition | Max1 smoke configuration | 3,149,250 | 307,768 | 22 |
 | **Total** |  | **29,269,710** | **1,685,779** |  |
 
 The final acquisition run is a complete Max1 search. It is not the canonical exhaustive Max3 result and does not cover Max2 multi-acquisition behavior.
