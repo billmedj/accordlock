@@ -7,7 +7,7 @@
 <p align="center"><strong>Agents can be wrong. Their actions do not have to be.</strong></p>
 
 <p align="center">
-  An open desktop agent and transactional execution runtime for consequential work.
+  An open-source desktop agent and transactional runtime for teams evaluating AI agents on code and infrastructure.
 </p>
 
 <p align="center">
@@ -19,6 +19,8 @@
 > [!IMPORTANT]
 > AccordLock is an **engineering alpha** for local evaluation and security research. It is not a supported production security boundary. There is no signed public installer, completed live EKS validation, or independent security review yet.
 
+AccordLock is built for platform, security, and SRE teams that need AI agents to work under bounded execution authority.
+
 ## Why this exists
 
 An agent can hold valid credentials and still do the wrong thing. The model may misunderstand the task, follow an injected instruction, invent a fact, act on stale state, exceed a shared limit, or retry an operation whose outcome is unknown.
@@ -28,6 +30,18 @@ Identity and policy systems answer whether an actor may perform a class of actio
 > Does this exact action still agree with the approved task, trusted evidence, current state, available authority, and shared constraints?
 
 If the answer cannot be established, AccordLock does not convert uncertainty into permission. It denies the action, requests a focused review, or records an unknown outcome for reconciliation.
+
+## Where AccordLock fits
+
+| Control layer | Question it answers |
+|---|---|
+| IAM and RBAC | Which actor may perform a class of action? |
+| Policy engines | Which actions satisfy organizational rules? |
+| Sandboxes | Where can code execute, and what can that environment reach? |
+| Supply-chain attestations | Where did an artifact come from, and how was it built? |
+| **AccordLock** | **May this exact action execute now under the approved task, admitted evidence, current state, available authority, shared resources, and transaction history?** |
+
+These controls remain in place. AccordLock supplies the per-action transaction boundary between them and an autonomous agent.
 
 ## The transaction boundary
 
@@ -52,19 +66,19 @@ AccordLock runtime ----- intent | evidence | state | authority | resources
 Single-use authorization
       |
       v
-Brokered effect -------- credentials remain at the execution boundary
+Brokered effect -------- exact effect constructed outside the model
       |
       v
 Observed result or UNKNOWN ---- audit, reconciliation, recovery
 ```
 
-The model is useful precisely because it can explore. It is untrusted precisely because exploration is not authority.
+The model may explore; execution authority stays in the runtime.
 
 ## What changes in practice
 
 | Failure mode | AccordLock behavior |
 |---|---|
-| Prompt injection changes a proposed tool call | The proposal receives no new authority. Exact policy and task constraints are evaluated outside the model. |
+| Prompt injection changes a proposed tool call | Hostile content may change the proposal, but cannot by itself grant authority. Fixed task and policy constraints are evaluated outside the model. An overbroad approved task remains dangerous. |
 | The model invents evidence or a deployment fact | Model output is not trusted evidence. Missing or inconclusive evidence cannot authorize automatically. |
 | Approved arguments are changed before execution | The authorization no longer matches and is rejected. |
 | Policy, configuration, or target state changes | Stale authority and stale state fail closed. |
@@ -73,7 +87,21 @@ The model is useful precisely because it can explore. It is untrusted precisely 
 | Concurrent agents compete for a protected resource | Componentwise limits and exclusive reservations are checked before dispatch. |
 | A safe read is within the task contract | It can proceed without interrupting the user. Approval is reserved for a real boundary. |
 
-AccordLock contains the **effects** of prompt injection and hallucination at execution time. It does not claim to detect every injection, make a model truthful, or secure channels that bypass the runtime.
+On fully mediated paths, AccordLock limits what model-influenced proposals can execute. It does not detect every prompt injection, prove an allowed action correct, or protect effects that bypass the runtime.
+
+## What AccordLock adds to Goose
+
+AccordLock Desktop starts from [Goose v1.47.0](desktop/UPSTREAM.md). The upstream agent foundation and the AccordLock security product have distinct, reviewable provenance.
+
+| Surface | Provenance | Role in this repository |
+|---|---|---|
+| Agent loop, provider and MCP ecosystem, desktop foundation | Goose | Untrusted planning, model access, tool integration, and the base desktop application |
+| AccordLock desktop distribution | AccordLock changes to Goose | Projects, fixed task contracts, exact approvals, protected-tool routing, activity, revocation, recovery, and deployment-preflight surfaces |
+| Transaction runtime | Independent AccordLock Rust components | Policy and evidence evaluation, signed single-use authorization, durable lifecycle state, controlled execution, audit, and reconciliation |
+| Cloud and remote-control path | AccordLock | GitHub, ECR, and Kubernetes preflight; narrow deployment profile; signed remote-decision protocols |
+| Assurance package | AccordLock | Lean models, TLA+ state machines, AccordBench, adversarial demonstrations, and claim-to-evidence traceability |
+
+The inherited files and AccordLock modifications are recorded in [the desktop modification inventory](desktop/MODIFICATIONS.md). The [engineering case study](docs/ENGINEERING_CASE_STUDY.md) follows the design from threat model to product, runtime, and evidence.
 
 ## Product surface
 
@@ -82,7 +110,7 @@ AccordLock contains the **effects** of prompt injection and hallucination at exe
 - Projects and task history rather than an undifferentiated chat list.
 - A concise task contract: objective, workspace, capabilities, protected paths, and expiry.
 - Automatic bounded reads; exact previews for file changes and terminal commands.
-- Model choice through supported providers, including Anthropic, OpenAI, Mistral, OpenCode Zen, OpenRouter, and Ollama/local models.
+- Model choice through Goose's provider layer, with configuration paths for Anthropic, OpenAI, Mistral, OpenCode Zen, OpenRouter, and Ollama/local models. Provider and model compatibility varies; model output remains untrusted.
 - Protected filesystem operations, opt-in terminal programs, and an HTTPS GET/HEAD network broker with exact-domain controls.
 - Action history, exportable audit records, recovery events, and scoped revocation.
 - Foundations for signed Slack, Teams, Telegram, and WhatsApp approval decisions. Live provider acceptance and a deployable private gateway remain release work.
@@ -103,6 +131,12 @@ AccordLock contains the **effects** of prompt injection and hallucination at exe
 The repository contains the engineering path for GitHub build evidence, ECR artifact evidence, EKS discovery, signed deployment preflight receipts, exact Kubernetes patch construction, and an execution worker that does not expose production credentials to the model.
 
 The authenticated GitHub–ECR–EKS chain has not yet been demonstrated against real accounts. The included cloud workflow is therefore a testable implementation path, not a production-readiness claim.
+
+## Research to implementation
+
+The published paper *Whence: The Fourth Coordinate of Computational Authority* argues that mutable authority depends on the provenance of active configuration, not only actor, action, and resource. AccordLock operationalizes that thesis by binding policy and configuration epochs, rooted registries, and current state into protected transactions so that drift invalidates stale authority.
+
+Read the [research provenance map](docs/RESEARCH_PROVENANCE.md), the [engineering case study](docs/ENGINEERING_CASE_STUDY.md), or the paper itself ([DOI 10.5281/zenodo.20905713](https://doi.org/10.5281/zenodo.20905713)). The paper motivates this design; it does not prove the software correct.
 
 ## Run the provider-free proof
 
@@ -137,12 +171,21 @@ Run the fast source suite with `python scripts/test_all.py`. Add `--runtime`, `-
 
 ## Assurance, with the claim boundary intact
 
-AccordLock includes:
+Machine-checked scope includes selected abstract properties that:
+
+- evidence cannot expand task authority;
+- consumed authorizations cannot be reused;
+- changed authority or state invalidates stale authorization;
+- evidence can restrict a decision but cannot expand authority;
+- resource admission respects componentwise bounds; and
+- an unresolved effect cannot be treated as a safe retry.
+
+At the current snapshot, the evidence set includes:
 
 - **81 Lean theorems** over selected properties of small abstract authorization models;
 - **8 TLA+ models** for bounded lifecycle and concurrency exploration;
 - **73 AccordBench cases** covering intent conformance, transaction lifecycle, shared resources, and safe autonomy;
-- **10 public assurance claims** linked to 221 concrete proof, model, source, and test references.
+- **10 scoped public assurance claims** mapped to proof, model, source, and executable-test references.
 
 Run the traceability gate:
 
@@ -185,7 +228,7 @@ The second command creates a development package. Release packaging has stricter
 
 | Area | Status |
 |---|---|
-| Local desktop task flow | Functional engineering alpha |
+| Local desktop task flow | Implemented locally; clean-checkout release-candidate validation pending |
 | Filesystem and exact-command mediation | Implemented; terminal containment is not a complete OS sandbox |
 | Network mediation | Exact-domain HTTPS GET/HEAD path implemented; broader enterprise profiles pending |
 | Durable audit, revocation, and recovery records | Implemented locally |
@@ -208,14 +251,10 @@ The complete boundary is documented in [Product status](docs/PRODUCT_STATUS.md),
 5. **Audit records describe what the system can establish, not what it hopes happened.**
 6. **Safe work should remain fluid.** Security that requires approving every read is not useful autonomy.
 
-## Research provenance
-
-AccordLock's configuration-provenance model is informed by the published paper *Whence: The Fourth Coordinate of Computational Authority* ([DOI 10.5281/zenodo.20905713](https://doi.org/10.5281/zenodo.20905713)). The repository contains the product implementation and its public assurance artifacts. It does not include unpublished research manuscripts or claim that the paper proves this software correct.
-
 ## Contributing and security
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing a security boundary. Vulnerabilities should not be filed as public issues; follow [SECURITY.md](SECURITY.md).
 
-The complete functional source is public under the [Apache License 2.0](LICENSE). AccordLock is derived in part from Goose and preserves its notices and third-party attribution. See [NOTICE](NOTICE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+The source code for this engineering alpha is public under the [Apache License 2.0](LICENSE). AccordLock is derived in part from Goose and preserves its notices and third-party attribution. See [NOTICE](NOTICE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Community expectations, support scope, decision rights, and brand use are documented in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [SUPPORT.md](SUPPORT.md), [GOVERNANCE.md](GOVERNANCE.md), and [TRADEMARKS.md](TRADEMARKS.md).
