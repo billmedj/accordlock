@@ -29,8 +29,41 @@ class AccordLockPublicationGuardTests(unittest.TestCase):
     def test_upstream_telemetry_ingestion_keys_are_rejected(self) -> None:
         candidate = "phc_" + ("A" * 40)
         self.assertTrue(
-            any(pattern.search(candidate) for pattern in PUBLICATION.SECRET_PATTERNS)
+            any(pattern.search(candidate) for pattern in PUBLICATION.GLOBAL_SECRET_PATTERNS)
         )
+
+    def test_secret_in_non_owned_upstream_path_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            git(root, "init", "--quiet")
+            fixture = root / "vendor" / "upstream" / "fixture.txt"
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text("token=" + "phc_" + ("B" * 40) + "\n", encoding="utf-8")
+            git(root, "add", fixture.relative_to(root).as_posix())
+
+            errors: list[str] = []
+            PUBLICATION.check_repository_hygiene(errors, root)
+
+            self.assertEqual(
+                errors,
+                [
+                    "vendor/upstream/fixture.txt:1: possible committed secret is forbidden"
+                ],
+            )
+
+    def test_runtime_helpers_are_offline_and_uv_build_fetch_is_pinned(self) -> None:
+        errors: list[str] = []
+        PUBLICATION.check_extension_helper_supply_chain(errors)
+
+        self.assertEqual(errors, [])
+        self.assertNotIn(
+            PUBLICATION.PINNED_UV_BUILD_SURFACE,
+            PUBLICATION.EXTENSION_HELPER_SURFACES,
+        )
+        build_helper = (PUBLICATION.ROOT / PUBLICATION.PINNED_UV_BUILD_SURFACE).read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("https://", build_helper)
 
     def test_personal_home_paths_are_detected_without_naming_a_developer(self) -> None:
         self.assertTrue(

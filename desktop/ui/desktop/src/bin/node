@@ -1,16 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Modified by AccordLock contributors; see UPSTREAM.md.
 
-# Enable strict mode to exit on errors and unset variables
 set -euo pipefail
 
-# Get the directory where this script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_SOURCE="${BASH_SOURCE[0]}"
+SCRIPT_PARENT="${SCRIPT_SOURCE%/*}"
+[[ "${SCRIPT_PARENT}" != "${SCRIPT_SOURCE}" ]] || SCRIPT_PARENT="."
+SCRIPT_DIR="$(cd -P -- "${SCRIPT_PARENT}" && pwd -P)"
+source "${SCRIPT_DIR}/system-tool-wrapper.sh"
 
-# Source the common setup script
-source "${SCRIPT_DIR}/node-setup-common.sh"
-
-# Final step: Execute node with passed arguments
-log "Executing 'node' command with arguments: ${*}"
-node "${@}" || log "Failed to execute 'node' with arguments: ${*}"
-
-log "node script completed successfully."
+accordlock_exec_system_tool node "${SCRIPT_DIR}/node" "$@"

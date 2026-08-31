@@ -1,3 +1,5 @@
+<!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
+
 # AccordLock Desktop scripts
 
 These maintainer scripts support development, verification, English message extraction, and packaging. They are not an end-user installation path.
@@ -28,6 +30,8 @@ Supplying both runtime sources or neither is an error.
 ## Platform preparation
 
 `prepare-platform-binaries.js` stages pinned helper binaries for the current platform and removes incompatible cross-platform files. Downloaded helpers are accepted only after their pinned SHA-256 values match.
+
+Packaged extension wrappers do not install runtimes. They resolve an existing system `node`, `npx`, `uvx`, or `jbang` outside the application bundle and fail with a prerequisite error when none is available. The legacy `prepare-windows-npm` scripts are retained only as fail-closed stubs.
 
 ## English messages and artwork
 

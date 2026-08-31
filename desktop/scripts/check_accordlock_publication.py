@@ -104,12 +104,44 @@ PERSONAL_PATH_PATTERNS = (
     ),
 )
 
-SECRET_PATTERNS = (
-    re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
+GLOBAL_SECRET_PATTERNS = (
+    re.compile(r"\b(?:AKIA|ASIA)[0-9A-Z]{16}\b"),
     re.compile(r"\bgh[pousr]_[A-Za-z0-9]{36,}\b"),
     re.compile(r"\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b"),
     re.compile(r"\bphc_[A-Za-z0-9]{20,}\b"),
+)
+
+SCOPED_SECRET_PATTERNS = (
     re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
+)
+
+EXTENSION_HELPER_SURFACES = (
+    "ui/desktop/src/bin/system-tool-wrapper.sh",
+    "ui/desktop/src/bin/node",
+    "ui/desktop/src/bin/npx",
+    "ui/desktop/src/bin/uvx",
+    "ui/desktop/src/bin/jbang",
+    "ui/desktop/src/platform/windows/bin/npx.cmd",
+    "ui/desktop/src/platform/windows/bin/jbang.cmd",
+    "ui/desktop/scripts/prepare-windows-npm.bat",
+    "ui/desktop/scripts/prepare-windows-npm.sh",
+)
+
+FORBIDDEN_EXTENSION_HELPER_PATTERNS = (
+    ("network download", re.compile(r"\b(?:curl|wget|Invoke-WebRequest|Start-BitsTransfer)\b", re.IGNORECASE)),
+    ("network URL", re.compile(r"https?://", re.IGNORECASE)),
+    ("package self-install", re.compile(r"\b(?:hermit|npm|pnpm|yarn|uv|jbang)\s+install\b", re.IGNORECASE)),
+    ("installer execution", re.compile(r"\b(?:msiexec(?:\.exe)?|Expand-Archive)\b", re.IGNORECASE)),
+    ("mutable stable release", re.compile(r"releases/download/stable", re.IGNORECASE)),
+    ("wildcard trust", re.compile(r"\btrust\s+add\s+['\"]?\*", re.IGNORECASE)),
+    ("legacy runtime cache", re.compile(r"LOCALAPPDATA[^\r\n]*(?:Goose|AccordLock)[\\/]node", re.IGNORECASE)),
+)
+
+PINNED_UV_BUILD_SURFACE = "ui/desktop/scripts/prepare-platform-binaries.js"
+PINNED_UV_VERSION = "0.11.11"
+PINNED_UV_HASHES = (
+    "b1645e948603c12dd741987d0c072471195e18dd299b42334477ceac694f0af8",
+    "0305c488dc29c16df1483c02a902d21a6798b0744f8e9eb34271d6b3e4bf6e2a",
 )
 
 PUBLIC_INSTALL_SURFACES = (
@@ -224,11 +256,17 @@ def check_repository_hygiene(errors: list[str], root: Path = ROOT) -> None:
         ):
             errors.append(f"{relative_path}: local runtime or build artifact is forbidden")
 
-        if not is_owned_text(relative_path):
-            continue
         try:
             content = (root / relative_path).read_text(encoding="utf-8")
         except UnicodeDecodeError:
+            continue
+        for pattern in GLOBAL_SECRET_PATTERNS:
+            match = pattern.search(content)
+            if match:
+                line = content.count("\n", 0, match.start()) + 1
+                errors.append(f"{relative_path}:{line}: possible committed secret is forbidden")
+
+        if not is_owned_text(relative_path):
             continue
         for label, pattern in BANNED_OWNED_TERMS:
             match = pattern.search(content)
@@ -244,11 +282,42 @@ def check_repository_hygiene(errors: list[str], root: Path = ROOT) -> None:
             if match:
                 line = content.count("\n", 0, match.start()) + 1
                 errors.append(f"{relative_path}:{line}: personal absolute path is forbidden")
-        for pattern in SECRET_PATTERNS:
+        for pattern in SCOPED_SECRET_PATTERNS:
             match = pattern.search(content)
             if match:
                 line = content.count("\n", 0, match.start()) + 1
                 errors.append(f"{relative_path}:{line}: possible committed secret is forbidden")
+
+
+def check_extension_helper_supply_chain(errors: list[str]) -> None:
+    for relative_path in EXTENSION_HELPER_SURFACES:
+        content = read(relative_path)
+        for label, pattern in FORBIDDEN_EXTENSION_HELPER_PATTERNS:
+            match = pattern.search(content)
+            if match:
+                line = content.count("\n", 0, match.start()) + 1
+                errors.append(
+                    f"{relative_path}:{line}: forbidden extension helper behavior: {label}"
+                )
+
+    build_helper = read(PINNED_UV_BUILD_SURFACE)
+    for required in (
+        f"const uvVersion = '{PINNED_UV_VERSION}'",
+        "releases/download/${uvVersion}",
+        *PINNED_UV_HASHES,
+        "actualHash !== expectedHash",
+        "sha256(extractedPath)",
+    ):
+        if required not in build_helper:
+            errors.append(
+                f"{PINNED_UV_BUILD_SURFACE}: pinned uv build fetch is missing {required}"
+            )
+    verification = build_helper.find("actualHash !== expectedHash")
+    staging = build_helper.find("fs.copyFileSync(extractedPath, destPath)")
+    if verification < 0 or staging < 0 or verification > staging:
+        errors.append(
+            f"{PINNED_UV_BUILD_SURFACE}: uv digest verification must precede staging"
+        )
 
 
 def workflow_triggers(content: str) -> set[str]:
@@ -447,6 +516,7 @@ def main() -> int:
         check_workflows(errors)
         check_artifact_boundaries(errors)
         check_public_surfaces(errors)
+        check_extension_helper_supply_chain(errors)
         check_repository_hygiene(errors)
     except (OSError, UnicodeError, AssertionError, subprocess.SubprocessError) as error:
         errors.append(str(error))
