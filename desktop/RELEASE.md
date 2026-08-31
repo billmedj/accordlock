@@ -1,17 +1,35 @@
 <!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
 # AccordLock release process
 
-AccordLock has no supported public release yet. A source snapshot, development
-installer, or passing local test suite is not a production release.
+AccordLock has no supported production release yet. A source snapshot,
+development installer, or passing local test suite is not a production
+security boundary.
 
 The release boundary spans this monorepo's desktop distribution and independent
-runtime. Validate both component trees from the monorepo root. The first public
-technical preview is source-only; binary release packaging remains disabled
-until its manifest adapter, signing, inventory, and clean-machine gates pass.
+runtime. Validate both component trees from the monorepo root.
+
+## Source engineering alpha
+
+The first public technical preview is a source-only GitHub prerelease. It may
+contain no binary assets. Before tagging it, the exact monorepo commit must pass
+the source publication, runtime, desktop, formal-model, and reproducibility
+workflows. Its notes must link the exact commit and green workflow runs, state
+that live cloud/provider acceptance and independent review remain pending, and
+direct readers to the known limitations.
+
+The source tag does not satisfy the binary or production gates below. It exists
+so reviewers can inspect, reproduce, and discuss the complete engineering
+alpha without mistaking an unsigned development package for a supported build.
+
+## Binary and production gates
+
+Binary release packaging remains disabled until its manifest adapter, signing,
+inventory, clean-machine, live-provider, and independent-review gates pass.
 
 ## Release gates
 
-A release candidate may be published only when all of these gates pass:
+A binary or production release candidate may be published only when all of
+these gates pass:
 
 1. **Pinned source** — the root `SOURCE_PROVENANCE.json` records the imported
    desktop and runtime commits, source trees, assembled trees, exclusions, and
@@ -53,10 +71,11 @@ marked and never publish them as supported releases.
 
 ## Publish
 
-Create an immutable version tag only after the release gates pass. Release
-notes must state the supported operating systems, supported deployment
-profiles, known limitations, upgrade behavior, and security-relevant changes.
-Do not imply that a read-only deployment preflight can change a cluster.
+Create an immutable version tag only after the gates for that release class
+pass. Release notes must state the release class, supported operating systems,
+supported deployment profiles, known limitations, upgrade behavior, and
+security-relevant changes. Do not imply that a read-only deployment preflight
+can change a cluster.
 
 If any gate fails after packaging, discard the candidate, fix the source, and
 build a new version. Do not replace artifacts under an existing tag.

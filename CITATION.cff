@@ -6,6 +6,7 @@ authors:
   - family-names: "Medjani"
     given-names: "Bilal"
 version: "0.1.0-alpha.1"
+date-released: 2026-08-31
 repository-code: "https://github.com/billmedj/accordlock"
 license: "Apache-2.0"
 abstract: >-

@@ -5,6 +5,10 @@ Record the operating-system version, installer digest, application version,
 monorepo commit, assembled desktop and runtime trees, model provider, and tester
 for each run. A failed item blocks release until a new candidate passes.
 
+This checklist governs a binary release. The source-only engineering alpha is
+governed by the exact-commit workflow and no-binary rules in `RELEASE.md`; it
+does not claim that the items below have passed.
+
 ## Install and update
 
 - [ ] A clean install succeeds without a developer toolchain.

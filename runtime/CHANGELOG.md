@@ -9,6 +9,13 @@ must still be called out explicitly.
 
 ## [Unreleased]
 
+No changes yet.
+
+## [0.1.0-alpha.1] - 2026-08-31
+
+Initial public engineering alpha, published as part of the source-only
+AccordLock monorepo prerelease.
+
 ### Added
 
 - Public governance, security, contribution, support, trademark, and release
@@ -47,11 +54,4 @@ must still be called out explicitly.
 
 ### Removed
 
-- Internal acquisition, buyer, and customer-action strategy from the public
-  source tree.
 - Historical fixtures that depended on files outside the repository.
-
-## [0.1.0-alpha.1] - Unreleased
-
-Initial public technical preview. This version will not be dated or tagged
-until the mandatory release checklist is complete.

@@ -11,10 +11,9 @@ must still be called out explicitly.
 
 No changes yet.
 
-## [0.1.0-alpha.1] - Unreleased
+## [0.1.0-alpha.1] - 2026-08-31
 
-Initial public engineering alpha. This version will not be dated or tagged
-until the mandatory source-release gates pass.
+Initial public engineering alpha, published as a source-only prerelease.
 
 ### Added
 

@@ -17,3 +17,13 @@ maintainers.
 
 The original Apache-2.0 license and upstream attribution are preserved in
 `LICENSE`, `NOTICE`, and `THIRD_PARTY_NOTICES.md`.
+
+## Version identities
+
+The AccordLock product release is versioned at the public monorepo boundary.
+For the first engineering alpha, that identity is `0.1.0-alpha.1`.
+
+The desktop Rust workspace remains at Goose `1.47.0`, and inherited SDK or
+binary-wrapper packages may retain their upstream compatibility versions.
+Those values identify upstream components and package protocols; they are not
+the AccordLock product version.
