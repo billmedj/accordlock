@@ -349,6 +349,7 @@ fn validate_url(value: &str) -> Result<(), PolicyEnforcementError> {
         || parsed.port().is_some_and(|port| port != 443)
         || host != host.to_ascii_lowercase()
         || !host.contains('.')
+        || !is_valid_dns_name(host)
         || host == "localhost"
         || host.ends_with(".localhost")
         || host.parse::<std::net::IpAddr>().is_ok()
@@ -356,6 +357,20 @@ fn validate_url(value: &str) -> Result<(), PolicyEnforcementError> {
         return Err(PolicyEnforcementError::InvalidField("url"));
     }
     Ok(())
+}
+
+fn is_valid_dns_name(host: &str) -> bool {
+    host.len() <= 253
+        && !host.ends_with('.')
+        && host.split('.').all(|label| {
+            !label.is_empty()
+                && label.len() <= 63
+                && !label.starts_with('-')
+                && !label.ends_with('-')
+                && label
+                    .bytes()
+                    .all(|byte| byte.is_ascii_alphanumeric() || byte == b'-')
+        })
 }
 
 fn validate_response(

@@ -2725,7 +2725,8 @@ impl ExtensionManager {
 mod tests {
     use super::*;
     use crate::agents::accordlock_authorization::{
-        ExecutionAuthorization, ToolExecutionObservation,
+        canonical_json_bytes, sha256_digest, AgentPlanCheckpointInput, ExecutionAuthorization,
+        ToolExecutionObservation,
     };
     use crate::agents::accordlock_filesystem::{
         BrokeredFilesystemOutcome, BrokeredFilesystemResult, ExecutionEvidence,
@@ -3665,6 +3666,40 @@ mod tests {
         (policy_enforcement_point, calls, temp_dir, manager)
     }
 
+    fn policy_enforced_test_call(
+        workspace: &tempfile::TempDir,
+        request_id: &str,
+    ) -> (ToolCallContext, CallToolRequestParams) {
+        let arguments = object!({ "path": "notes.txt" });
+        let arguments_sha256 = sha256_digest(
+            &canonical_json_bytes(&Value::Object(arguments.clone()))
+                .expect("test arguments must be canonicalizable"),
+        );
+        let checkpoint = AgentPlanCheckpointInput::new(
+            "session".to_owned(),
+            request_id.to_owned(),
+            serde_json::json!({
+                "text": [],
+                "tool_requests": [{
+                    "id": request_id,
+                    "name": "counting__tool",
+                    "arguments_sha256": arguments_sha256,
+                }],
+            }),
+            chrono::Utc::now().timestamp(),
+        )
+        .expect("test checkpoint must be valid");
+        let context = ToolCallContext::new(
+            "session".to_owned(),
+            Some(workspace.path().to_path_buf()),
+            Some(request_id.to_owned()),
+        )
+        .with_agent_plan_checkpoint(checkpoint);
+        let tool_call =
+            CallToolRequestParams::new("counting__tool".to_owned()).with_arguments(arguments);
+        (context, tool_call)
+    }
+
     struct ContextNotificationClient;
 
     #[async_trait::async_trait]
@@ -3911,13 +3946,7 @@ mod tests {
     async fn accordlock_exact_allow_executes_once_and_records_execution() {
         let (policy_point, calls, workspace, manager) =
             dispatch_policy_enforced_call(TestGateBehavior::Allow).await;
-        let ctx = ToolCallContext::new(
-            "session".to_owned(),
-            Some(workspace.path().to_path_buf()),
-            Some("request".to_owned()),
-        );
-        let tool_call = CallToolRequestParams::new("counting__tool".to_owned())
-            .with_arguments(object!({ "path": "notes.txt" }));
+        let (ctx, tool_call) = policy_enforced_test_call(&workspace, "request");
 
         let dispatched = manager
             .dispatch_tool_call(&ctx, tool_call, CancellationToken::new())
@@ -3933,13 +3962,7 @@ mod tests {
     async fn accordlock_consumed_authority_is_observed_even_if_waiter_is_dropped() {
         let (policy_point, calls, workspace, manager) =
             dispatch_policy_enforced_call(TestGateBehavior::Allow).await;
-        let ctx = ToolCallContext::new(
-            "session".to_owned(),
-            Some(workspace.path().to_path_buf()),
-            Some("detached-request".to_owned()),
-        );
-        let tool_call = CallToolRequestParams::new("counting__tool".to_owned())
-            .with_arguments(object!({ "path": "notes.txt" }));
+        let (ctx, tool_call) = policy_enforced_test_call(&workspace, "detached-request");
 
         let dispatched = manager
             .dispatch_tool_call(&ctx, tool_call, CancellationToken::new())
@@ -3983,13 +4006,7 @@ mod tests {
     async fn accordlock_replay_is_denied_before_second_execution() {
         let (_policy_point, calls, workspace, manager) =
             dispatch_policy_enforced_call(TestGateBehavior::AllowOnce).await;
-        let ctx = ToolCallContext::new(
-            "session".to_owned(),
-            Some(workspace.path().to_path_buf()),
-            Some("one-use-request".to_owned()),
-        );
-        let tool_call = CallToolRequestParams::new("counting__tool".to_owned())
-            .with_arguments(object!({ "path": "notes.txt" }));
+        let (ctx, tool_call) = policy_enforced_test_call(&workspace, "one-use-request");
 
         let first = manager
             .dispatch_tool_call(&ctx, tool_call.clone(), CancellationToken::new())
@@ -4007,13 +4024,7 @@ mod tests {
     async fn accordlock_execution_record_failure_is_reported_as_ambiguous() {
         let (_policy_point, calls, workspace, manager) =
             dispatch_policy_enforced_call(TestGateBehavior::RecordFails).await;
-        let ctx = ToolCallContext::new(
-            "session".to_owned(),
-            Some(workspace.path().to_path_buf()),
-            Some("request".to_owned()),
-        );
-        let tool_call = CallToolRequestParams::new("counting__tool".to_owned())
-            .with_arguments(object!({ "path": "notes.txt" }));
+        let (ctx, tool_call) = policy_enforced_test_call(&workspace, "request");
 
         let dispatched = manager
             .dispatch_tool_call(&ctx, tool_call, CancellationToken::new())

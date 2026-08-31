@@ -1,7 +1,7 @@
 use crate::config::paths::Paths;
-use crate::config::{Config, get_enabled_extensions};
-use crate::session::SessionManager;
+use crate::config::{get_enabled_extensions, Config};
 use crate::session::session_manager::CURRENT_SCHEMA_VERSION;
+use crate::session::SessionManager;
 #[cfg(any(target_os = "macos", target_os = "windows"))]
 use crate::subprocess::SubprocessExt;
 use chrono::{DateTime, Utc};
@@ -9,16 +9,19 @@ use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
-use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Mutex;
 use uuid::Uuid;
 
-const POSTHOG_API_KEY: &str = "phc_RyX5CaY01VtZJCQyhSR5KFh6qimUy81YwxsEpotAftT";
+#[cfg(not(feature = "accordlock-distribution"))]
+const POSTHOG_API_KEY_ENV: &str = "GOOSE_POSTHOG_API_KEY";
+#[cfg(not(feature = "accordlock-distribution"))]
 const POSTHOG_CAPTURE_URL: &str = "https://us.i.posthog.com/capture/";
 
 /// Config key for telemetry opt-out preference
 pub const TELEMETRY_ENABLED_KEY: &str = "GOOSE_TELEMETRY_ENABLED";
 
+#[cfg(not(feature = "accordlock-distribution"))]
 static TELEMETRY_DISABLED_BY_ENV: Lazy<AtomicBool> = Lazy::new(|| {
     std::env::var("GOOSE_TELEMETRY_OFF")
         .map(|v| v == "1" || v.to_lowercase() == "true")
@@ -64,22 +67,26 @@ pub fn is_telemetry_enabled() -> bool {
 // PostHog HTTP API
 // ============================================================================
 
+#[cfg(not(feature = "accordlock-distribution"))]
 #[derive(Serialize)]
-struct CaptureEvent {
-    api_key: &'static str,
+struct CaptureEvent<'a> {
+    api_key: &'a str,
     event: String,
     distinct_id: String,
     properties: HashMap<String, serde_json::Value>,
     timestamp: Option<String>,
 }
 
+#[cfg(not(feature = "accordlock-distribution"))]
 async fn posthog_capture(
     event_name: &str,
     distinct_id: &str,
     properties: HashMap<String, serde_json::Value>,
 ) -> Result<(), String> {
+    let api_key = std::env::var(POSTHOG_API_KEY_ENV)
+        .map_err(|_| format!("{POSTHOG_API_KEY_ENV} is not configured"))?;
     let payload = CaptureEvent {
-        api_key: POSTHOG_API_KEY,
+        api_key: &api_key,
         event: event_name.to_string(),
         distinct_id: distinct_id.to_string(),
         properties,
@@ -96,6 +103,16 @@ async fn posthog_capture(
         .map_err(|e| format!("{e}"))?;
 
     Ok(())
+}
+
+#[cfg(feature = "accordlock-distribution")]
+async fn posthog_capture(
+    event_name: &str,
+    distinct_id: &str,
+    properties: HashMap<String, serde_json::Value>,
+) -> Result<(), String> {
+    let _ = (event_name, distinct_id, properties);
+    Err("upstream telemetry is disabled in AccordLock distributions".to_string())
 }
 
 // ============================================================================
@@ -545,6 +562,7 @@ fn sanitize_string(s: &str) -> String {
     result
 }
 
+#[cfg(not(feature = "accordlock-distribution"))]
 fn sanitize_value(value: serde_json::Value) -> serde_json::Value {
     match value {
         serde_json::Value::String(s) => serde_json::Value::String(sanitize_string(&s)),
@@ -565,7 +583,7 @@ fn sanitize_value(value: serde_json::Value) -> serde_json::Value {
 // ============================================================================
 pub async fn emit_event(
     event_name: &str,
-    mut properties: HashMap<String, serde_json::Value>,
+    properties: HashMap<String, serde_json::Value>,
 ) -> Result<(), String> {
     #[cfg(feature = "accordlock-distribution")]
     {
@@ -575,6 +593,7 @@ pub async fn emit_event(
 
     #[cfg(not(feature = "accordlock-distribution"))]
     {
+        let mut properties = properties;
         // Only onboarding events are enabled for now. These bypass the telemetry
         // check so we can track the funnel before the user makes their choice.
         let is_onboarding_event =
@@ -619,5 +638,34 @@ pub async fn emit_event(
             .collect();
 
         posthog_capture(event_name, &installation.installation_id, sanitized).await
+    }
+}
+
+#[cfg(all(test, feature = "accordlock-distribution"))]
+mod accordlock_telemetry_tests {
+    use super::*;
+
+    #[test]
+    fn accordlock_telemetry_is_always_disabled() {
+        assert_eq!(get_telemetry_choice(), Some(false));
+        assert!(!is_telemetry_enabled());
+    }
+
+    #[tokio::test]
+    async fn accordlock_posthog_transport_fails_closed() {
+        let error = posthog_capture("test", "test", HashMap::new())
+            .await
+            .expect_err("AccordLock must not expose an upstream telemetry transport");
+
+        assert_eq!(
+            error,
+            "upstream telemetry is disabled in AccordLock distributions"
+        );
+    }
+
+    #[test]
+    fn accordlock_source_contains_no_posthog_ingestion_key() {
+        let posthog_ingestion_key_prefix = ["phc", "_"].concat();
+        assert!(!include_str!("posthog.rs").contains(&posthog_ingestion_key_prefix));
     }
 }

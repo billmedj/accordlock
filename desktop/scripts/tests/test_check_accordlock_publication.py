@@ -26,6 +26,12 @@ def git(root: Path, *arguments: str) -> None:
 
 
 class AccordLockPublicationGuardTests(unittest.TestCase):
+    def test_upstream_telemetry_ingestion_keys_are_rejected(self) -> None:
+        candidate = "phc_" + ("A" * 40)
+        self.assertTrue(
+            any(pattern.search(candidate) for pattern in PUBLICATION.SECRET_PATTERNS)
+        )
+
     def test_personal_home_paths_are_detected_without_naming_a_developer(self) -> None:
         self.assertTrue(
             any(
