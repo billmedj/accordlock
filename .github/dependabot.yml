@@ -4,24 +4,31 @@ updates:
     directory: /
     schedule:
       interval: monthly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
+    groups:
+      workflow-actions:
+        patterns:
+          - "*"
   - package-ecosystem: cargo
     directory: /runtime
     schedule:
       interval: monthly
-    open-pull-requests-limit: 5
+    # The imported dependency graphs are reviewed as part of deliberate
+    # upgrade batches. A zero limit disables version-update PRs while leaving
+    # Dependabot security updates available.
+    open-pull-requests-limit: 0
   - package-ecosystem: cargo
     directory: /desktop
     schedule:
       interval: monthly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
   - package-ecosystem: npm
     directory: /desktop/ui
     schedule:
       interval: monthly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
   - package-ecosystem: npm
     directory: /desktop/oidc-proxy
     schedule:
       interval: monthly
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 0
