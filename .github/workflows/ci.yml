@@ -118,7 +118,11 @@ jobs:
           lake-package-directory: runtime/formal
           use-github-cache: false
           use-mathlib-cache: false
-          leanchecker: true
+          leanchecker: false
+
+      - name: Independently recheck the public Lean library
+        working-directory: runtime/formal
+        run: lake env leanchecker AccordLockFormal
 
       - name: Reject proof placeholders and report theorem count
         run: python scripts/check_lean_sources.py
