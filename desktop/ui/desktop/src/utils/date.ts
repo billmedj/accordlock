@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 export const formatToLocalDateWithTimezone = (dateString?: string | null): string => {
   if (!dateString) {
     return 'N/A';

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '../../../../ui/button';
 import { Search, ExternalLink, Check } from 'lucide-react';

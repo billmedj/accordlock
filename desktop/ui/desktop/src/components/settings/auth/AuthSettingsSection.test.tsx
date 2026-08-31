@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, type RenderOptions } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

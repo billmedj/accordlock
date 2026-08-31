@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Component, Path, PathBuf};

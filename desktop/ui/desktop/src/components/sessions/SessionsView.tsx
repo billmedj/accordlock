@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { useCallback } from 'react';
 import SessionListView from './SessionListView';
 import { useNavigation } from '../../hooks/useNavigation';

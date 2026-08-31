@@ -1,3 +1,4 @@
+<!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
 # AccordLock Repository Governance
 
 This document governs the AccordLock distribution maintained in this

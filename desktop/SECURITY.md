@@ -1,3 +1,4 @@
+<!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
 # Security Policy
 
 AccordLock is an AI agent distribution that can read files, invoke tools, start

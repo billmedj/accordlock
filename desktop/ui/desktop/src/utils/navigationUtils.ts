@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import type { NavigateFunction } from 'react-router';
 import type { Recipe } from '../recipe';
 import { UserInput } from '../types/message';

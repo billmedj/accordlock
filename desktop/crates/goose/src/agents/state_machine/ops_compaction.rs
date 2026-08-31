@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 //! Compacts conversation history when it is too large for the configured context window.
 
 use std::sync::Arc;

@@ -1,3 +1,4 @@
+<!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
 ## Summary
 
 <!-- What user or security problem does this change solve? -->
@@ -25,4 +26,3 @@
 - [ ] Documentation and user-facing copy are clear, standard English.
 - [ ] No credentials, private data, local paths, or runtime artifacts are included.
 - [ ] Security and compatibility consequences are documented.
-

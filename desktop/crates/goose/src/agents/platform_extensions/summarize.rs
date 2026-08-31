@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 

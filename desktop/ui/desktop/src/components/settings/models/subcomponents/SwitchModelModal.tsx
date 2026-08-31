@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { Bot } from 'lucide-react';
 import { defineMessages, useIntl } from '../../../../i18n';

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import type { ChatState } from '../types/chatState';
 import type { TokenState } from '../types/chat';
 import type { ImageData, Message, NotificationEvent, UserInput } from '../types/message';

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { defineConfig } from 'vite';
 import fs from 'node:fs';
 import path from 'node:path';

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { DictationSettings } from '../dictation/DictationSettings';
 import { ResponseStylesSection } from '../response_styles/ResponseStylesSection';
 import { GoosehintsSection } from './GoosehintsSection';

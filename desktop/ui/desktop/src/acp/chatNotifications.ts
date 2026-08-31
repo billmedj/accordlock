@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import type { GooseSessionNotification_unstable } from '@aaif/goose-sdk';
 import type { SessionNotification } from '@agentclientprotocol/sdk';
 import { AppEvents } from '../constants/events';

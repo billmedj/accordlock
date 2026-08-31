@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 //! Local Whisper transcription using Candle
 //!
 //! This module provides local audio transcription using OpenAI's Whisper model

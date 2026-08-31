@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { View, ViewOptions } from '../../utils/navigationUtils';
 import ExtensionsSection from '../settings/extensions/ExtensionsSection';
 import type { ExtensionConfig } from '../../types/extensions';

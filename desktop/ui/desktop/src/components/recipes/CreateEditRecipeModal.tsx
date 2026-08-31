@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { useState, useEffect, useCallback } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { generateDeepLink } from '../../recipe';

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 //! Peekaboo helper functions for macOS GUI automation via the Peekaboo CLI.
 //!
 //! These are used by `ComputerControllerServer` on macOS to auto-install

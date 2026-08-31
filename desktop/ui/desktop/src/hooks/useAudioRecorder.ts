@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { getDictationConfig, transcribeDictation } from '../acp/dictation';
 import { useConfig } from '../components/ConfigContext';

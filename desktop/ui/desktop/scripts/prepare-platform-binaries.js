@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 const fs = require('fs');
 const crypto = require('crypto');
 const https = require('https');

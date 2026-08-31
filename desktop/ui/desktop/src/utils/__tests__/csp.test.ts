@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { describe, it, expect } from 'vitest';
 import { buildConnectSrc, shouldUpgradeInsecureRequests, buildCSP } from '../csp';
 import type { ExternalBackendConfig } from '../settings';

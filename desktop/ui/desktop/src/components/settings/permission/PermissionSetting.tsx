@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { useCallback, useEffect, useState } from 'react';
 import { ScrollArea } from '../../ui/scroll-area';
 import BackButton from '../../ui/BackButton';

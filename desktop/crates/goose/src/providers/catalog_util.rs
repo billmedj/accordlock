@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 pub use goose_providers::canonical::catalog::{
     ModelCapabilities, ModelTemplate, ProviderCatalogEntry, ProviderFormat,
     ProviderSetupCapabilities, ProviderSetupCatalogEntry, ProviderSetupCategory,

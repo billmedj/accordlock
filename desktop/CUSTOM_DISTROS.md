@@ -1,3 +1,4 @@
+<!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
 # Custom Distributions of goose
 
 > **Tip:** This is sometimes referred to as "white labelling" — creating a branded or tailored version of an open source project for your organization.

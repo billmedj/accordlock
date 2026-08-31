@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AppEvents } from '../constants/events';
 import { toastError } from '../toasts';

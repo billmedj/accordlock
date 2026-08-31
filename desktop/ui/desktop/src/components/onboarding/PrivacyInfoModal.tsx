@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { defineMessages, useIntl } from '../../i18n';
 

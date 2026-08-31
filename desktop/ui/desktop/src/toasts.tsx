@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { toast, ToastOptions } from 'react-toastify';
 import { Button } from './components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from './components/ui/Tooltip';

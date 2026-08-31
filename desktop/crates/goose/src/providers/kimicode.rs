@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use crate::config::paths::Paths;
 use anyhow::Result;
 use async_stream::try_stream;

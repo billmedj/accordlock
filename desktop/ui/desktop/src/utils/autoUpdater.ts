@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { autoUpdater, UpdateInfo } from 'electron-updater';
 import {
   BrowserWindow,

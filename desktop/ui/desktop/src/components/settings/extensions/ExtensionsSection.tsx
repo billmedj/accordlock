@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { Button } from '../../ui/button';
 import { Plus } from 'lucide-react';

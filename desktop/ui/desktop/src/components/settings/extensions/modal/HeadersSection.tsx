@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React from 'react';
 import { Button } from '../../../ui/button';
 import { Plus, X } from 'lucide-react';

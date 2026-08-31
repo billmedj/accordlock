@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use crate::config::paths::Paths;
 use crate::config::GooseMode;
 use fs2::FileExt;

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use super::{
     config_secret_value, default_inventory_identity, default_inventory_identity_resolver,
     serialize_string_map, InventoryIdentityInput, InventoryRegistration,

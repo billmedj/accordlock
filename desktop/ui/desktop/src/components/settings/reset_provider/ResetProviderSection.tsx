@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { Button } from '../../ui/button';
 import { RefreshCw } from 'lucide-react';
 import { acpClearDefaults } from '../../../acp/providers';

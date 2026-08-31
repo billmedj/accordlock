@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 pub mod edit;
 pub mod image;
 pub mod shell;

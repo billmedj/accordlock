@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '../../ui/button';
 import { ChevronDownIcon, SlidersHorizontal, AlertCircle } from 'lucide-react';

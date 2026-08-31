@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use crate::config::paths::Paths;
 #[cfg(not(feature = "accordlock-distribution"))]
 use crate::providers::private_file::write_private_file;

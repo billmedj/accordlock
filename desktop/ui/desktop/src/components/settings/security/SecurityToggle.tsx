@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useEffect, useMemo } from 'react';
 import { Switch } from '../../ui/switch';
 import { useConfig } from '../../ConfigContext';

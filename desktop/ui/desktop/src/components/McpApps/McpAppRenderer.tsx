@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 /**
  * McpAppRenderer — Renders interactive MCP App UIs inside a sandboxed iframe.
  *

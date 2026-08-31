@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import type {
   RecipeDto,
   RecipeExtensionDto,

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import type { GooseServeExitSignal, GooseServeResult, Logger } from './gooseServe';
 
 export const GOOSE_SERVE_EXITED_USER_MESSAGE =

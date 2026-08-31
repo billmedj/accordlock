@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1.4
+# Modified by AccordLock contributors; see UPSTREAM.md.
 # AccordLock source-alpha CLI evaluation image.
 # This is not the complete Desktop/native-runtime product or a release artifact.
 

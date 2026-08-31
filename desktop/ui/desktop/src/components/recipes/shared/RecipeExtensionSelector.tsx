@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState } from 'react';
 import type { RecipeExtension } from '../../../recipe';
 import { useConfig, type FixedExtensionEntry } from '../../ConfigContext';

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use anyhow::Result;
 use async_trait::async_trait;
 use rmcp::model::Role;

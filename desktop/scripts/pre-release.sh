@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# Modified by AccordLock contributors; see UPSTREAM.md.
 set -eu
 
 printf '%s\n' \

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { useState, useEffect, FormEvent, useCallback } from 'react';
 import type { ScheduledJobDto } from '@aaif/goose-sdk';
 import { Card } from '../ui/card';

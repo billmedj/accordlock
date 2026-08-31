@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState } from 'react';
 import { acpAuthenticateProvider } from '../../acp/providers';
 import type { ProviderDetails } from '../../types/providers';

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import type { ExtensionConfig } from '../../../types/extensions';
 import { toastService } from '../../../toasts';
 import { isSupportedDeepLinkProtocol } from '../../../utils/deepLinks';

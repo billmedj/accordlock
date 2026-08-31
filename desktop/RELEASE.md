@@ -1,3 +1,4 @@
+<!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
 # AccordLock release process
 
 AccordLock has no supported public release yet. A source snapshot, development

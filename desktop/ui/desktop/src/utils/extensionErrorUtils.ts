@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 /**
  * Shared constants and utilities for extension error handling
  */

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useEffect, useState } from 'react';
 import { defineMessages, useIntl } from '../../../i18n';
 import type { MessageDescriptor } from 'react-intl';

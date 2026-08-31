@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import type { GetPromptResponse_unstable, PromptTemplateEntry } from '@aaif/goose-sdk';
 import { getAcpClient } from './acpConnection';
 

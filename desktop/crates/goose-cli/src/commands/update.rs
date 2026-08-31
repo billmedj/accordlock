@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use anyhow::{bail, Context, Result};
 use reqwest::{
     header::{HeaderValue, AUTHORIZATION},

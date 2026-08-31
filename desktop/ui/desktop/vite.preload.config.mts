@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { defineConfig, type Plugin } from 'vite';
 
 const ALLOWED_SANDBOX_REQUIRE = 'electron';

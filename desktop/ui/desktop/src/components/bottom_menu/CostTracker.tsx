@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useEffect } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/Tooltip';
 import { fetchCanonicalModelInfo, type CanonicalModelInfo } from '../../utils/canonical';

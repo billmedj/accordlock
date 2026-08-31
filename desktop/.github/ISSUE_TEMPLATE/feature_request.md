@@ -1,4 +1,5 @@
 ---
+# Modified by AccordLock contributors; see UPSTREAM.md.
 name: Feature request
 about: Propose a user or security outcome
 title: ''

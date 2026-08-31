@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { getDictationConfig, DictationProviderStatusEntry } from '../../../acp/dictation';

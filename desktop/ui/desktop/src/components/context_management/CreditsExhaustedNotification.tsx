@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React from 'react';
 import { AlertTriangle, ExternalLink } from 'lucide-react';
 import type { Message, SystemNotificationContent } from '../../types/message';

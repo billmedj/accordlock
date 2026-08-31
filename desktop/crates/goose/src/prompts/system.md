@@ -1,3 +1,4 @@
+{# Modified by AccordLock contributors; see UPSTREAM.md. #}
 {% if accordlock_distribution %}
 You are AccordLock, a security-focused local AI agent.
 {% else %}

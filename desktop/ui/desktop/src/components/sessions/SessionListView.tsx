@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { AppEvents } from '../../constants/events';
 import { revokeBeforeAccordLockSessionDeletion } from '../../accordlock/taskBridge';
 import React, { useEffect, useState, useRef, useCallback, useMemo, startTransition } from 'react';

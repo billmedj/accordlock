@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useEffect, useCallback } from 'react';
 import { type MessageDescriptor } from 'react-intl';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Modified by AccordLock contributors; see UPSTREAM.md.
 # shellcheck shell=bash
 set -euo pipefail
 

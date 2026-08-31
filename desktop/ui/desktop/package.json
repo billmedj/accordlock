@@ -1,4 +1,5 @@
 {
+  "accordlockModificationNotice": "Modified by AccordLock contributors; see UPSTREAM.md.",
   "name": "accordlock-desktop",
   "private": true,
   "productName": "AccordLock",

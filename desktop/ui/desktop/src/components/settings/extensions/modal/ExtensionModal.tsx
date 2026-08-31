@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useCallback } from 'react';
 import { Button } from '../../../ui/button';
 import {

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { Input } from '../../../ui/input';
 import { defineMessages, useIntl } from '../../../../i18n';
 

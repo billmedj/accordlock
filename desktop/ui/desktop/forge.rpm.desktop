@@ -1,3 +1,4 @@
+# Modified by AccordLock contributors; see UPSTREAM.md.
 [Desktop Entry]
 Name=AccordLock
 Exec=/usr/lib/AccordLock/AccordLock %U

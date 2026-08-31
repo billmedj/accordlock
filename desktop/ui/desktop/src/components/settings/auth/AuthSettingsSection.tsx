@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useCallback, useEffect, useState } from 'react';
 import { KeyRound, Loader2, LogIn, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';

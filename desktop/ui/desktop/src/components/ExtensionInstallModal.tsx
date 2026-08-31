@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { IpcRendererEvent } from 'electron';
 import {

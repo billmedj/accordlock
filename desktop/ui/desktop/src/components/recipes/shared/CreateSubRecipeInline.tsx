@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useCallback } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { X, Save, Loader2 } from 'lucide-react';

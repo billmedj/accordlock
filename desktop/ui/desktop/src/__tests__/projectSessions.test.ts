@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { describe, expect, it } from 'vitest';
 import { getProjectLabel, groupSessionsByProject } from '../utils/projectSessions';
 import type { SessionListItem } from '../acp/sessions';

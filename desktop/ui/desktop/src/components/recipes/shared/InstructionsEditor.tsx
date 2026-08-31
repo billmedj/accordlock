@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { useState } from 'react';
 import { Button } from '../../ui/button';
 import { useEscapeKey } from '../../../hooks/useEscapeKey';

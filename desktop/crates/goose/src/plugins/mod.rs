@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 pub mod discovery;
 pub mod formats;
 pub mod mcp_servers;

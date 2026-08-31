@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 #[cfg(any(not(feature = "accordlock-distribution"), test))]
 use crate::config::paths::Paths;
 use crate::config::{Config, ConfigError};

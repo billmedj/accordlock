@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 // URL protocol constants and security utilities
 
 // Protocols for web content only (HTTP requests, browser URLs, server connections)

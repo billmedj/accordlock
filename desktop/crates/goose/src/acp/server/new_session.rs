@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use crate::acp::custom_requests::GooseExtension;
 use crate::acp::server::{meta_string, ResultExt};
 use crate::agents::ExtensionLoadResult;

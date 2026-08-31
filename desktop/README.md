@@ -1,3 +1,4 @@
+<!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
 <p align="center">
   <img src="ui/desktop/src/images/icon.svg" width="104" height="104" alt="AccordLock" />
 </p>

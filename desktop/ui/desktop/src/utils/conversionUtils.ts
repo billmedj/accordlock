@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 export async function safeJsonParse<T>(
   response: Response,
   errorMessage: string = 'Failed to parse server response'

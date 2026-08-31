@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { addExtensionFromDeepLink } from './deeplink';
 import { toastService } from '../../../toasts';

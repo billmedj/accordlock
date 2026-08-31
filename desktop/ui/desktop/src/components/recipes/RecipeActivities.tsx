@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { Card } from '../ui/card';
 import { AccordLockGlyph } from '../accordlock/AccordLockBrand';
 import MarkdownContent from '../MarkdownContent';

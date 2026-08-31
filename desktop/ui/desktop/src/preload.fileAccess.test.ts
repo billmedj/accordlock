@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('preload file access boundary', () => {

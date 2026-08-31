@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 //! Lifecycle hooks support, modelled after the Open Plugins
 //! [hooks specification](https://open-plugins.com/agent-builders/components/hooks).
 //!

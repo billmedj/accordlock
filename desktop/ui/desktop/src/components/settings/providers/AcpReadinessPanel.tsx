@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckCircle2, CircleAlert, LoaderCircle, RefreshCw } from 'lucide-react';
 import { acpEnableProvider, acpRefreshProviderDetails } from '../../../acp/providers';

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useEffect, useState, useCallback } from 'react';
 import { Select } from '../../ui/Select';
 import { Input } from '../../ui/input';

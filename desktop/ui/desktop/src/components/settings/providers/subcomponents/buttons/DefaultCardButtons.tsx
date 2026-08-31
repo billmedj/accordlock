@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { ConfigureSettingsButton, RocketButton } from './CardButtons';
 import type { ProviderDetails } from '../../../../../types/providers';
 import { defineMessages, useIntl } from '../../../../../i18n';

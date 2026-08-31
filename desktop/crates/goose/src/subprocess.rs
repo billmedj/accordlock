@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use tokio::process::Command;
 
 #[cfg(windows)]

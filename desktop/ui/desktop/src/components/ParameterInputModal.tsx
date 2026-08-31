@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { useId, useState, useEffect } from 'react';
 import { Parameter } from '../recipe';
 import { Button } from './ui/button';

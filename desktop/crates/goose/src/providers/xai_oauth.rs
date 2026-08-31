@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use super::api_client::{ApiClient, AuthMethod, AuthProvider};
 use super::base::{ConfigKey, MessageStream, Provider, ProviderDef, ProviderMetadata};
 use super::openai_compatible::OpenAiCompatibleProvider;

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useEffect, useState, forwardRef } from 'react';
 import { Gear } from '../../icons';
 import { ConfigureApproveMode } from './ConfigureApproveMode';

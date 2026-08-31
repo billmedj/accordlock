@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use crate::config::paths::Paths;
 use crate::providers::api_client::{ApiClient, AuthMethod};
 use crate::providers::oauth_device_flow::{run_device_flow, DeviceFlowConfig, RequestEncoding};

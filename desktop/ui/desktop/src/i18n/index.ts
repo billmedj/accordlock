@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 /** English-only react-intl configuration for the desktop renderer. */
 
 import sourceCatalog from './messages/en.json';

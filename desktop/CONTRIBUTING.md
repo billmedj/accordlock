@@ -1,3 +1,4 @@
+<!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
 # Contributing to AccordLock
 
 Thank you for helping improve this repository. Bug reports, threat analysis,

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useCallback, useState, useRef, useEffect } from 'react';
 import { compressImageDataUrl } from '../utils/conversionUtils';
 

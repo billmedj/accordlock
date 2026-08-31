@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 //! Runs session diagnostics and feeds repair context back into the turn.
 
 use anyhow::{anyhow, Result};

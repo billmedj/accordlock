@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { IpcRendererEvent } from 'electron';
 import { Outlet, useLocation } from 'react-router';

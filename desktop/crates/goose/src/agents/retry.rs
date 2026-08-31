@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use anyhow::Result;
 #[cfg(not(feature = "accordlock-distribution"))]
 use std::process::Stdio;

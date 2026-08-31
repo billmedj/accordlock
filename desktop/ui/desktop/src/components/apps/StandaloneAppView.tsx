@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import McpAppRenderer from '../McpApps/McpAppRenderer';

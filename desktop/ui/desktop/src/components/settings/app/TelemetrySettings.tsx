@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useEffect, useCallback } from 'react';
 import { Switch } from '../../ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';

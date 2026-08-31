@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronDown, Mic } from 'lucide-react';
 import { Button } from '../../ui/button';

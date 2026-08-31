@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import type { ActionRequired } from '../types/message';
 import { defineMessages, useIntl } from '../i18n';
 import { snakeToTitleCase } from '../utils';

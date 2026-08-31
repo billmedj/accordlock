@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use super::*;
 
 #[cfg(feature = "accordlock-distribution")]

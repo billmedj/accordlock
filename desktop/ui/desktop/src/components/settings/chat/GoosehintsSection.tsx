@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState } from 'react';
 import { Button } from '../../ui/button';
 import { FolderKey } from 'lucide-react';

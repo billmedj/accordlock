@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState } from 'react';
 import { Plus, Edit2, Trash2, FilePlus } from 'lucide-react';
 import { Button } from '../../ui/button';

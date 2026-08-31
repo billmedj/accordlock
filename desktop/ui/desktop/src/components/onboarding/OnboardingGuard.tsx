@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useConfig } from '../ConfigContext';

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { useEffect, useRef, useState } from 'react';
 import { GitBranch, Check, Search } from 'lucide-react';
 import { toastError } from '../toasts';

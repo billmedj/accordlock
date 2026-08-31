@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import Model from './modelInterface';
 
 // Helper functions for predefined models - shared across components

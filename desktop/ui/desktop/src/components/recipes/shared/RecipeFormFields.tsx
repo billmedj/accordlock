@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { useState } from 'react';
 import type { Parameter, RecipeExtension } from '../../../recipe';
 import { ChevronDown } from 'lucide-react';

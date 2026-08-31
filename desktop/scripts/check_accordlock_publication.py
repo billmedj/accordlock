@@ -510,6 +510,19 @@ def check_public_surfaces(errors: list[str]) -> None:
         errors.append("update.rs: AccordLock fail-closed gate must precede upstream resolution")
 
 
+def check_upstream_modification_notices(errors: list[str]) -> None:
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "check_upstream_modifications.py")],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    if result.returncode != 0:
+        details = result.stdout.strip() or "upstream modification audit failed"
+        errors.append(details)
+
+
 def main() -> int:
     errors: list[str] = []
     try:
@@ -517,6 +530,7 @@ def main() -> int:
         check_artifact_boundaries(errors)
         check_public_surfaces(errors)
         check_extension_helper_supply_chain(errors)
+        check_upstream_modification_notices(errors)
         check_repository_hygiene(errors)
     except (OSError, UnicodeError, AssertionError, subprocess.SubprocessError) as error:
         errors.append(str(error))

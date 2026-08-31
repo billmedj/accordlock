@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
 import os from 'node:os';

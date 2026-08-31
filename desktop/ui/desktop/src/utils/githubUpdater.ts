@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { app } from 'electron';
 import { compareVersions } from 'compare-versions';
 import * as fs from 'fs/promises';

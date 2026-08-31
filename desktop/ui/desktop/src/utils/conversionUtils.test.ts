@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { describe, expect, it } from 'vitest';
 import { errorMessage, GENERIC_USER_FACING_ERROR, userFacingErrorMessage } from './conversionUtils';
 

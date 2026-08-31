@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 //! Exposes extension capabilities and executes requests that belong to them.
 
 use std::collections::{HashMap, HashSet};

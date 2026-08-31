@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import type { ExternalBackendConfig } from './settings';
 
 const DEFAULT_CONNECT_SOURCES = ["'self'"];

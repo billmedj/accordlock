@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import type { AgentMention, AvailableCommand } from '@aaif/goose-sdk';
 import type { DisplayItem } from '../components/MentionPopover';
 import { getAcpClient } from './acpConnection';

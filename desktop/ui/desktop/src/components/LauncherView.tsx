@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useRef, useState } from 'react';
 import { CornerDownLeft, FolderLock, LockKeyhole } from 'lucide-react';
 import { validateAccordLockObjective } from '../accordlock/taskObjective';

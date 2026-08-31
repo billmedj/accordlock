@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use anyhow::{Context, Result};
 
 use cliclack::{confirm, multiselect, select};

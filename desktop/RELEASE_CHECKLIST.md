@@ -1,3 +1,4 @@
+<!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
 # AccordLock release acceptance checklist
 
 Record the operating-system version, installer digest, application version,

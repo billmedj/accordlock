@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useEffect } from 'react';
 import { Download, Trash2, X, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '../../ui/button';

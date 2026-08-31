@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { applyThemeTokens, buildMcpHostStyles } from '../theme/theme-tokens';
 import type { McpUiHostStyles } from '@modelcontextprotocol/ext-apps/app-bridge';

@@ -1,3 +1,4 @@
+# Modified by AccordLock contributors; see UPSTREAM.md.
 # Deliberately inert. AccordLock injects its signed release feed at build time and keeps
 # updates disabled until that feed exists. This file must never point at upstream Goose.
 provider: github

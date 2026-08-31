@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '../../ui/button';
 import { KeyboardShortcuts } from '../../../utils/settings';

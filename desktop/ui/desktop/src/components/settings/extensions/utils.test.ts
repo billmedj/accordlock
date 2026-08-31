@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   nameToKey,

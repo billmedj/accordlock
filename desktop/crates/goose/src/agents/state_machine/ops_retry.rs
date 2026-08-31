@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 //! Decides whether a completed response should finish, continue, or retry the turn.
 
 use anyhow::{anyhow, Result};

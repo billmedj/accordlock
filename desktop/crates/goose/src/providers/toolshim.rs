@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 //! # ToolShim Module
 //!
 //! The ToolShim module provides a reusable component for interpreting and augmenting LLM outputs with tool calls,

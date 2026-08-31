@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { RequestError } from '@agentclientprotocol/sdk';
 import { userFacingErrorMessage } from '../utils/conversionUtils';
 

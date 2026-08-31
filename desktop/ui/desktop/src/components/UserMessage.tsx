@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import ImagePreview from './ImagePreview';
 import MarkdownContent from './MarkdownContent';

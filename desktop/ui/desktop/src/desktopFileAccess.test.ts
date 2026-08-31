@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import fs, { constants as fsConstants } from 'node:fs';
 import fsPromises from 'node:fs/promises';
 import os from 'node:os';

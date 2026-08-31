@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 pub mod accordlock_authorization;
 mod accordlock_filesystem;
 mod accordlock_network;

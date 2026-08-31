@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { Sliders, Bot, LoaderCircle, Settings, History } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useModelAndProvider } from '../../../ModelAndProviderContext';

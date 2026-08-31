@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { defineMessages, useIntl } from '../../i18n';

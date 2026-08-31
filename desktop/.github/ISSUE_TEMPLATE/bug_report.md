@@ -1,4 +1,5 @@
 ---
+# Modified by AccordLock contributors; see UPSTREAM.md.
 name: Bug report
 about: Report a reproducible problem
 title: ''

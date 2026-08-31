@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { z } from 'zod';

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use crate::mcp_utils::ToolResult;
 use crate::providers::base::Provider;
 use rmcp::model::{CallToolResult, Tool};

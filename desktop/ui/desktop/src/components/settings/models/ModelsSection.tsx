@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { View } from '../../../utils/navigationUtils';
 import ModelSettingsButtons from './subcomponents/ModelSettingsButtons';

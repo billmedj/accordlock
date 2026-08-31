@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 // AccordLock releases must never consume the upstream Goose update channel.
 // Enable this only after the distribution owns a signed release repository.
 export const UPDATES_ENABLED = false;

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use anyhow::Result;
 use goose_providers::conversation::token_usage::{ProviderUsage, Usage as ProviderTokenUsage};
 use rmcp::model::{CallToolRequestParams, CallToolResult, ContentBlock};

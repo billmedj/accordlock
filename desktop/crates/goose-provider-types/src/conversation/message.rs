@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use crate::conversation::token_usage::{CostSource, ProviderUsage};
 use crate::conversation::tool_result_serde;
 use crate::mcp_utils::extract_text_from_resource;

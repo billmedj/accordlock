@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 //! Applies recipe commands and enforces their structured final output.
 
 use std::collections::HashSet;

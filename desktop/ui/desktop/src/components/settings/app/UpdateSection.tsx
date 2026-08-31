@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { useState, useEffect } from 'react';
 import { Button } from '../../ui/button';
 import { Loader2, Download, CheckCircle, AlertCircle } from 'lucide-react';

@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import type { Session } from './types/session';
 import type { ExtensionConfig } from './types/extensions';
 import type { setViewType } from './hooks/useNavigation';

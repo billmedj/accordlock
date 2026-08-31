@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 mod acp_tooling;
 pub mod amp_acp;
 pub mod anthropic {

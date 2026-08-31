@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use std::collections::VecDeque;
 use std::sync::Arc;
 

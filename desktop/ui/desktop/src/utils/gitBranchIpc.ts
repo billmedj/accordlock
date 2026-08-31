@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import type { BrowserWindow, IpcMainInvokeEvent } from 'electron';
 import { ipcMain } from 'electron';
 import {

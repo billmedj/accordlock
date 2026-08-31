@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use crate::cli::StreamableHttpOptions;
 
 use super::output;

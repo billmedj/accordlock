@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   acpCreateCustomProviderFromRequest,

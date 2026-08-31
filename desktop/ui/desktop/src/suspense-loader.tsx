@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { AccordLockWordmark } from './components/accordlock/AccordLockBrand';
 
 export default function SuspenseLoader() {

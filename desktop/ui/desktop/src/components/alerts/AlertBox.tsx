@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { useState, useEffect } from 'react';
 import { IoIosCloseCircle, IoIosWarning, IoIosInformationCircle } from 'react-icons/io';
 import { FaPencilAlt, FaSave } from 'react-icons/fa';

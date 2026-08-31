@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { useState, useEffect, useRef } from 'react';
 import { defineMessages, useIntl } from '../../../i18n';
 import { Switch } from '../../ui/switch';

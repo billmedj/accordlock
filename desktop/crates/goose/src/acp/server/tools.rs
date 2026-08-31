@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use super::*;
 use crate::agents::extension_manager::get_parameter_names;
 use crate::agents::reply_parts::is_tool_visible_to_app;

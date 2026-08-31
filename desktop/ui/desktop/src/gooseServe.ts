@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { spawn, type ChildProcess } from 'child_process';
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';

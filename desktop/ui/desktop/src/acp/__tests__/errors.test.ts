@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { describe, expect, it } from 'vitest';
 import { RequestError } from '@agentclientprotocol/sdk';
 import {

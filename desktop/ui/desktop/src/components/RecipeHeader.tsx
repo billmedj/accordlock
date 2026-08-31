@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { defineMessages, useIntl } from '../i18n';
 
 const i18n = defineMessages({

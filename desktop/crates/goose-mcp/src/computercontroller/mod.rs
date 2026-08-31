@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 #[cfg(target_os = "macos")]
 use crate::subprocess::{merged_path, SubprocessExt};
 #[cfg(target_os = "macos")]

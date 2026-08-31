@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 export type RecentModel = {
   provider: string;
   model: string;

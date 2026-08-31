@@ -1,3 +1,4 @@
+# Modified by AccordLock contributors; see UPSTREAM.md.
 # build-windows.ps1
 # Build the protected AccordLock Desktop distribution for Windows.
 # Run this script from the root of the goose-fork repository in PowerShell

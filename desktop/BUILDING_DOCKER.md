@@ -1,3 +1,4 @@
+<!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
 # AccordLock container status
 
 AccordLock Desktop is currently a **source alpha**. No public AccordLock container image is published, and upstream Goose images are not substitutes for this distribution.

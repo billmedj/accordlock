@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { memo, useMemo, useRef } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import ImagePreview from './ImagePreview';

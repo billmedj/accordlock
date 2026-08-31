@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 /**
  * Theme tokens — the single source of truth for all MCP semantic token values.
  *

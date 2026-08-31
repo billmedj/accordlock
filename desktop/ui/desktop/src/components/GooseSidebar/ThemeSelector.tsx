@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React from 'react';
 import { Moon, Sliders, Sun } from 'lucide-react';
 import { Button } from '../ui/button';

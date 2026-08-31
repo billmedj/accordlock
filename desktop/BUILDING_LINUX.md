@@ -1,3 +1,4 @@
+<!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
 # AccordLock Linux source validation
 
 AccordLock Desktop is currently a **source alpha**. This repository does not publish or endorse a Linux installer, package, container image, or upstream Goose binary as an AccordLock distribution.

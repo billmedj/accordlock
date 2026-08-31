@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 /**
  * Custom event names used throughout the application.
  */

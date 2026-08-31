@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { ChatState } from '../types/chatState';
 import { defineMessages, useIntl } from '../i18n';
 import { AccordLockGlyph } from './accordlock/AccordLockBrand';

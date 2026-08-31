@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import {
   methods,
   type ForkSessionRequest,

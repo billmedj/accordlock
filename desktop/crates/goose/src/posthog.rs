@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use crate::config::paths::Paths;
 use crate::config::{get_enabled_extensions, Config};
 use crate::session::session_manager::CURRENT_SCHEMA_VERSION;

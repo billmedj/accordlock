@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import React, { useState } from 'react';
 import { AlertTriangle, Download } from 'lucide-react';
 import { Button } from './button';

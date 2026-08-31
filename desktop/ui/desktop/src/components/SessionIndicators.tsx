@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { AlertCircle, Loader2 } from 'lucide-react';
 import React from 'react';
 import { defineMessages, useIntl } from '../i18n';

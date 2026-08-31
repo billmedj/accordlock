@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import './accordlockBootstrap';
 import type {
   IpcMainEvent,

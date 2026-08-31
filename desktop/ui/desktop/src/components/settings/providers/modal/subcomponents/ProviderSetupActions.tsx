@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 import { SyntheticEvent } from 'react';
 import { Button } from '../../../../ui/button';
 import { Trash2, AlertTriangle } from 'lucide-react';

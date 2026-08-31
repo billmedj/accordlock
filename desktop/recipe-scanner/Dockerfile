@@ -1,3 +1,4 @@
+# Modified by AccordLock contributors; see UPSTREAM.md.
 FROM debian:bookworm-slim
 
 # Install essential tools for monitoring and security scanning

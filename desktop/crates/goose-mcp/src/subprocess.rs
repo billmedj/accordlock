@@ -1,3 +1,4 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 #[cfg(not(windows))]
 use std::sync::OnceLock;
 use tokio::process::Command;

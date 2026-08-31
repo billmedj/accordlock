@@ -1,3 +1,4 @@
+# Modified by AccordLock contributors; see UPSTREAM.md.
 version: 2
 updates:
   # pnpm workspace for the UI (desktop, acp, text, sdk, goose-binary/*).
