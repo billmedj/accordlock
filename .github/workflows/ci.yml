@@ -163,6 +163,10 @@ jobs:
         working-directory: desktop
         run: python scripts/check_accordlock_publication.py
 
+      - name: Test the desktop publication boundary
+        working-directory: desktop
+        run: python -m unittest discover -s scripts/tests -v
+
       - name: Check Rust formatting
         working-directory: desktop
         run: cargo fmt --all -- --check
