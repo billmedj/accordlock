@@ -158,7 +158,7 @@ def read(relative_path: str) -> str:
 
 def git_files(root: Path, *arguments: str) -> tuple[str, ...]:
     result = subprocess.run(
-        ["git", "ls-files", "-z", *arguments],
+        ["git", "ls-files", "-z", *arguments, "--", "."],
         cwd=root,
         check=True,
         capture_output=True,
