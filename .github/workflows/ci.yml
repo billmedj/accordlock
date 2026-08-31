@@ -1,0 +1,182 @@
+name: Source CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: source-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publication:
+    name: Publication and claim boundaries
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Run the fail-closed publication gate
+        run: python scripts/check_publication.py
+
+      - name: Test the publication gate
+        run: python -m unittest discover -s tests -v
+
+      - name: Test the assurance manifest
+        run: python -m unittest discover -s assurance/tests -t assurance -v
+
+      - name: Test provider-free demonstrations
+        env:
+          PYTHONPATH: demos/src
+        run: python -W error::ResourceWarning -m unittest discover -s demos/tests -v
+
+  runtime:
+    name: Transaction runtime
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Activate the repository-pinned Rust toolchain
+        working-directory: runtime
+        run: rustup show active-toolchain
+
+      - name: Check Rust formatting
+        working-directory: runtime
+        run: cargo fmt --all -- --check
+
+      - name: Run Rust tests
+        working-directory: runtime
+        env:
+          CARGO_INCREMENTAL: "0"
+        run: cargo test --workspace --locked
+
+      - name: Run repository contract tests
+        working-directory: runtime
+        run: python -m unittest discover -s tests -v
+
+      - name: Build native demonstration entrypoints
+        working-directory: runtime
+        env:
+          CARGO_INCREMENTAL: "0"
+        run: cargo build --locked -p accordlock-cli -p accordlock-agent-runtime
+
+      - name: Run the native provider-free proof
+        working-directory: runtime
+        run: cargo run --locked -q -p accordlock-cli -- offline --compact
+
+      - name: Run demonstrations against native binaries
+        env:
+          PYTHONPATH: demos/src
+          ACCORDLOCK_CLI_BIN: runtime/target/debug/accordlock
+          ACCORDLOCK_RUNTIME_BIN: runtime/target/debug/accordlock-agent-runtime
+        run: python -W error::ResourceWarning -m unittest discover -s demos/tests -v
+
+  formal-model:
+    name: Lean model
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build and independently check the Lean environment
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        with:
+          lake-package-directory: runtime/formal
+          use-github-cache: false
+          use-mathlib-cache: false
+          leanchecker: true
+
+      - name: Reject proof placeholders and report theorem count
+        run: python scripts/check_lean_sources.py
+
+  desktop:
+    name: Windows desktop
+    runs-on: windows-2025
+    timeout-minutes: 120
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.10.0
+
+      - name: Install Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Activate pinned pnpm
+        shell: pwsh
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.30.0 --activate
+          node --version
+          pnpm --version
+
+      - name: Activate the repository-pinned Rust toolchain
+        working-directory: desktop
+        run: rustup show active-toolchain
+
+      - name: Check the desktop publication boundary
+        working-directory: desktop
+        run: python scripts/check_accordlock_publication.py
+
+      - name: Check Rust formatting
+        working-directory: desktop
+        run: cargo fmt --all -- --check
+
+      - name: Test the protected desktop backend
+        working-directory: desktop
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_BUILD_JOBS: "2"
+        run: cargo test --locked -p goose --features accordlock-distribution --lib accordlock_
+
+      - name: Build the packaged backend configuration
+        working-directory: desktop
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_BUILD_JOBS: "2"
+        run: cargo build --locked --release -p goose-cli --bin goose --no-default-features --features accordlock-distribution,rustls-tls,system-keyring
+
+      - name: Install locked desktop dependencies
+        working-directory: desktop/ui
+        run: pnpm install --frozen-lockfile
+
+      - name: Check interface types, lint, and English catalog
+        working-directory: desktop/ui/desktop
+        run: pnpm run lint:check
+
+      - name: Run desktop unit tests
+        working-directory: desktop/ui/desktop
+        run: pnpm run test:run

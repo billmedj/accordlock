@@ -1,0 +1,50 @@
+name: Feature proposal
+description: Propose a concrete workflow or security outcome
+title: "[Proposal]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: What should a person or organization be able to accomplish?
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current workflow
+      description: What do users do today, and where does it fail or create risk?
+    validations:
+      required: true
+  - type: textarea
+    id: boundary
+    attributes:
+      label: Authority and trust boundary
+      description: Which action, credential holder, external system, or approval boundary would change?
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: Failure behavior
+      description: What should happen when evidence, state, connectivity, or authority is missing or stale?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Acceptance evidence
+      description: Which test, receipt, benchmark, or external-system run would establish that the feature works?
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and discussions.
+          required: true
+        - label: This proposal contains no credentials, customer data, or private research material.
+          required: true

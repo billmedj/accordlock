@@ -27,7 +27,7 @@
       "upstreamRepository": "https://github.com/aaif-goose/goose.git",
       "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
       "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
-      "assembledTree": "068591d568270bdbf8a13798b564c5f889520b38",
+      "assembledTree": "a579edfcbba90720e31c59906689bfaedc583315",
       "trackedTreeExclusions": [
         {
           "path": "documentation/",
@@ -46,6 +46,22 @@
         {
           "path": "scripts/check_accordlock_publication.py",
           "reason": "Removed checks for the two intentionally excluded upstream documentation surfaces and scoped Git-visible file enumeration to the desktop component when run inside the monorepo."
+        },
+        {
+          "path": "RELEASE.md",
+          "reason": "Aligned the release boundary with the public monorepo and documented that the first technical preview is source-only."
+        },
+        {
+          "path": "RELEASE_CHECKLIST.md",
+          "reason": "Replaced separate-repository identity wording with the monorepo commit and assembled component trees."
+        },
+        {
+          "path": "scripts/build-windows.ps1",
+          "reason": "Updated release-orchestration copy and examples without weakening the existing fail-closed signing and manifest requirements."
+        },
+        {
+          "path": "scripts/build-macos.ps1",
+          "reason": "Updated release-orchestration copy without weakening the existing fail-closed signing and manifest requirements."
         }
       ]
     }

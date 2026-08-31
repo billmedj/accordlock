@@ -309,7 +309,7 @@ finally {
 $releaseLock = $null
 if ($Release) {
     if ([string]::IsNullOrWhiteSpace($ReleaseLockPath)) {
-        throw 'Release packaging requires -ReleaseLockPath from the validated integration wrapper.'
+        throw 'Release packaging requires -ReleaseLockPath from validated release orchestration.'
     }
     $releaseLock = Get-Content -LiteralPath (Assert-RegularFile -Path $ReleaseLockPath -Description 'The release source lock').FullName -Raw | ConvertFrom-Json -Depth 32
     if ($releaseLock.schema_version -ne 2 -or $releaseLock.publication_state.status -cne 'ready') {

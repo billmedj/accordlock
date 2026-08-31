@@ -11,11 +11,11 @@
 #   - NuGet 7.9.0 from https://dist.nuget.org/win-x86-commandline/v7.9.0/nuget.exe
 #
 # Usage:
-#   cd C:\path\to\goose-fork
-#   .\scripts\build-windows.ps1 -Release -ReleaseLockPath C:\path\to\UPSTREAM.lock.json -RuntimeRepo C:\path\to\accordlock -NuGetToolPath C:\path\to\nuget.exe
+#   cd C:\path\to\accordlock\desktop
+#   .\scripts\build-windows.ps1 -Release -ReleaseLockPath C:\path\to\release-manifest.json -RuntimeRepo ..\runtime -NuGetToolPath C:\path\to\nuget.exe
 #   $env:ACCORDLOCK_ALLOW_DIRTY_BUILD = "1"
-#   .\scripts\build-windows.ps1 -Development -AllowDirty -RuntimeRepo C:\path\to\accordlock
-#   .\scripts\build-windows.ps1 -PrepareOnly -AllowDirty -RuntimeRepo C:\path\to\accordlock
+#   .\scripts\build-windows.ps1 -Development -AllowDirty -RuntimeRepo ..\runtime
+#   .\scripts\build-windows.ps1 -PrepareOnly -AllowDirty -RuntimeRepo ..\runtime
 
 param(
     [switch]$AllowDirty,
@@ -362,7 +362,7 @@ $releaseCertificateFile = $null
 $releaseCertificatePassword = $null
 if ($Release) {
     if ([string]::IsNullOrWhiteSpace($ReleaseLockPath)) {
-        throw "Release packaging requires -ReleaseLockPath from the validated AccordLock wrapper."
+        throw "Release packaging requires -ReleaseLockPath from validated release orchestration."
     }
     $releaseLockItem = Get-Item -LiteralPath $ReleaseLockPath -ErrorAction Stop
     if ($releaseLockItem.PSIsContainer -or -not [string]::IsNullOrEmpty($releaseLockItem.LinkType)) {

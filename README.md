@@ -10,6 +10,12 @@
   An open desktop agent and transactional execution runtime for consequential work.
 </p>
 
+<p align="center">
+  <a href="https://github.com/billmedj/accordlock/actions/workflows/ci.yml"><img alt="Source CI" src="https://github.com/billmedj/accordlock/actions/workflows/ci.yml/badge.svg" /></a>
+  <a href="LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/badge/license-Apache--2.0-2563eb.svg" /></a>
+  <a href="docs/PRODUCT_STATUS.md"><img alt="Engineering Alpha" src="https://img.shields.io/badge/status-engineering%20alpha-d97706.svg" /></a>
+</p>
+
 > [!IMPORTANT]
 > AccordLock is an **engineering alpha** for local evaluation and security research. It is not a supported production security boundary. There is no signed public installer, completed live EKS validation, or independent security review yet.
 
@@ -116,6 +122,18 @@ cargo run --offline --locked -q -p accordlock-cli -- offline --compact
 ```
 
 See [the demo package](demos/README.md) for the adversarial walkthrough and AccordBench adapter once the full report is needed.
+
+## Verify the public source boundary
+
+One standard-library command checks required public files, source provenance, generated artifacts, credentials and personal paths, documentation links, pinned GitHub Actions, component publication guards, and the claim-to-evidence map:
+
+```powershell
+python scripts/check_publication.py
+```
+
+This is a source-hygiene and traceability gate. It does not replace the Rust, desktop, Lean, TLA+, PostgreSQL, live-provider, packaging, or independent-review gates. Those layers run separately so a missing tool cannot be mistaken for a pass.
+
+Run the fast source suite with `python scripts/test_all.py`. Add `--runtime`, `--formal`, or `--desktop` to opt into each heavier layer; `--all` selects all three. The formal layer requires the checksum-pinned TLC jar to be fetched explicitly, and the desktop layer may install its locked dependencies.
 
 ## Assurance, with the claim boundary intact
 

@@ -1,6 +1,6 @@
 # AccordLock provider-free adversarial demonstrations
 
-This package runs security demonstrations against AccordLock's real native entrypoints without a model provider, account, cluster, or internet request. It is designed to merge under `demos/` in the AccordLock monorepo.
+This package runs security demonstrations against AccordLock's real native entrypoints without a model provider, account, cluster, or internet request.
 
 It demonstrates five concrete properties:
 

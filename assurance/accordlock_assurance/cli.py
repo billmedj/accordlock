@@ -11,8 +11,8 @@ from .linter import ManifestLoadError, verify_manifest
 
 
 def _default_root() -> Path:
-    # After this package is merged as <repository>/assurance, the parent is the
-    # repository root. A standalone staging copy should pass --root explicitly.
+    # This package lives at <repository>/assurance, so the parent is the
+    # repository root. An independently packaged copy should pass --root explicitly.
     return Path(__file__).resolve().parents[2]
 
 

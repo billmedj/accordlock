@@ -24,12 +24,6 @@ From the monorepo root:
 python assurance/verify.py --root runtime
 ```
 
-From this standalone staging package against a sibling checkout:
-
-```sh
-python verify.py --root ../accordlock
-```
-
 For machine-readable output:
 
 ```sh

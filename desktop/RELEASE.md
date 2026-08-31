@@ -3,22 +3,25 @@
 AccordLock has no supported public release yet. A source snapshot, development
 installer, or passing local test suite is not a production release.
 
-The release boundary spans the AccordLock wrapper, this desktop distribution,
-and the AccordLock core runtime. Use the wrapper repository to validate and
-package those exact sources together.
+The release boundary spans this monorepo's desktop distribution and independent
+runtime. Validate both component trees from the monorepo root. The first public
+technical preview is source-only; binary release packaging remains disabled
+until its manifest adapter, signing, inventory, and clean-machine gates pass.
 
 ## Release gates
 
 A release candidate may be published only when all of these gates pass:
 
-1. **Pinned source** — `UPSTREAM.lock.json` names clean, public commits for the
-   wrapper, desktop distribution, and core runtime.
+1. **Pinned source** — the root `SOURCE_PROVENANCE.json` records the imported
+   desktop and runtime commits, source trees, assembled trees, exclusions, and
+   post-import adjustments.
 2. **Repository validation** — publication hygiene, license attribution,
    schemas, policy contracts, and source-lock checks pass.
 3. **Automated tests** — the core Rust suites and desktop unit, type, format,
    localization, and packaging checks pass from a clean checkout.
-4. **Reproducible package** — the wrapper builds the installer from the pinned
-   sources. Embedded binaries match their build markers and source commits.
+4. **Reproducible package** — the binary release orchestrator consumes a
+   release-ready manifest derived from the recorded monorepo sources. Embedded
+   binaries match their build markers and source commit.
 5. **Signed artifacts** — the Windows installer and protected sidecars have
    valid release signatures. Development signatures are not accepted.
 6. **Software inventory** — the pinned Syft version produces valid CycloneDX
@@ -30,9 +33,10 @@ A release candidate may be published only when all of these gates pass:
 
 ## Build
 
-Run the release from the wrapper repository, not from this nested source tree.
-The wrapper validates the source lock and invokes this distribution's
-fail-closed packager with the code-signing certificate and pinned SBOM tool.
+Do not invoke `-Release` for the source-only technical preview. A later binary
+release must run from the monorepo root, validate source provenance, derive the
+packager's release-ready manifest, and invoke the fail-closed packager with a
+code-signing certificate and pinned SBOM tool.
 
 The completed output must contain:
 

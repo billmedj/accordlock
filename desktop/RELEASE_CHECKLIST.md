@@ -1,8 +1,8 @@
 # AccordLock release acceptance checklist
 
 Record the operating-system version, installer digest, application version,
-desktop commit, core commit, model provider, and tester for each run. A failed
-item blocks release until a new candidate passes.
+monorepo commit, assembled desktop and runtime trees, model provider, and tester
+for each run. A failed item blocks release until a new candidate passes.
 
 ## Install and update
 

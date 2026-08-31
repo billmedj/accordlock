@@ -1,0 +1,65 @@
+name: Bug report
+description: Report a reproducible defect in the engineering alpha
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve AccordLock. Do not report vulnerabilities, credentials, customer data, or exploit details here. Use the private process in the Security policy.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Paste the exact tag or commit hash.
+      placeholder: v0.1.0-alpha.1 or a full commit hash
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, architecture, and relevant tool versions.
+      placeholder: Windows 11 x64; desktop source build; Node 24.10.0
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction
+      description: Give the smallest sequence that reproduces the defect.
+      placeholder: |
+        1. Start AccordLock with ...
+        2. Create a task with ...
+        3. Request ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Add the smallest useful log excerpt, screenshot, or exported record. Remove tokens, personal paths, and confidential content.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: This report contains no secret, customer data, or unpublished vulnerability detail.
+          required: true
+        - label: I understand that the current release is an engineering alpha, not a supported production boundary.
+          required: true
