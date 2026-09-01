@@ -8,8 +8,10 @@ because MSVC reports successful import-library creation on stderr; the separate
 workspace Clippy stage still applies `-D warnings` to every target.
 
 The default PostgreSQL mode is `local`. It starts or reuses the project-local
-PostgreSQL 17 cluster on `127.0.0.1:55432`, runs the complete explicit local
+PostgreSQL 17.11 cluster on `127.0.0.1:55432`, runs the complete explicit local
 `NoTls` PostgreSQL suite, and stops only an instance that it started. The
+documented Windows 17.4 profile remains accepted for local compatibility;
+other server versions fail closed until explicitly calibrated. The
 separate SCRAM-PLUS/TLS integration requires its own TLS endpoint and is not
 part of this local runner. External mode
 requires `ACCORDLOCK_TEST_POSTGRES_URL`; it means that the runner does not manage

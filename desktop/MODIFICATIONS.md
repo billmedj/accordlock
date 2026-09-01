@@ -17,10 +17,10 @@ without placing invalid comments inside strict data formats or binary assets.
 
 - 2369 files in the pinned upstream tree
 - 855 upstream files under the two explicit exclusions
-- 369 inherited files modified and distributed
-- 352 modified text/source files with an in-file notice
+- 370 inherited files modified and distributed
+- 353 modified text/source files with an in-file notice
 - 17 modified generated, strict-data, or binary files documented as exceptions
-- 1108 inherited files distributed unchanged
+- 1107 inherited files distributed unchanged
 - 216 AccordLock-only files
 - 37 other upstream files omitted from this distribution
 
@@ -35,6 +35,7 @@ uses a schema-neutral top-level metadata field.
 
 ## Modified inherited files with in-file notices
 
+- `.gitattributes`
 - `.github/DISCUSSION_TEMPLATE/qa.yml`
 - `.github/ISSUE_TEMPLATE/bug_report.md`
 - `.github/ISSUE_TEMPLATE/feature_request.md`

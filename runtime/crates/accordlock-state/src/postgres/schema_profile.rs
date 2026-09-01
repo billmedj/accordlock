@@ -4,11 +4,31 @@ use crate::StateError;
 
 use super::migration_checksum;
 
-const CONTROL_SCHEMA_PROFILE_SHA256: &str =
-    "sha256:6955bdb6f22eda58b94019a63e0b13e97443483fcf8c3324724c9e01fd6154ea";
+// PostgreSQL preserves the same enforced objects while allowing catalog
+// decompilation details to vary across supported PostgreSQL 17 builds. Keep
+// every explicitly accepted representation exact: an unknown rendering still
+// fails closed instead of being normalized away.
+const CONTROL_SCHEMA_PROFILES_BY_SERVER_VERSION: &[(i32, &str)] = &[
+    // PostgreSQL 17.4 on Windows.
+    (
+        170_004,
+        "sha256:6955bdb6f22eda58b94019a63e0b13e97443483fcf8c3324724c9e01fd6154ea",
+    ),
+    // PostgreSQL 17.11 from the checksum-pinned official Debian image used in CI.
+    (
+        170_011,
+        "sha256:71b32cf28dbb4f7b3057304da0d59373bfa11521112688bcfc5c8b550562c799",
+    ),
+];
 
 const DISPATCH_ACQUISITION_SCHEMA_PROFILE_SHA256: &str =
     "sha256:524a01ce398a1a7dec8d43ed2d7f67eb613ed5e4fdf159387f39f474e81a3626";
+
+fn expected_control_schema_checksum(server_version_num: i32) -> Option<&'static str> {
+    CONTROL_SCHEMA_PROFILES_BY_SERVER_VERSION
+        .iter()
+        .find_map(|(version, checksum)| (*version == server_version_num).then_some(*checksum))
+}
 
 const DISPATCH_ACQUISITION_SCHEMA_PROFILE_SQL: &str = r#"
 SELECT profile_line
@@ -487,13 +507,26 @@ SELECT profile_line
 "#;
 
 pub(super) fn validate_control_schema(transaction: &mut Transaction<'_>) -> Result<(), StateError> {
+    let server_version_num: i32 = transaction
+        .query_one(
+            "SELECT current_setting('server_version_num')::integer AS server_version_num",
+            &[],
+        )?
+        .get("server_version_num");
+    let expected_checksum =
+        expected_control_schema_checksum(server_version_num).ok_or_else(|| {
+            StateError::SchemaMismatch(format!(
+                "unsupported PostgreSQL server_version_num for durable-control schema profile: \
+                 {server_version_num}"
+            ))
+        })?;
     let lines: Vec<String> = transaction
         .query(CONTROL_SCHEMA_PROFILE_SQL, &[])?
         .into_iter()
         .map(|row| row.get("profile_line"))
         .collect();
     let checksum = migration_checksum(&lines.join("\n"));
-    if checksum != CONTROL_SCHEMA_PROFILE_SHA256 {
+    if checksum != expected_checksum {
         return Err(StateError::SchemaMismatch(format!(
             "durable-control schema profile differs: {checksum}"
         )));
@@ -515,6 +548,25 @@ pub(super) fn validate_control_schema(transaction: &mut Transaction<'_>) -> Resu
         ));
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::expected_control_schema_checksum;
+
+    #[test]
+    fn control_schema_fingerprints_are_bound_to_exact_server_versions() {
+        assert_eq!(
+            expected_control_schema_checksum(170_004),
+            Some("sha256:6955bdb6f22eda58b94019a63e0b13e97443483fcf8c3324724c9e01fd6154ea")
+        );
+        assert_eq!(
+            expected_control_schema_checksum(170_011),
+            Some("sha256:71b32cf28dbb4f7b3057304da0d59373bfa11521112688bcfc5c8b550562c799")
+        );
+        assert_eq!(expected_control_schema_checksum(170_010), None);
+        assert_eq!(expected_control_schema_checksum(180_000), None);
+    }
 }
 
 pub(super) fn validate_dispatch_acquisition_schema(

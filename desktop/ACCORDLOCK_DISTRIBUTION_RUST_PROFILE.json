@@ -35,15 +35,15 @@
       "host": "aarch64-apple-darwin",
       "target": "aarch64-apple-darwin",
       "runner": "macos-15",
-      "packageCount": 536,
-      "graphSha256": "cd766ca748903b007cdefc24106e55602afd1d5834174de9b04daf855b50949e"
+      "packageCount": 534,
+      "graphSha256": "d8262d8f19d9997a84357afcd6b43fb2f1077f04c97d541dd23aafc494e06d41"
     },
     {
       "host": "x86_64-apple-darwin",
       "target": "x86_64-apple-darwin",
       "runner": "macos-15-intel",
-      "packageCount": 536,
-      "graphSha256": "9e330aacff09e97b5d9488e128463b452e1fc15236f2f4cf0cda377e293e1ce8"
+      "packageCount": 534,
+      "graphSha256": "1fd19a0d52af31d6d9207384344621b31e7f02639e8a425b21710723c6ef41e0"
     },
     {
       "host": "x86_64-pc-windows-msvc",

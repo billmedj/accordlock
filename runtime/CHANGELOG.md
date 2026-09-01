@@ -36,6 +36,13 @@ must still be called out explicitly.
 - Corrected Windows 8.3 path-alias handling by comparing native stable file or
   directory identities instead of normalized path strings. Terminal executable
   identity is also checked before and after hashing.
+- Bound the four text-based native packaging helpers to LF checkouts on every
+  host and made CI verify that attribute contract before auditing their exact
+  raw-byte hashes.
+- Added the exact durable-control catalog fingerprint produced by the
+  checksum-pinned PostgreSQL 17.11 CI image while retaining the PostgreSQL 17.4
+  fingerprint. Each fingerprint is bound to its exact server version, and any
+  other version or catalog representation still fails closed.
 
 ## [0.1.0-alpha.1] - 2026-09-01
 

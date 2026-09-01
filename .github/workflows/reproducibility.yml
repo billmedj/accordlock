@@ -8,6 +8,7 @@ on:
       - "desktop/Cargo.toml"
       - "desktop/**/Cargo.toml"
       - "desktop/ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json"
+      - "desktop/.gitattributes"
       - "desktop/rust-toolchain.toml"
       - ".cargo/**"
       - "desktop/.cargo/**"
@@ -29,6 +30,7 @@ on:
       - "desktop/Cargo.toml"
       - "desktop/**/Cargo.toml"
       - "desktop/ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json"
+      - "desktop/.gitattributes"
       - "desktop/rust-toolchain.toml"
       - ".cargo/**"
       - "desktop/.cargo/**"
@@ -83,6 +85,22 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      - name: Verify exact-byte checkout policy
+        shell: bash
+        run: |
+          paths=(
+            desktop/scripts/build-macos.ps1
+            desktop/scripts/build-windows.ps1
+            desktop/ui/desktop/src/platform/windows/bin/jbang.cmd
+            desktop/ui/desktop/src/platform/windows/bin/npx.cmd
+          )
+          attributes="$(git check-attr --cached text eol -- "${paths[@]}")"
+          printf '%s\n' "$attributes"
+          for path in "${paths[@]}"; do
+            grep -Fqx "$path: text: set" <<<"$attributes"
+            grep -Fqx "$path: eol: lf" <<<"$attributes"
+          done
 
       - name: Activate the desktop-pinned native Rust toolchain
         working-directory: desktop

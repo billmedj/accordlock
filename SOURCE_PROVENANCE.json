@@ -8,7 +8,7 @@
       "sourceRepository": "https://github.com/billmedj/accordlock-core.git",
       "commit": "27301d159feccf53bc565a5de68c1c307d9bff09",
       "tree": "3a02ebe252285cacf180ca9c46976477ec71cfa7",
-      "assembledTree": "4349ead49d678cd083e19c0ebf4dbfbdc60cf83f",
+      "assembledTree": "ffa385a41be8d3a8dbaef0beacfbaac68549e9d6",
       "trackedTreeExclusions": [],
       "postImportAdjustments": [
         {
@@ -74,6 +74,30 @@
         {
           "path": "scripts/rustsec-advisory-db.commit",
           "reason": "Advanced the reproducibly pinned RustSec advisory database to the audited current revision used by release security checks."
+        },
+        {
+          "path": "README.md",
+          "reason": "Documented the exact PostgreSQL server-version profiles accepted by the fail-closed reproduction runner."
+        },
+        {
+          "path": "crates/accordlock-state/src/postgres/schema_profile.rs",
+          "reason": "Bound each accepted durable-control catalog fingerprint to its exact PostgreSQL server version while preserving fail-closed drift detection."
+        },
+        {
+          "path": "docs/INSTALLATION.md",
+          "reason": "Aligned installation requirements with the exact PostgreSQL compatibility matrix enforced by the runtime."
+        },
+        {
+          "path": "infra/README.md",
+          "reason": "Identified PostgreSQL 17.11 as the current disposable infrastructure baseline."
+        },
+        {
+          "path": "infra/local/postgres/README.md",
+          "reason": "Documented the version-bound local PostgreSQL profiles used for reproducible validation."
+        },
+        {
+          "path": "scripts/README.md",
+          "reason": "Documented fail-closed PostgreSQL version handling in the complete reproduction runner."
         }
       ],
       "postImportChangeSets": [
@@ -105,7 +129,7 @@
         },
         {
           "baseTree": "39bbb72c6a4b9dcd6dbbed24981260544d4dfbe8",
-          "resultTree": "4349ead49d678cd083e19c0ebf4dbfbdc60cf83f",
+          "resultTree": "ffa385a41be8d3a8dbaef0beacfbaac68549e9d6",
           "changes": [
             {
               "path": "CHANGELOG.md",
@@ -118,9 +142,39 @@
               "reason": "Updated h2 from 0.4.15 to the RustSec-fixed 0.4.16 release without unrelated runtime dependency changes."
             },
             {
+              "path": "README.md",
+              "effect": "modified",
+              "reason": "Documented the exact PostgreSQL server-version profiles accepted by complete reproduction."
+            },
+            {
               "path": "SOURCE_MANIFEST.sha256",
               "effect": "modified",
-              "reason": "Regenerated all 420 exact runtime source hashes after adding the audit implementation and its tests."
+              "reason": "Regenerated all 420 exact runtime source hashes after the recorded security and documentation adjustments."
+            },
+            {
+              "path": "crates/accordlock-state/src/postgres/schema_profile.rs",
+              "effect": "modified",
+              "reason": "Accepted only the catalog fingerprints produced by exact PostgreSQL 17.4 and 17.11 server versions and rejected every unrecognized pairing."
+            },
+            {
+              "path": "docs/INSTALLATION.md",
+              "effect": "modified",
+              "reason": "Aligned installation requirements with the runtime's exact PostgreSQL compatibility matrix."
+            },
+            {
+              "path": "infra/README.md",
+              "effect": "modified",
+              "reason": "Named PostgreSQL 17.11 as the disposable infrastructure baseline."
+            },
+            {
+              "path": "infra/local/postgres/README.md",
+              "effect": "modified",
+              "reason": "Documented PostgreSQL 17.11 as the baseline and the exact 17.4 local compatibility profile."
+            },
+            {
+              "path": "scripts/README.md",
+              "effect": "modified",
+              "reason": "Documented version-bound PostgreSQL validation in the complete reproduction runner."
             },
             {
               "path": "scripts/check_profiled_rustsec_audit.py",
@@ -142,7 +196,7 @@
       "upstreamRepository": "https://github.com/aaif-goose/goose.git",
       "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
       "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
-      "assembledTree": "e4d10966c4fd27b264735b428099744c890ee1a6",
+      "assembledTree": "3e44c0edddbd67cf7978e2bb045f06974b0fd22b",
       "trackedTreeExclusions": [
         {
           "path": "documentation/",
@@ -159,6 +213,10 @@
       ],
       "postImportAdjustments": [
         {
+          "path": ".gitattributes",
+          "reason": "Forced the four raw-byte-hashed packaging helpers to materialize with LF line endings on every native host."
+        },
+        {
           "path": "ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json",
           "reason": "Pinned the exact package, binary, features, native host-target pairs, productive build scripts, package counts, and dependency-graph digests used by the distributed desktop sidecar."
         },
@@ -168,7 +226,7 @@
         },
         {
           "path": "MODIFICATIONS.md",
-          "reason": "Recorded the deterministic file-by-file inventory of 369 modified, 1108 unchanged, 216 AccordLock-only, and 37 omitted upstream paths."
+          "reason": "Recorded the deterministic file-by-file inventory of 370 modified, 1107 unchanged, 216 AccordLock-only, and 37 omitted upstream paths."
         },
         {
           "path": "Cargo.toml",
@@ -531,8 +589,13 @@
         },
         {
           "baseTree": "7734083400d8ee2b198c41c769f8690983f4ebbf",
-          "resultTree": "e4d10966c4fd27b264735b428099744c890ee1a6",
+          "resultTree": "3e44c0edddbd67cf7978e2bb045f06974b0fd22b",
           "changes": [
+            {
+              "path": ".gitattributes",
+              "effect": "modified",
+              "reason": "Pinned the checked-out LF bytes of all four text-based helpers covered by native packaging hashes."
+            },
             {
               "path": "ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json",
               "effect": "added",
@@ -546,7 +609,7 @@
             {
               "path": "MODIFICATIONS.md",
               "effect": "modified",
-              "reason": "Regenerated the exact Goose inheritance inventory for 369 modified, 1108 unchanged, 216 AccordLock-only, and 37 omitted files."
+              "reason": "Regenerated the exact Goose inheritance inventory for 370 modified, 1107 unchanged, 216 AccordLock-only, and 37 omitted files."
             },
             {
               "path": "RELEASE.md",
@@ -581,7 +644,7 @@
             {
               "path": "scripts/check_upstream_modifications.py",
               "effect": "modified",
-              "reason": "Advanced the deterministic upstream path-set counts and digests to include the new packaging contract test."
+              "reason": "Advanced the deterministic upstream path-set counts and digests to include the packaging contract test and LF checkout policy."
             },
             {
               "path": "ui/desktop/forge.config.ts",
