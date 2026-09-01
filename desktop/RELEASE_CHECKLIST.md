@@ -71,6 +71,22 @@ does not claim that the items below have passed.
 
 ## Package integrity
 
+- [ ] The candidate was built on an ephemeral, exclusive runner with no
+      concurrent writer to either source checkout; both checkouts remained on
+      the locked commits and clean through the final pre-package check.
+- [ ] Native release sidecars came from newly created Cargo target directories;
+      `src/bin` contained no tracked sources, reviewed platform wrappers were
+      copied, re-hashed, and assigned their reviewed modes in a real
+      in-repository staging directory, and all temporary target directories
+      were removed after staging.
+- [ ] Every output directory and recursive cleanup target was a real non-link
+      descendant of the verified desktop output boundary.
+- [ ] The macOS DMG and ZIP were mounted or extracted into fresh controlled
+      directories. Each contained exactly one AccordLock application payload
+      whose file set, digests, native modes, architectures, and release
+      signature matched the verified staged payload and packaged application;
+      both distributed copies retained a valid stapled ticket and passed
+      Gatekeeper assessment.
 - [ ] `accordlock-artifact-manifest.json` lists every shipped artifact with the
       correct digest and source identity.
 - [ ] `SHA256SUMS` verifies without omissions or extra files.

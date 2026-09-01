@@ -1,4 +1,4 @@
-# AccordLock disposable local PostgreSQL 17
+# AccordLock disposable local PostgreSQL 17.11
 
 These scripts initialize a project-local PostgreSQL cluster under
 `.local/postgres`, bound only to `127.0.0.1:55432`. The database is
@@ -17,7 +17,8 @@ machine, remote listener, CI secret, or production use. The scripts never
 delete the data directory. Remove it manually only after verifying the exact
 path and accepting the loss of local test data.
 
-Windows with PostgreSQL 17 installed in the standard location:
+Windows with PostgreSQL 17.11 installed in the standard location (the
+documented 17.4 reproduction profile is also accepted for local compatibility):
 
 ```powershell
 ./infra/local/postgres/init.ps1
@@ -27,7 +28,7 @@ cargo test -p accordlock-state --test postgres -- --ignored --test-threads=1
 ./infra/local/postgres/stop.ps1
 ```
 
-POSIX with PostgreSQL 17 commands on `PATH`:
+POSIX with PostgreSQL 17.11 commands on `PATH`:
 
 ```sh
 ./infra/local/postgres/postgres-local.sh start

@@ -39,8 +39,21 @@ these gates pass:
 3. **Automated tests** — the core Rust suites and desktop unit, type, format,
    localization, and packaging checks pass from a clean checkout.
 4. **Reproducible package** — the binary release orchestrator consumes a
-   release-ready manifest derived from the recorded monorepo sources. Embedded
-   binaries match their build markers and source commit.
+   release-ready manifest derived from the recorded monorepo sources on an
+   ephemeral, exclusive build runner. The source checkouts have no concurrent
+   writer; their exact commits and clean state are rechecked after native
+   compilation and before packaging. Release builds use new Cargo target
+   directories that are removed after the compiled sidecars are staged.
+   Output creation and cleanup traverse only verified non-link directories
+   beneath the real desktop package boundary.
+   Reviewed platform wrappers live outside `src/bin`; that directory contains
+   generated staging only. Every copied wrapper is re-hashed and assigned its
+   reviewed native mode, and embedded binaries match their build markers and
+   source commit. macOS DMG and ZIP candidates are reopened, constrained to
+   their exact application roots, and revalidated against the staged payload
+   digests, executable modes, architectures, and release signature.
+   Distributed copies must also retain a valid stapled notarization ticket and
+   pass Gatekeeper assessment.
 5. **Signed artifacts** — the Windows installer and protected sidecars have
    valid release signatures. Development signatures are not accepted.
 6. **Software inventory** — the pinned Syft version produces valid CycloneDX

@@ -50,8 +50,10 @@ cargo test --workspace --locked
 python3 -m unittest discover -s tests -v
 ```
 
-The complete fail-closed suite additionally requires PostgreSQL 17, Java, the
-pinned TLA+ tool, and the pinned RustSec advisory database. Follow
+The complete fail-closed suite additionally requires PostgreSQL 17.11, Java,
+the pinned TLA+ tool, and the pinned RustSec advisory database. The documented
+Windows 17.4 reproduction profile remains accepted for local compatibility;
+all other server versions fail closed until explicitly calibrated. Follow
 [`scripts/README.md`](../scripts/README.md); do not omit failed or unavailable
 stages while reporting a complete pass.
 

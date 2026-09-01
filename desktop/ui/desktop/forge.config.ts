@@ -3,6 +3,11 @@ const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 const path = require('node:path');
 const { signPackagedWindowsApplication } = require('./scripts/accordlock-windows-signing');
+const {
+  assertCanonicalStagingDirectory,
+  assertMacOSDistributionFiles,
+  assertWindowsDistributionFiles,
+} = require('./scripts/prepare-platform-binaries');
 const { verifyMacOSSidecars } = require('./scripts/verify-accordlock-macos-sidecars');
 
 const isLinuxVulkanBuild = process.env.GOOSE_DESKTOP_LINUX_VARIANT === 'vulkan';
@@ -205,7 +210,23 @@ module.exports = {
   rebuildConfig: {},
   hooks: {
     prePackage: async (_forgeConfig, platform, arch) => {
-      if (platform !== 'darwin' || !appleSigningEnabled) {
+      const binDirectory = path.resolve(__dirname, 'src', 'bin');
+      assertCanonicalStagingDirectory(binDirectory);
+      if (platform === 'win32') {
+        if (arch !== 'x64') {
+          throw new Error(`AccordLock Windows packages must target x64, received ${arch}`);
+        }
+        assertWindowsDistributionFiles(binDirectory);
+        return;
+      }
+      if (platform !== 'darwin') {
+        return;
+      }
+      if (!['arm64', 'x64'].includes(arch)) {
+        throw new Error(`AccordLock macOS packages must target arm64 or x64, received ${arch}`);
+      }
+      assertMacOSDistributionFiles(binDirectory);
+      if (!appleSigningEnabled) {
         return;
       }
       if (arch !== accordLockMacOSExpectedArchitecture) {
@@ -214,7 +235,7 @@ module.exports = {
         );
       }
       verifyMacOSSidecars({
-        binDirectory: path.resolve(__dirname, 'src', 'bin'),
+        binDirectory,
         expectedTeamId: appleTeamId,
         expectedArchitecture: arch,
       });

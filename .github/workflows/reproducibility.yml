@@ -4,6 +4,22 @@ on:
   pull_request:
     paths:
       - "runtime/**"
+      - "desktop/Cargo.lock"
+      - "desktop/Cargo.toml"
+      - "desktop/**/Cargo.toml"
+      - "desktop/ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json"
+      - "desktop/.gitattributes"
+      - "desktop/rust-toolchain.toml"
+      - ".cargo/**"
+      - "desktop/.cargo/**"
+      - "desktop/scripts/**"
+      - "desktop/ui/pnpm-lock.yaml"
+      - "desktop/ui/desktop/package.json"
+      - "desktop/ui/desktop/forge.config.*"
+      - "desktop/ui/desktop/scripts/**"
+      - "desktop/ui/desktop/src/platform/darwin/bin/**"
+      - "desktop/ui/desktop/src/platform/windows/bin/**"
+      - "desktop/ui/desktop/src/bin/**"
       - "assurance/**"
       - ".github/workflows/reproducibility.yml"
   push:
@@ -11,6 +27,22 @@ on:
       - main
     paths:
       - "runtime/**"
+      - "desktop/Cargo.lock"
+      - "desktop/Cargo.toml"
+      - "desktop/**/Cargo.toml"
+      - "desktop/ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json"
+      - "desktop/.gitattributes"
+      - "desktop/rust-toolchain.toml"
+      - ".cargo/**"
+      - "desktop/.cargo/**"
+      - "desktop/scripts/**"
+      - "desktop/ui/pnpm-lock.yaml"
+      - "desktop/ui/desktop/package.json"
+      - "desktop/ui/desktop/forge.config.*"
+      - "desktop/ui/desktop/scripts/**"
+      - "desktop/ui/desktop/src/platform/darwin/bin/**"
+      - "desktop/ui/desktop/src/platform/windows/bin/**"
+      - "desktop/ui/desktop/src/bin/**"
       - "assurance/**"
       - ".github/workflows/reproducibility.yml"
   workflow_dispatch:
@@ -23,6 +55,100 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  desktop-rustsec-matrix:
+    name: Resolve native desktop audit matrix
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.profile.outputs.matrix }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Read the reviewed native host/target matrix
+        id: profile
+        shell: bash
+        run: >-
+          echo "matrix=$(python3 runtime/scripts/check_profiled_rustsec_audit.py
+          --profile desktop/ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json
+          --emit-ci-matrix)" >> "$GITHUB_OUTPUT"
+
+  desktop-rustsec-native:
+    name: Desktop RustSec (${{ matrix.host }})
+    needs: desktop-rustsec-matrix
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.desktop-rustsec-matrix.outputs.matrix) }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Verify exact-byte checkout policy
+        shell: bash
+        run: |
+          paths=(
+            desktop/scripts/build-macos.ps1
+            desktop/scripts/build-windows.ps1
+            desktop/ui/desktop/src/platform/darwin/bin/jbang
+            desktop/ui/desktop/src/platform/darwin/bin/node
+            desktop/ui/desktop/src/platform/darwin/bin/npx
+            desktop/ui/desktop/src/platform/darwin/bin/system-tool-wrapper.sh
+            desktop/ui/desktop/src/platform/darwin/bin/uvx
+            desktop/ui/desktop/src/platform/windows/bin/jbang.cmd
+            desktop/ui/desktop/src/platform/windows/bin/npx.cmd
+          )
+          attributes="$(git check-attr --cached text eol -- "${paths[@]}")"
+          printf '%s\n' "$attributes"
+          for path in "${paths[@]}"; do
+            grep -Fqx "$path: text: set" <<<"$attributes"
+            grep -Fqx "$path: eol: lf" <<<"$attributes"
+          done
+
+      - name: Activate the pinned Node.js runtime
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.10.0
+
+      - name: Exercise the native desktop payload contract
+        working-directory: desktop
+        run: node --test ui/desktop/scripts/prepare-platform-binaries.test.js
+
+      - name: Activate the desktop-pinned native Rust toolchain
+        working-directory: desktop
+        run: rustup show active-toolchain
+
+      - name: Install pinned cargo-audit
+        working-directory: runtime
+        run: cargo install cargo-audit --version 0.22.2 --locked --root .local/tools/cargo-audit
+
+      - name: Fetch the repository-pinned RustSec database
+        working-directory: runtime
+        shell: bash
+        run: |
+          git clone https://github.com/RustSec/advisory-db.git .local/rustsec-advisory-db
+          rustsec_commit="$(tr -d '\r\n' < scripts/rustsec-advisory-db.commit)"
+          git -C .local/rustsec-advisory-db checkout --detach "$rustsec_commit"
+
+      - name: Audit the native packaged desktop Rust graph
+        working-directory: desktop
+        run: >-
+          ${{ matrix.python }} ../runtime/scripts/check_profiled_rustsec_audit.py
+          --cargo cargo
+          --rustc rustc
+          --cargo-audit ../runtime/${{ matrix.cargoAudit }}
+          --git git
+          --db ../runtime/.local/rustsec-advisory-db
+          --profile ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json
+          --expected-commit-file ../runtime/scripts/rustsec-advisory-db.commit
+          --max-age-days 14
+          --expected-host ${{ matrix.host }}
+          --target ${{ matrix.target }}
+
   runtime-reproducibility:
     name: Rust, TLC, PostgreSQL, and supply chain
     runs-on: ubuntu-24.04

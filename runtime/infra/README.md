@@ -6,7 +6,7 @@ artifacts. Nothing here applies resources to AWS or Kubernetes automatically.
 | Path | Purpose | Changes live infrastructure? |
 | --- | --- | --- |
 | `local/k8s/` | End-to-end `kind` demonstration with synthetic attestations | Creates or reuses only a local `accordlock` kind cluster |
-| `local/postgres/` | Disposable loopback PostgreSQL 17 state store | Starts only a project-local database on `127.0.0.1:55432` |
+| `local/postgres/` | Disposable loopback PostgreSQL 17.11 state store | Starts only a project-local database on `127.0.0.1:55432` |
 | `kubernetes/admission/` | Hardened, fail-closed webhook deployment candidate | No; checked-in sentinels deliberately prevent deployment |
 | `kubernetes/activation/` | Offline validation of captured EKS activation evidence | No; reads one local JSON file only |
 

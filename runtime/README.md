@@ -129,8 +129,11 @@ cargo test --workspace --locked
 python3 -m unittest discover -s tests -v
 ```
 
-The complete fail-closed reproduction runner also requires PostgreSQL 17,
-Java, a pinned TLA+ tools jar, and a pinned RustSec advisory database. See
+The complete fail-closed reproduction runner also requires PostgreSQL 17.11,
+Java, a pinned TLA+ tools jar, and a pinned RustSec advisory database. The
+documented Windows 17.4 reproduction profile remains accepted for local
+compatibility; every other server version fails closed until explicitly
+calibrated. See
 [scripts/README.md](scripts/README.md) before running:
 
 ```powershell

@@ -1,1 +1,14 @@
+# Modified by AccordLock contributors; see UPSTREAM.md.
 crates/goose/src/agents/snapshots/*.snap linguist-language=Text
+
+# These scripts are verified by raw-byte SHA-256 during native packaging.
+# Keep their checked-out bytes identical on every host, including Windows.
+scripts/build-macos.ps1 text eol=lf
+scripts/build-windows.ps1 text eol=lf
+ui/desktop/src/platform/darwin/bin/jbang text eol=lf
+ui/desktop/src/platform/darwin/bin/node text eol=lf
+ui/desktop/src/platform/darwin/bin/npx text eol=lf
+ui/desktop/src/platform/darwin/bin/system-tool-wrapper.sh text eol=lf
+ui/desktop/src/platform/darwin/bin/uvx text eol=lf
+ui/desktop/src/platform/windows/bin/jbang.cmd text eol=lf
+ui/desktop/src/platform/windows/bin/npx.cmd text eol=lf

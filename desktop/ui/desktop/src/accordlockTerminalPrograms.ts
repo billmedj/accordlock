@@ -50,10 +50,13 @@ const hasExactKeys = (value: Record<string, unknown>, keys: readonly string[]): 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
-const normalizedPathIdentity = (value: string, platform: NodeJS.Platform): string => {
-  const normalized = path.normalize(value);
-  return platform === 'win32' ? normalized.toLowerCase() : normalized;
-};
+const sameFileIdentity = (left: fs.BigIntStats, right: fs.BigIntStats): boolean =>
+  left.dev === right.dev &&
+  left.ino === right.ino &&
+  (left.ino !== 0n ||
+    (left.birthtimeMs === right.birthtimeMs &&
+      left.size === right.size &&
+      left.mode === right.mode));
 
 const hashFile = (filePath: string): string => {
   const hash = createHash('sha256');
@@ -92,13 +95,18 @@ export const inspectAccordLockTerminalProgram = (
     throw new Error('AccordLock terminal executable must be an absolute path');
   }
   const requested = path.resolve(selectedPath);
-  const metadata = fs.lstatSync(requested);
+  const metadata = fs.lstatSync(requested, { bigint: true });
   if (!metadata.isFile() || metadata.isSymbolicLink()) {
     throw new Error('AccordLock terminal executable must be a regular non-link file');
   }
   const canonical = fs.realpathSync.native(requested);
-  if (normalizedPathIdentity(canonical, platform) !== normalizedPathIdentity(requested, platform)) {
-    throw new Error('AccordLock terminal executable path must already be canonical');
+  const canonicalMetadata = fs.lstatSync(canonical, { bigint: true });
+  if (
+    !canonicalMetadata.isFile() ||
+    canonicalMetadata.isSymbolicLink() ||
+    !sameFileIdentity(metadata, canonicalMetadata)
+  ) {
+    throw new Error('AccordLock terminal executable changed while it was being inspected');
   }
   const stem = path.basename(canonical, path.extname(canonical)).toLowerCase();
   if (BANNED_EXECUTABLE_STEMS.has(stem)) {
@@ -107,10 +115,15 @@ export const inspectAccordLockTerminalProgram = (
   if (platform === 'win32' && path.extname(canonical).toLowerCase() !== '.exe') {
     throw new Error('AccordLock Windows terminal programs must be native executables');
   }
+  const executableSha256 = hashFile(canonical);
+  const finalMetadata = fs.lstatSync(canonical, { bigint: true });
+  if (!finalMetadata.isFile() || !sameFileIdentity(canonicalMetadata, finalMetadata)) {
+    throw new Error('AccordLock terminal executable changed while it was being inspected');
+  }
   return {
     alias: trustedAlias,
     executable_path: canonical,
-    executable_sha256: hashFile(canonical),
+    executable_sha256: executableSha256,
   };
 };
 

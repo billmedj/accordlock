@@ -36,7 +36,7 @@ describe('DesktopFileAccess', () => {
     fs.writeFileSync(path.join(workingDirectory, '.goosehints'), 'project guidance');
     const access = new DesktopFileAccess();
     await access.bindWindow(7, workingDirectory);
-    const canonicalWorkingDirectory = fs.realpathSync(workingDirectory);
+    const canonicalWorkingDirectory = fs.realpathSync.native(workingDirectory);
 
     await expect(access.readGoosehints(7)).resolves.toEqual({
       file: 'project guidance',
@@ -50,7 +50,7 @@ describe('DesktopFileAccess', () => {
     const workingDirectory = makeTempDirectory();
     const access = new DesktopFileAccess();
     await access.bindWindow(7, workingDirectory);
-    const canonicalWorkingDirectory = fs.realpathSync(workingDirectory);
+    const canonicalWorkingDirectory = fs.realpathSync.native(workingDirectory);
 
     await expect(access.readGoosehints(7)).resolves.toEqual({
       file: '',
@@ -64,7 +64,7 @@ describe('DesktopFileAccess', () => {
     const workingDirectory = makeTempDirectory();
     const access = new DesktopFileAccess();
     await access.bindWindow(7, workingDirectory);
-    const filePath = path.join(fs.realpathSync(workingDirectory), '.goosehints');
+    const filePath = path.join(fs.realpathSync.native(workingDirectory), '.goosehints');
 
     await expect(access.writeGoosehints(7, 'first guidance')).resolves.toBe(true);
     expect(fs.readFileSync(filePath, 'utf8')).toBe('first guidance');
@@ -420,9 +420,9 @@ describe('DesktopFileAccess', () => {
 
     await expect(access.selectWorkspaceWithNativeDialog(7, showDialog)).resolves.toEqual({
       canceled: false,
-      directory: fs.realpathSync(nextWorkspace),
+      directory: fs.realpathSync.native(nextWorkspace),
     });
-    expect(showDialog).toHaveBeenCalledWith(fs.realpathSync(currentWorkspace));
+    expect(showDialog).toHaveBeenCalledWith(fs.realpathSync.native(currentWorkspace));
     expect(showDialog).toHaveBeenCalledOnce();
   });
 
@@ -609,7 +609,7 @@ describe('DesktopFileAccess', () => {
       fs.symlinkSync(firstProject, workingDirectory);
       const access = new DesktopFileAccess();
       await access.bindWindow(7, workingDirectory);
-      const canonicalFirstProject = fs.realpathSync(firstProject);
+      const canonicalFirstProject = fs.realpathSync.native(firstProject);
 
       fs.unlinkSync(workingDirectory);
       fs.symlinkSync(secondProject, workingDirectory);

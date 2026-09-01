@@ -135,6 +135,42 @@ class AccordLockPublicationGuardTests(unittest.TestCase):
             )
         )
 
+    def test_archived_macos_app_requires_its_own_notarization_ticket(self) -> None:
+        original_read = PUBLICATION.read
+
+        def read_without_archived_ticket_check(relative_path: str) -> str:
+            content = original_read(relative_path)
+            if relative_path == "scripts/build-macos.ps1":
+                return content.replace("'stapler', 'validate', '-v', $AppRoot", "'verify'")
+            return content
+
+        errors: list[str] = []
+        with patch.object(PUBLICATION, "read", side_effect=read_without_archived_ticket_check):
+            PUBLICATION.check_macos_packaging_supply_chain(errors)
+
+        self.assertTrue(any("native DMG pipeline is missing" in error for error in errors))
+
+    def test_macos_output_cleanup_requires_real_non_link_ancestors(self) -> None:
+        original_read = PUBLICATION.read
+
+        def read_with_lexical_cleanup(relative_path: str) -> str:
+            content = original_read(relative_path)
+            if relative_path == "scripts/build-macos.ps1":
+                return content.replace(
+                    "Remove-ControlledDirectoryTree -Boundary $outputPlatformRoot -Directory $outputRoot",
+                    "Remove-Item -LiteralPath $outputRoot -Recurse -Force",
+                )
+            return content
+
+        errors: list[str] = []
+        with patch.object(PUBLICATION, "read", side_effect=read_with_lexical_cleanup):
+            PUBLICATION.check_macos_packaging_supply_chain(errors)
+
+        self.assertIn(
+            "scripts/build-macos.ps1: output cleanup must validate real non-link ancestors",
+            errors,
+        )
+
     def test_retired_pctx_dependency_is_rejected(self) -> None:
         original_read = PUBLICATION.read
 

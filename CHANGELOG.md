@@ -9,6 +9,52 @@ must still be called out explicitly.
 
 ## [Unreleased]
 
+### Security
+
+- Updated `h2` from `0.4.15` to `0.4.16` in the runtime and desktop
+  lockfiles to address `RUSTSEC-2026-0258`.
+- Updated `event-listener` from `5.4.1` to `5.4.2` in the distributed desktop
+  graph to address `RUSTSEC-2026-0221`.
+- Made `bat` optional behind the existing `tui` feature, excluding `bat` and
+  its `bincode` 1.x dependency from the protected no-default-features desktop
+  graph while preserving TUI-enabled builds.
+- Added a fail-closed RustSec audit for the exact `goose-cli` graph shipped on
+  Windows x64, macOS Intel, and macOS ARM64. Each graph is resolved on a native
+  host, bound to the productive packaging command and script digest, and checked
+  against the complete lockfile without advisory ignores or target or severity
+  filters.
+- Restricted the Windows package to ten named sidecar, marker, and support
+  files. Packaging rejects extra files, directories, links, non-x64 PE files,
+  and wildcard DLL collection.
+- Restricted the macOS package to eleven named sidecar, marker, and support
+  files. Both platforms reject redirected staging directories, and the seven
+  authored support wrappers are checksum-bound before packaging. macOS builds
+  also pin every payload mode, reopen the final DMG and ZIP, require exact
+  archive roots, and revalidate payload digests, executable architectures, and
+  release signatures, stapled notarization tickets, and Gatekeeper acceptance
+  from the distributed artifacts themselves. Output cleanup is confined to
+  real non-link descendants of the desktop build boundary.
+- Isolated each native release build in new, platform-specific Cargo target
+  directories that are removed after staging. On the required exclusive build
+  runner, both source checkouts are revalidated against the release lock before
+  signing and again before Electron Forge runs.
+- Corrected Windows 8.3 path-alias handling by comparing native stable file or
+  directory identities instead of normalized path strings. Terminal executable
+  identity is also checked before and after hashing.
+- Anchored staging-path validation at the desktop package boundary. A
+  host-managed checkout alias is accepted, while every link or junction inside
+  the product-owned path to `src/bin` remains rejected.
+- Bound all nine text-based native packaging helpers to LF checkouts on every
+  host and made CI verify that attribute contract before auditing their exact
+  raw-byte hashes.
+- Moved reviewed macOS wrapper sources out of `src/bin`, which is now generated
+  staging only. Windows and macOS preparation copy and re-hash those sources
+  without making the release checkout dirty before Forge runs.
+- Added the exact durable-control catalog fingerprint produced by the
+  checksum-pinned PostgreSQL 17.11 CI image while retaining the PostgreSQL 17.4
+  fingerprint. Each fingerprint is bound to its exact server version, and any
+  other version or catalog representation still fails closed.
+
 ## [0.1.0-alpha.1] - 2026-09-01
 
 Initial public engineering alpha, published as a source-only prerelease.

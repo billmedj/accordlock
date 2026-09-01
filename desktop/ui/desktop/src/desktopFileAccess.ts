@@ -406,9 +406,6 @@ export class DesktopFileAccess {
     const resolvedPath = path.isAbsolute(requestedPath)
       ? path.resolve(requestedPath)
       : path.resolve(binding.path, requestedPath);
-    if (!isWithinDirectory(binding.path, resolvedPath)) {
-      throw new Error('The requested directory is outside the authorized workspace');
-    }
 
     const requestedMetadata = await fs.lstat(resolvedPath, { bigint: true });
     if (requestedMetadata.isSymbolicLink()) {
@@ -424,9 +421,11 @@ export class DesktopFileAccess {
     if (
       !canonicalMetadata.isDirectory() ||
       canonicalMetadata.isSymbolicLink() ||
-      canonicalMetadata.dev !== binding.dev
+      canonicalMetadata.dev !== binding.dev ||
+      canonicalMetadata.dev !== requestedMetadata.dev ||
+      canonicalMetadata.ino !== requestedMetadata.ino
     ) {
-      throw new Error('The requested path is not a regular directory');
+      throw new Error('The requested path is not a stable regular directory');
     }
 
     const names: string[] = [];

@@ -5,10 +5,13 @@ const https = require('https');
 const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
+const { SIDECAR_SPECS } = require('./accordlock-windows-signing');
 
 // Paths
-const srcBinDir = path.join(__dirname, '..', 'src', 'bin');
-const platformWinDir = path.join(__dirname, '..', 'src', 'platform', 'windows', 'bin');
+const desktopRoot = path.resolve(__dirname, '..');
+const srcBinDir = path.join(desktopRoot, 'src', 'bin');
+const platformDarwinDir = path.join(desktopRoot, 'src', 'platform', 'darwin', 'bin');
+const platformWinDir = path.join(desktopRoot, 'src', 'platform', 'windows', 'bin');
 const uvVersion = '0.11.11';
 const uvDownloadUrl = `https://github.com/astral-sh/uv/releases/download/${uvVersion}/uv-x86_64-pc-windows-msvc.zip`;
 const uvBinaryHashes = {
@@ -18,13 +21,76 @@ const uvBinaryHashes = {
 const accordLockSanitizedUvHash =
     '6bd02b05ea03517986f20e7f9abd462bdc7c04ffafac49ee2646c6195ab5b534';
 
+const windowsAuthoredSupportFiles = Object.freeze(['jbang.cmd', 'npx.cmd']);
+const windowsAuthoredSupportFileHashes = Object.freeze({
+    'jbang.cmd': '2588d30e4e39865ba05edf2548c5900cf7da65a383f31ede8a45ab4b402cdeba',
+    'npx.cmd': '5bbf9c2d45e014dce03ae24e9f2caf653f5134045c9269271777d0cb62039a6c',
+});
+const windowsDistributionFileHashPolicy = Object.freeze({
+    'jbang.cmd': Object.freeze([windowsAuthoredSupportFileHashes['jbang.cmd']]),
+    'npx.cmd': Object.freeze([windowsAuthoredSupportFileHashes['npx.cmd']]),
+    'uv.exe': Object.freeze([uvBinaryHashes['uv.exe'], accordLockSanitizedUvHash]),
+    'uvx.exe': Object.freeze([uvBinaryHashes['uvx.exe']]),
+});
+const windowsDistributionFiles = Object.freeze(
+    [
+        ...SIDECAR_SPECS.flatMap(spec => [spec.binary, spec.marker]),
+        ...windowsAuthoredSupportFiles,
+        ...Object.keys(uvBinaryHashes),
+    ].sort()
+);
+const windowsDistributionFileSet = new Set(windowsDistributionFiles);
+const windowsX64PeFiles = Object.freeze(
+    [...SIDECAR_SPECS.map(spec => spec.binary), ...Object.keys(uvBinaryHashes)].sort()
+);
+const windowsSourceOnlyEntries = new Set([
+    '.gitkeep',
+    'jbang',
+    'node',
+    'npx',
+    'system-tool-wrapper.sh',
+    'uvx',
+]);
+const macOSSupportFiles = Object.freeze(['jbang', 'node', 'npx', 'system-tool-wrapper.sh', 'uvx']);
+const macOSSupportFileHashes = Object.freeze({
+    jbang: '30daf17ccbc0b030d5bec15854ff31a249f650e0ad14a575eb8250e4d983e444',
+    node: '38a3e65d6e8c8c554ba54036d596b6183762b396a145d0c3116a683e4501514e',
+    npx: '84ad66e6895a1631aa660efd237bfceee5e5bdf2ca1d2b0c759771c504d42bd3',
+    'system-tool-wrapper.sh': '8473f77e2911c30ea28af25db9c9cde09d55e6b5d94220ad24a297ad46dc07a6',
+    uvx: '218c7121887f294b664157d1d4c55737d57aa02fe2accd5d6eb22c8c0dbd47c3',
+});
+const macOSSupportFileModes = Object.freeze({
+    jbang: 0o755,
+    node: 0o755,
+    npx: 0o755,
+    'system-tool-wrapper.sh': 0o644,
+    uvx: 0o755,
+});
+const macOSDistributionFiles = Object.freeze(
+    [
+        ...SIDECAR_SPECS.flatMap(spec => [spec.binary.replace(/\.exe$/u, ''), spec.marker]),
+        ...macOSSupportFiles,
+    ].sort()
+);
+const macOSDistributionFileSet = new Set(macOSDistributionFiles);
+const macOSDistributionFileModes = Object.freeze({
+    ...Object.fromEntries(
+        SIDECAR_SPECS.flatMap(spec => [
+            [spec.binary.replace(/\.exe$/u, ''), 0o755],
+            [spec.marker, 0o644],
+        ])
+    ),
+    ...macOSSupportFileModes,
+});
+const macOSSourceOnlyEntries = new Set([
+    '.gitkeep',
+    ...windowsAuthoredSupportFiles,
+    ...Object.keys(uvBinaryHashes),
+    ...SIDECAR_SPECS.map(spec => spec.binary),
+]);
+
 // Platform-specific file patterns
-const windowsFiles = [
-    '*.exe',
-    '*.dll',
-    '*.cmd',
-    'goose-npm/**/*'
-];
+const windowsFiles = ['*.exe', '*.dll', '*.cmd', 'goose-npm/**/*'];
 
 // Helper function to check if file matches patterns
 function matchesPattern(filename, patterns) {
@@ -61,33 +127,241 @@ function hasExpectedHash(filePath, expectedHash) {
     return fs.existsSync(filePath) && sha256(filePath) === expectedHash;
 }
 
+function failDistribution(platform, message) {
+    throw new Error(`AccordLock ${platform} distribution preparation failed: ${message}`);
+}
+
+function sameCanonicalPath(left, right) {
+    const normalizedLeft = path.normalize(left);
+    const normalizedRight = path.normalize(right);
+    return process.platform === 'win32'
+        ? normalizedLeft.toLowerCase() === normalizedRight.toLowerCase()
+        : normalizedLeft === normalizedRight;
+}
+
+function assertRealNonLinkDirectory(binDirectory, platform) {
+    let directoryStat;
+    try {
+        directoryStat = fs.lstatSync(binDirectory);
+    } catch {
+        failDistribution(platform, `binary staging directory is missing: ${binDirectory}`);
+    }
+    if (!directoryStat.isDirectory() || directoryStat.isSymbolicLink()) {
+        failDistribution(platform, `binary staging path must be one regular non-link directory`);
+    }
+}
+
+function assertNoOwnedPathRedirection(directory, ownedBoundary, platform) {
+    const resolvedDirectory = path.resolve(directory);
+    const resolvedBoundary = path.resolve(ownedBoundary);
+    const relativeDirectory = path.relative(resolvedBoundary, resolvedDirectory);
+    if (
+        relativeDirectory === '' ||
+        relativeDirectory === '..' ||
+        relativeDirectory.startsWith(`..${path.sep}`) ||
+        path.isAbsolute(relativeDirectory)
+    ) {
+        failDistribution(platform, `binary staging directory escapes its package boundary`);
+    }
+
+    let current = resolvedDirectory;
+    while (!sameCanonicalPath(current, resolvedBoundary)) {
+        assertRealNonLinkDirectory(current, platform);
+        current = path.dirname(current);
+    }
+
+    const realBoundary = fs.realpathSync.native(resolvedBoundary);
+    const expectedRealDirectory = path.resolve(realBoundary, relativeDirectory);
+    const realDirectory = fs.realpathSync.native(resolvedDirectory);
+    if (!sameCanonicalPath(realDirectory, expectedRealDirectory)) {
+        failDistribution(
+            platform,
+            `binary staging directory must not traverse a link or junction inside its package boundary`
+        );
+    }
+}
+
+function assertCanonicalStagingDirectory(binDirectory = srcBinDir) {
+    const expectedDirectory = path.resolve(srcBinDir);
+    const requestedDirectory = path.resolve(binDirectory);
+    if (!sameCanonicalPath(requestedDirectory, expectedDirectory)) {
+        failDistribution(
+            'desktop',
+            `binary staging directory must be exactly ${expectedDirectory}`
+        );
+    }
+    assertRealNonLinkDirectory(requestedDirectory, 'desktop');
+    assertNoOwnedPathRedirection(requestedDirectory, desktopRoot, 'desktop');
+}
+
+function assertRegularNonLinkFile(filePath, label, platform) {
+    let stat;
+    try {
+        stat = fs.lstatSync(filePath);
+    } catch {
+        failDistribution(platform, `${label} is missing`);
+    }
+    if (!stat.isFile() || stat.isSymbolicLink()) {
+        failDistribution(platform, `${label} must be one regular non-link file`);
+    }
+}
+
+function assertPosixFileMode(filePath, label, platform, expectedMode) {
+    if (process.platform === 'win32') {
+        return;
+    }
+    const actualMode = fs.statSync(filePath).mode & 0o7777;
+    if (actualMode !== expectedMode) {
+        const expected = expectedMode.toString(8).padStart(4, '0');
+        const actual = actualMode.toString(8).padStart(4, '0');
+        failDistribution(platform, `${label} mode mismatch: expected ${expected}, got ${actual}`);
+    }
+}
+
+function assertWindowsX64Pe(filePath) {
+    assertRegularNonLinkFile(filePath, path.basename(filePath), 'Windows');
+    const bytes = fs.readFileSync(filePath);
+    if (bytes.length < 64 || bytes.readUInt16LE(0) !== 0x5a4d) {
+        failDistribution('Windows', `${path.basename(filePath)} is not a valid PE file`);
+    }
+    const peOffset = bytes.readUInt32LE(0x3c);
+    if (peOffset > bytes.length - 6 || bytes.readUInt32LE(peOffset) !== 0x00004550) {
+        failDistribution('Windows', `${path.basename(filePath)} has an invalid PE header`);
+    }
+    const machine = bytes.readUInt16LE(peOffset + 4);
+    if (machine !== 0x8664) {
+        failDistribution(
+            'Windows',
+            `${path.basename(filePath)} must target x86-64 (PE machine 0x${machine.toString(16)})`
+        );
+    }
+}
+
+function assertAllowedWindowsDistributionHash(name, actualHash, hashPolicy) {
+    const allowedHashes = hashPolicy[name];
+    if (!Array.isArray(allowedHashes) || allowedHashes.length === 0) {
+        failDistribution('Windows', `${name} has no approved checksum policy`);
+    }
+    if (!allowedHashes.includes(actualHash)) {
+        failDistribution('Windows', `${name} checksum mismatch: got ${actualHash}`);
+    }
+}
+
+function assertWindowsDistributionFileHashes(
+    binDirectory,
+    hashPolicy = windowsDistributionFileHashPolicy
+) {
+    for (const name of Object.keys(windowsDistributionFileHashPolicy)) {
+        assertAllowedWindowsDistributionHash(
+            name,
+            sha256(path.join(binDirectory, name)),
+            hashPolicy
+        );
+    }
+}
+
+function assertDistributionFiles(binDirectory, platform, expectedFiles, expectedFileSet) {
+    let entries;
+    assertRealNonLinkDirectory(binDirectory, platform);
+    try {
+        entries = fs.readdirSync(binDirectory, { withFileTypes: true });
+    } catch {
+        failDistribution(platform, `binary staging directory is missing: ${binDirectory}`);
+    }
+
+    const actualNames = entries.map(entry => entry.name).sort();
+    const missing = expectedFiles.filter(name => !actualNames.includes(name));
+    const unexpected = actualNames.filter(name => !expectedFileSet.has(name));
+    if (missing.length > 0 || unexpected.length > 0) {
+        failDistribution(
+            platform,
+            `staged file set differs: missing=[${missing.join(', ')}] unexpected=[${unexpected.join(', ')}]`
+        );
+    }
+
+    for (const entry of entries) {
+        assertRegularNonLinkFile(path.join(binDirectory, entry.name), entry.name, platform);
+    }
+}
+
+function assertWindowsDistributionFilesWithHashPolicy(binDirectory, hashPolicy) {
+    assertDistributionFiles(
+        binDirectory,
+        'Windows',
+        windowsDistributionFiles,
+        windowsDistributionFileSet
+    );
+    for (const name of windowsX64PeFiles) {
+        assertWindowsX64Pe(path.join(binDirectory, name));
+    }
+    assertWindowsDistributionFileHashes(binDirectory, hashPolicy);
+}
+
+function assertWindowsDistributionFiles(binDirectory = srcBinDir) {
+    assertWindowsDistributionFilesWithHashPolicy(binDirectory, windowsDistributionFileHashPolicy);
+}
+
+function assertMacOSDistributionFiles(binDirectory = srcBinDir) {
+    assertDistributionFiles(
+        binDirectory,
+        'macOS',
+        macOSDistributionFiles,
+        macOSDistributionFileSet
+    );
+    for (const [name, expectedHash] of Object.entries(macOSSupportFileHashes)) {
+        const filePath = path.join(binDirectory, name);
+        const actualHash = sha256(filePath);
+        if (actualHash !== expectedHash) {
+            failDistribution(
+                'macOS',
+                `${name} checksum mismatch: expected ${expectedHash}, got ${actualHash}`
+            );
+        }
+    }
+    for (const [name, expectedMode] of Object.entries(macOSDistributionFileModes)) {
+        assertPosixFileMode(path.join(binDirectory, name), name, 'macOS', expectedMode);
+    }
+}
+
+function assertMacOSPackagedApplication(appDirectory) {
+    assertRealNonLinkDirectory(appDirectory, 'macOS');
+    const contentsDirectory = path.join(appDirectory, 'Contents');
+    const executableDirectory = path.join(contentsDirectory, 'MacOS');
+    const binDirectory = path.join(contentsDirectory, 'Resources', 'bin');
+    assertNoOwnedPathRedirection(executableDirectory, appDirectory, 'macOS');
+    assertNoOwnedPathRedirection(binDirectory, appDirectory, 'macOS');
+    assertMacOSDistributionFiles(binDirectory);
+}
+
 function downloadFile(url, destPath, redirectsRemaining = 5) {
     return new Promise((resolve, reject) => {
-        https.get(url, response => {
-            if (
-                response.statusCode >= 300 &&
-                response.statusCode < 400 &&
-                response.headers.location &&
-                redirectsRemaining > 0
-            ) {
-                response.resume();
-                downloadFile(response.headers.location, destPath, redirectsRemaining - 1)
-                    .then(resolve)
-                    .catch(reject);
-                return;
-            }
+        https
+            .get(url, response => {
+                if (
+                    response.statusCode >= 300 &&
+                    response.statusCode < 400 &&
+                    response.headers.location &&
+                    redirectsRemaining > 0
+                ) {
+                    response.resume();
+                    downloadFile(response.headers.location, destPath, redirectsRemaining - 1)
+                        .then(resolve)
+                        .catch(reject);
+                    return;
+                }
 
-            if (response.statusCode !== 200) {
-                response.resume();
-                reject(new Error(`Failed to download ${url}: HTTP ${response.statusCode}`));
-                return;
-            }
+                if (response.statusCode !== 200) {
+                    response.resume();
+                    reject(new Error(`Failed to download ${url}: HTTP ${response.statusCode}`));
+                    return;
+                }
 
-            const file = fs.createWriteStream(destPath);
-            response.pipe(file);
-            file.on('finish', () => file.close(resolve));
-            file.on('error', reject);
-        }).on('error', reject);
+                const file = fs.createWriteStream(destPath);
+                response.pipe(file);
+                file.on('finish', () => file.close(resolve));
+                file.on('error', reject);
+            })
+            .on('error', reject);
     });
 }
 
@@ -110,9 +384,9 @@ function extractZip(zipPath, destDir) {
     execFileSync('unzip', ['-q', zipPath, '-d', destDir], { stdio: 'inherit' });
 }
 
-async function ensureWindowsUvBinaries() {
+async function ensureWindowsUvBinaries(binDirectory = srcBinDir) {
     const allPresent = Object.entries(uvBinaryHashes).every(([name, expectedHash]) => {
-        const filePath = path.join(srcBinDir, name);
+        const filePath = path.join(binDirectory, name);
         return (
             hasExpectedHash(filePath, expectedHash) ||
             (name === 'uv.exe' && hasExpectedHash(filePath, accordLockSanitizedUvHash))
@@ -147,7 +421,7 @@ async function ensureWindowsUvBinaries() {
                 );
             }
 
-            const destPath = path.join(srcBinDir, name);
+            const destPath = path.join(binDirectory, name);
             fs.rmSync(destPath, { force: true });
             fs.copyFileSync(extractedPath, destPath);
             console.log(`Copied pinned ${name}`);
@@ -158,20 +432,29 @@ async function ensureWindowsUvBinaries() {
 }
 
 // Helper function to clean directory of cross-platform files
-function cleanBinDirectory(targetPlatform) {
+function cleanBinDirectory(targetPlatform, binDirectory = srcBinDir) {
     console.log(`Cleaning bin directory for ${targetPlatform} build...`);
-    
-    if (!fs.existsSync(srcBinDir)) {
+
+    if (!fs.existsSync(binDirectory)) {
         console.log('src/bin directory does not exist, skipping cleanup');
         return;
     }
 
-    const files = fs.readdirSync(srcBinDir, { withFileTypes: true });
-    
+    const files = fs.readdirSync(binDirectory, { withFileTypes: true });
+
     files.forEach(file => {
-        const filePath = path.join(srcBinDir, file.name);
-        
-        if (targetPlatform === 'darwin' || targetPlatform === 'linux') {
+        const filePath = path.join(binDirectory, file.name);
+
+        if (targetPlatform === 'darwin') {
+            if (macOSSourceOnlyEntries.has(file.name)) {
+                console.log(`Removing non-macOS support file: ${file.name}`);
+                fs.rmSync(filePath, { recursive: true, force: true });
+                return;
+            }
+            if (!macOSDistributionFileSet.has(file.name)) {
+                failDistribution('macOS', `unapproved staged payload: ${file.name}`);
+            }
+        } else if (targetPlatform === 'linux') {
             const isLegacyBackendBinary = file.name === 'goosed';
             if (isLegacyBackendBinary || matchesPattern(file.name, windowsFiles)) {
                 const fileType = isLegacyBackendBinary ? 'legacy backend binary' : 'Windows file';
@@ -183,83 +466,166 @@ function cleanBinDirectory(targetPlatform) {
                 }
             }
         } else if (targetPlatform === 'win32') {
-            // For Windows, remove macOS-specific files (keep only Windows files and common files)
-            if (!matchesPattern(file.name, windowsFiles) && !matchesPattern(file.name, ['*.db', '*.log', '.gitkeep'])) {
-                // Check if it's a macOS binary (executable without extension)
-                if (file.isFile() && !path.extname(file.name) && file.name !== '.gitkeep') {
-                    try {
-                        // Check if file is executable (likely a macOS binary)
-                        const stats = fs.statSync(filePath);
-                        if (stats.mode & parseInt('111', 8)) { // Check if any execute bit is set
-                            console.log(`Removing macOS binary: ${file.name}`);
-                            fs.unlinkSync(filePath);
-                        }
-                    } catch (err) {
-                        console.warn(`Could not check file ${file.name}:`, err.message);
-                    }
-                }
+            if (windowsSourceOnlyEntries.has(file.name)) {
+                console.log(`Removing non-Windows support file: ${file.name}`);
+                fs.rmSync(filePath, { recursive: true, force: true });
+                return;
+            }
+            if (!windowsDistributionFileSet.has(file.name)) {
+                failDistribution('Windows', `unapproved staged payload: ${file.name}`);
             }
         }
     });
 }
 
+function copyReviewedSupportFiles(
+    platform,
+    sourceDirectory,
+    names,
+    hashes,
+    binDirectory,
+    ownedBoundary = desktopRoot,
+    modes = null
+) {
+    assertNoOwnedPathRedirection(sourceDirectory, ownedBoundary, platform);
+    const expectedSourceEntries = new Set(names);
+    const sourceEntries = fs.readdirSync(sourceDirectory, { withFileTypes: true });
+    const unexpectedSourceEntries = sourceEntries
+        .map(entry => entry.name)
+        .filter(name => !expectedSourceEntries.has(name));
+    const missingSourceEntries = names.filter(
+        name => !sourceEntries.some(entry => entry.name === name)
+    );
+    if (missingSourceEntries.length > 0 || unexpectedSourceEntries.length > 0) {
+        failDistribution(
+            platform,
+            `support source mismatch: missing=[${missingSourceEntries.sort().join(', ')}] unexpected=[${unexpectedSourceEntries.sort().join(', ')}]`
+        );
+    }
+
+    for (const name of names) {
+        const srcPath = path.join(sourceDirectory, name);
+        const destPath = path.join(binDirectory, name);
+        assertRegularNonLinkFile(srcPath, `${platform} support source ${name}`, platform);
+        const expectedHash = hashes[name];
+        const sourceHash = sha256(srcPath);
+        if (sourceHash !== expectedHash) {
+            failDistribution(
+                platform,
+                `support source ${name} checksum mismatch: expected ${expectedHash}, got ${sourceHash}`
+            );
+        }
+        fs.rmSync(destPath, { recursive: true, force: true });
+        fs.copyFileSync(srcPath, destPath);
+        if (process.platform !== 'win32' && modes !== null) {
+            const expectedMode = modes[name];
+            if (!Number.isInteger(expectedMode)) {
+                failDistribution(platform, `support source ${name} has no approved mode policy`);
+            }
+            fs.chmodSync(destPath, expectedMode);
+        }
+        if (sha256(destPath) !== sourceHash) {
+            failDistribution(
+                platform,
+                `staged support file ${name} does not match its reviewed source`
+            );
+        }
+        console.log(`Copied: ${name}`);
+    }
+}
+
 // Helper function to copy platform-specific files
-async function copyPlatformFiles(targetPlatform) {
+async function copyPlatformFiles(targetPlatform, binDirectory = srcBinDir) {
+    if (targetPlatform === 'darwin') {
+        console.log('Copying macOS-specific files...');
+        copyReviewedSupportFiles(
+            'macOS',
+            platformDarwinDir,
+            macOSSupportFiles,
+            macOSSupportFileHashes,
+            binDirectory,
+            desktopRoot,
+            macOSSupportFileModes
+        );
+        return;
+    }
+
     if (targetPlatform === 'win32') {
         console.log('Copying Windows-specific files...');
-        
+
         if (!fs.existsSync(platformWinDir)) {
             console.warn('Windows platform directory does not exist');
             return;
         }
 
         // Ensure src/bin exists
-        if (!fs.existsSync(srcBinDir)) {
-            fs.mkdirSync(srcBinDir, { recursive: true });
+        if (!fs.existsSync(binDirectory)) {
+            fs.mkdirSync(binDirectory, { recursive: true });
         }
 
-        // Copy Windows-specific scripts and authored support files.
-        const files = fs.readdirSync(platformWinDir, { withFileTypes: true });
-        files.forEach(file => {
-            if (
-                file.name === 'README.md' ||
-                file.name === '.gitignore' ||
-                file.name.endsWith('.exe') ||
-                file.name.endsWith('.dll')
-            ) {
-                return;
-            }
+        const allowedSourceEntries = new Set([
+            ...windowsAuthoredSupportFiles,
+            '.gitignore',
+            'README.md',
+        ]);
+        const unexpectedSourceEntries = fs
+            .readdirSync(platformWinDir)
+            .filter(name => !allowedSourceEntries.has(name));
+        if (unexpectedSourceEntries.length > 0) {
+            failDistribution(
+                'Windows',
+                `Windows support source contains unapproved entries: ${unexpectedSourceEntries.sort().join(', ')}`
+            );
+        }
 
-            const srcPath = path.join(platformWinDir, file.name);
-            const destPath = path.join(srcBinDir, file.name);
-            
-            if (file.isDirectory()) {
-                fs.rmSync(destPath, { recursive: true, force: true });
-                fs.cpSync(srcPath, destPath, { recursive: true });
-                console.log(`Copied directory: ${file.name}`);
-            } else {
-                fs.rmSync(destPath, { force: true });
-                fs.copyFileSync(srcPath, destPath);
-                console.log(`Copied: ${file.name}`);
+        for (const name of windowsAuthoredSupportFiles) {
+            const srcPath = path.join(platformWinDir, name);
+            const destPath = path.join(binDirectory, name);
+            assertRegularNonLinkFile(srcPath, `Windows support source ${name}`, 'Windows');
+            const expectedHash = windowsAuthoredSupportFileHashes[name];
+            const sourceHash = sha256(srcPath);
+            if (sourceHash !== expectedHash) {
+                failDistribution(
+                    'Windows',
+                    `Windows support source ${name} checksum mismatch: expected ${expectedHash}, got ${sourceHash}`
+                );
             }
-        });
+            fs.rmSync(destPath, { recursive: true, force: true });
+            fs.copyFileSync(srcPath, destPath);
+            const stagedHash = sha256(destPath);
+            if (stagedHash !== sourceHash) {
+                failDistribution(
+                    'Windows',
+                    `staged Windows support file ${name} does not match its reviewed source`
+                );
+            }
+            console.log(`Copied: ${name}`);
+        }
 
-        await ensureWindowsUvBinaries();
+        await ensureWindowsUvBinaries(binDirectory);
     }
 }
 
 // Main function
 async function preparePlatformBinaries() {
     const targetPlatform = process.env.ELECTRON_PLATFORM || process.platform;
-    
+
     console.log(`Preparing binaries for platform: ${targetPlatform}`);
-    
+
+    assertCanonicalStagingDirectory();
+
     // First copy platform-specific files if needed
     await copyPlatformFiles(targetPlatform);
-    
+
     // Then clean up cross-platform files
     cleanBinDirectory(targetPlatform);
-    
+
+    if (targetPlatform === 'win32') {
+        assertWindowsDistributionFiles();
+    } else if (targetPlatform === 'darwin') {
+        assertMacOSDistributionFiles();
+    }
+
     console.log('Platform binary preparation complete');
 }
 
@@ -271,4 +637,27 @@ if (require.main === module) {
     });
 }
 
-module.exports = { preparePlatformBinaries };
+module.exports = {
+    _testOnlyAssertNoOwnedPathRedirection: assertNoOwnedPathRedirection,
+    _testOnlyAssertWindowsDistributionFilesWithHashPolicy:
+        assertWindowsDistributionFilesWithHashPolicy,
+    _testOnlyCopyReviewedSupportFiles: copyReviewedSupportFiles,
+    assertAllowedWindowsDistributionHash,
+    assertCanonicalStagingDirectory,
+    assertMacOSDistributionFiles,
+    assertMacOSPackagedApplication,
+    assertWindowsDistributionFiles,
+    assertWindowsX64Pe,
+    cleanBinDirectory,
+    copyPlatformFiles,
+    macOSDistributionFiles,
+    macOSDistributionFileModes,
+    macOSSupportFiles,
+    macOSSupportFileHashes,
+    macOSSupportFileModes,
+    preparePlatformBinaries,
+    windowsAuthoredSupportFileHashes,
+    windowsDistributionFiles,
+    windowsDistributionFileHashPolicy,
+    windowsX64PeFiles,
+};

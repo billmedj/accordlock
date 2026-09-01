@@ -1,4 +1,6 @@
+// Modified by AccordLock contributors; see UPSTREAM.md.
 use anstream::{adapter::strip_str, println};
+#[cfg(feature = "tui")]
 use bat::WrappingMode;
 use console::{measure_text_width, style, Color, StyledObject, Term};
 use goose::config::Config;
@@ -24,7 +26,9 @@ use std::time::Duration;
 use super::streaming_buffer::MarkdownBuffer;
 
 pub const DEFAULT_MIN_PRIORITY: f32 = 0.0;
+#[cfg(feature = "tui")]
 pub const DEFAULT_CLI_LIGHT_THEME: &str = "GitHub";
+#[cfg(feature = "tui")]
 pub const DEFAULT_CLI_DARK_THEME: &str = "zenburn";
 const OUTPUT_TOKEN_LIMIT_WARNING: &str =
     "Warning: Response reached the model's output-token limit and may be incomplete.";
@@ -54,6 +58,7 @@ pub enum Theme {
 }
 
 impl Theme {
+    #[cfg(feature = "tui")]
     fn as_str(&self) -> String {
         match self {
             Theme::Light => Config::global()
@@ -1010,6 +1015,7 @@ fn print_tool_header(call: &CallToolRequestParams) {
 }
 
 // Respect NO_COLOR, as https://crates.io/crates/console already does
+#[cfg(feature = "tui")]
 pub fn env_no_color() -> bool {
     // if NO_COLOR is defined at all disable colors
     std::env::var_os("NO_COLOR").is_none()
@@ -1038,8 +1044,8 @@ fn print_markdown(content: &str, theme: Theme) {
 /// The printer is cached per thread because `PrettyPrinter::new()`
 /// deserializes bat's bundled syntax/theme assets; `print()` drains the
 /// queued inputs but leaves the printer reusable.
+#[cfg(feature = "tui")]
 fn print_markdown_raw(content: &str, theme: Theme) {
-    use std::cell::RefCell;
     thread_local! {
         static PRINTER: RefCell<bat::PrettyPrinter<'static>> =
             RefCell::new(bat::PrettyPrinter::new());
@@ -1057,6 +1063,11 @@ fn print_markdown_raw(content: &str, theme: Theme) {
             .print()
             .unwrap();
     });
+}
+
+#[cfg(not(feature = "tui"))]
+fn print_markdown_raw(content: &str, _theme: Theme) {
+    print!("{}", content);
 }
 
 fn extract_markdown_table(content: &str) -> Option<(String, Vec<&str>, &str)> {
