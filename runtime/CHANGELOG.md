@@ -41,8 +41,10 @@ must still be called out explicitly.
   raw-byte hashes.
 - Added the exact durable-control catalog fingerprint produced by the
   checksum-pinned PostgreSQL 17.11 CI image while retaining the PostgreSQL 17.4
-  fingerprint. Each fingerprint is bound to its exact server version, and any
-  other version or catalog representation still fails closed.
+  fingerprint. PostgreSQL 17.4 accepts the two exact catalog renderings observed
+  for its supported schema, one of which is shared by a fresh project-local 17.4
+  cluster and the 17.11 CI image. Any other version, fingerprint, or pairing
+  still fails closed.
 
 ## [0.1.0-alpha.1] - 2026-09-01
 

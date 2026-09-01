@@ -1016,6 +1016,68 @@ fn complete_control_dispatch(fixture: &PgControlFixture) -> (ControlSubmissionRe
     (receipt, key)
 }
 
+fn durable_dispatch_head_and_tail(
+    url: &str,
+    first_submission: &ControlSubmissionReceipt,
+    first_key: &ConsumeKey,
+    second_submission: &ControlSubmissionReceipt,
+    second_key: &ConsumeKey,
+) -> (ConsumeKey, ConsumeKey) {
+    let submission_ids = [
+        first_submission.submission_id(),
+        second_submission.submission_id(),
+    ];
+    let ordered: Vec<Uuid> = Client::connect(url, NoTls)
+        .unwrap()
+        .query(
+            "SELECT submission_id
+               FROM public.accordlock_control_consumptions
+              WHERE submission_id = ANY($1::uuid[])
+              ORDER BY linked_at, submission_id",
+            &[&submission_ids.as_slice()],
+        )
+        .unwrap()
+        .into_iter()
+        .map(|row| row.get("submission_id"))
+        .collect();
+    assert_eq!(ordered.len(), 2);
+    let reverse_submission_ids = [submission_ids[1], submission_ids[0]];
+    assert!(
+        ordered.as_slice() == submission_ids.as_slice()
+            || ordered.as_slice() == reverse_submission_ids.as_slice(),
+        "durable queue query returned an unexpected submission set: {ordered:?}"
+    );
+    if ordered[0] == first_submission.submission_id() {
+        (first_key.clone(), second_key.clone())
+    } else {
+        assert_eq!(ordered[0], second_submission.submission_id());
+        (second_key.clone(), first_key.clone())
+    }
+}
+
+fn wait_until_control_consumption_is_strictly_older(
+    url: &str,
+    submission: &ControlSubmissionReceipt,
+) {
+    let linked_at: i64 = Client::connect(url, NoTls)
+        .unwrap()
+        .query_one(
+            "SELECT linked_at
+               FROM public.accordlock_control_consumptions
+              WHERE submission_id=$1",
+            &[&submission.submission_id()],
+        )
+        .unwrap()
+        .get("linked_at");
+    for _ in 0..10 {
+        if database_time(url) > linked_at {
+            return;
+        }
+        thread::sleep(Duration::from_secs(1));
+    }
+    panic!("database time did not advance beyond control consumption {linked_at}");
+}
+
 fn create_pending_no_send_head(
     fixture: &PgControlFixture,
     broker_capability: &BrokerJournalCapability,
@@ -1166,7 +1228,14 @@ fn postgres_v14_create_absent_no_send_retires_and_releases_same_physical() {
     let mut fixture = PgControlFixture::new();
     let broker_capability = fixture.store.issue_broker_journal_capability().unwrap();
     let (first_submission, first_key) = complete_control_dispatch(&fixture);
-    let (_, second_key) = complete_control_dispatch(&fixture);
+    let (second_submission, second_key) = complete_control_dispatch(&fixture);
+    let (expected_head_key, tail_key) = durable_dispatch_head_and_tail(
+        &fixture.url,
+        &first_submission,
+        &first_key,
+        &second_submission,
+        &second_key,
+    );
 
     let original_request =
         DispatchAcquisitionRequest::new("pg-v14-create-absent", Uuid::new_v4()).unwrap();
@@ -1178,7 +1247,7 @@ fn postgres_v14_create_absent_no_send_retires_and_releases_same_physical() {
         DispatchAcquisitionOutcome::Acquired(work) => work.into_parts().1,
         other => panic!("expected acquired CREATE work, got {other:?}"),
     };
-    assert_eq!(authority.claim().key(), &first_key);
+    assert_eq!(authority.claim().key(), &expected_head_key);
     let current = fixture
         .store
         .load_current_eks_attempt_for_acquisition(&authority)
@@ -1261,7 +1330,7 @@ fn postgres_v14_create_absent_no_send_retires_and_releases_same_physical() {
         .unwrap()
     {
         DispatchAcquisitionOutcome::Acquired(work) => {
-            assert_eq!(work.authority().claim().key(), &second_key);
+            assert_eq!(work.authority().claim().key(), &tail_key);
         }
         other => panic!("retired CREATE_ABSENT head did not release same physical: {other:?}"),
     }
@@ -1348,7 +1417,17 @@ fn postgres_v14_terminal_delete_conflict_does_not_starve_distinct_physical_tail(
         .unwrap();
 
     fixture.rotate_to_distinct_physical("conflict-tail");
-    let (_, tail_key) = complete_control_dispatch(&fixture);
+    wait_until_control_consumption_is_strictly_older(&fixture.url, &first_submission);
+    let (tail_submission, tail_key) = complete_control_dispatch(&fixture);
+    let (durable_head_key, durable_tail_key) = durable_dispatch_head_and_tail(
+        &fixture.url,
+        &first_submission,
+        &first_key,
+        &tail_submission,
+        &tail_key,
+    );
+    assert_eq!(durable_head_key, first_key);
+    assert_eq!(durable_tail_key, tail_key);
     let tail_request =
         DispatchAcquisitionRequest::new("pg-v14-conflict-tail", Uuid::new_v4()).unwrap();
     match fixture
@@ -1387,7 +1466,17 @@ fn postgres_v14_global_fifo_precedes_newer_recovery_with_older_productive_head()
     };
 
     fixture.rotate_to_distinct_physical("global-fifo-recovery");
+    wait_until_control_consumption_is_strictly_older(&fixture.url, &first_submission);
     let (second_submission, second_key) = complete_control_dispatch(&fixture);
+    let (durable_head_key, durable_tail_key) = durable_dispatch_head_and_tail(
+        &fixture.url,
+        &first_submission,
+        &first_key,
+        &second_submission,
+        &second_key,
+    );
+    assert_eq!(durable_head_key, first_key);
+    assert_eq!(durable_tail_key, second_key);
     let second_grant = fixture.grant.clone();
     let second_request =
         DispatchAcquisitionRequest::new("pg-v14-global-fifo-b", Uuid::new_v4()).unwrap();
@@ -1575,7 +1664,14 @@ fn postgres_v14_pending_no_send_becomes_due_and_releases_same_physical() {
     let mut fixture = PgControlFixture::new();
     let broker_capability = fixture.store.issue_broker_journal_capability().unwrap();
     let (first_submission, first_key) = complete_control_dispatch(&fixture);
-    let (_, second_key) = complete_control_dispatch(&fixture);
+    let (second_submission, second_key) = complete_control_dispatch(&fixture);
+    let (expected_head_key, tail_key) = durable_dispatch_head_and_tail(
+        &fixture.url,
+        &first_submission,
+        &first_key,
+        &second_submission,
+        &second_key,
+    );
     let original_request =
         DispatchAcquisitionRequest::new("pg-v14-pending-head", Uuid::new_v4()).unwrap();
     let authority = match fixture
@@ -1586,6 +1682,8 @@ fn postgres_v14_pending_no_send_becomes_due_and_releases_same_physical() {
         DispatchAcquisitionOutcome::Acquired(work) => work.into_parts().1,
         other => panic!("expected acquired pending head, got {other:?}"),
     };
+    assert_eq!(authority.claim().key(), &expected_head_key);
+    let acquired_key = expected_head_key;
     let current = fixture
         .store
         .load_current_eks_attempt_for_acquisition(&authority)
@@ -1633,7 +1731,7 @@ fn postgres_v14_pending_no_send_becomes_due_and_releases_same_physical() {
         .begin_broker_reconciliation(
             &broker_capability,
             &BrokerReconciliationRequest::new(
-                first_key.clone(),
+                acquired_key.clone(),
                 BrokerJournalOperation::DeleteSecret,
                 route_commitment,
             )
@@ -1664,10 +1762,10 @@ fn postgres_v14_pending_no_send_becomes_due_and_releases_same_physical() {
               WHERE tenant=$1 AND environment=$2 AND authorization_id=$3
                 AND transaction_id=$4",
             &[
-                &first_key.scope.tenant,
-                &first_key.scope.environment,
-                &first_key.authorization_id,
-                &first_key.transaction_id,
+                &acquired_key.scope.tenant,
+                &acquired_key.scope.environment,
+                &acquired_key.authorization_id,
+                &acquired_key.transaction_id,
             ],
         )
         .unwrap()
@@ -1720,7 +1818,7 @@ fn postgres_v14_pending_no_send_becomes_due_and_releases_same_physical() {
         .unwrap()
     {
         DispatchAcquisitionOutcome::Acquired(work) => {
-            assert_eq!(work.authority().claim().key(), &second_key);
+            assert_eq!(work.authority().claim().key(), &tail_key);
         }
         other => panic!("retirement did not release same physical tail: {other:?}"),
     }

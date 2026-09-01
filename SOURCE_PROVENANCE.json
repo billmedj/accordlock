@@ -8,7 +8,7 @@
       "sourceRepository": "https://github.com/billmedj/accordlock-core.git",
       "commit": "27301d159feccf53bc565a5de68c1c307d9bff09",
       "tree": "3a02ebe252285cacf180ca9c46976477ec71cfa7",
-      "assembledTree": "0d017eeb764e1e7f2a1a596f66de8edc1241655b",
+      "assembledTree": "0b312057206b9fc08d153c640c10225c69fc44ec",
       "trackedTreeExclusions": [],
       "postImportAdjustments": [
         {
@@ -81,7 +81,11 @@
         },
         {
           "path": "crates/accordlock-state/src/postgres/schema_profile.rs",
-          "reason": "Bound each accepted durable-control catalog fingerprint to its exact PostgreSQL server version while preserving fail-closed drift detection."
+          "reason": "Bound each supported PostgreSQL version to an exact allowlist of durable-control catalog fingerprints while preserving fail-closed drift detection."
+        },
+        {
+          "path": "crates/accordlock-state/tests/postgres_control_v13.rs",
+          "reason": "Made queue tests verify the durable database order and explicit temporal premises instead of assuming sub-second creation order."
         },
         {
           "path": "docs/INSTALLATION.md",
@@ -185,6 +189,32 @@
               "path": "tests/test_profiled_rustsec_audit.py",
               "effect": "added",
               "reason": "Added fail-closed regression tests for the packaged-graph RustSec boundary."
+            }
+          ]
+        },
+        {
+          "baseTree": "0d017eeb764e1e7f2a1a596f66de8edc1241655b",
+          "resultTree": "0b312057206b9fc08d153c640c10225c69fc44ec",
+          "changes": [
+            {
+              "path": "CHANGELOG.md",
+              "effect": "modified",
+              "reason": "Documented the exact PostgreSQL 17.4 catalog renderings and version-fingerprint pairing boundary."
+            },
+            {
+              "path": "SOURCE_MANIFEST.sha256",
+              "effect": "modified",
+              "reason": "Regenerated all 420 exact runtime source hashes after the queue-test and schema-profile corrections."
+            },
+            {
+              "path": "crates/accordlock-state/src/postgres/schema_profile.rs",
+              "effect": "modified",
+              "reason": "Accepted the fresh project-local PostgreSQL 17.4 catalog fingerprint as a second exact version-bound representation while rejecting every unknown version, fingerprint, or pairing."
+            },
+            {
+              "path": "crates/accordlock-state/tests/postgres_control_v13.rs",
+              "effect": "modified",
+              "reason": "Replaced nondeterministic creation-order assumptions with an independent durable-order oracle and explicit time separation in retirement, conflict-skip, and global FIFO tests."
             }
           ]
         }
