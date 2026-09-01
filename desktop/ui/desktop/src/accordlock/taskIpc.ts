@@ -24,6 +24,14 @@ export const ACCORDLOCK_CONTROL_PROTOCOL = 'accordlock.desktop.control/v2' as co
 
 export type AccordLockTaskAuthorizationDecision = 'APPROVE' | 'REJECT';
 
+export type AccordLockTaskAccessMode = 'ASK' | 'BLOCKED';
+
+export interface AccordLockTaskAccessSelection {
+  file_changes: AccordLockTaskAccessMode;
+  terminal: AccordLockTaskAccessMode;
+  network: AccordLockTaskAccessMode;
+}
+
 export interface AccordLockTaskRequest {
   protocol: typeof ACCORDLOCK_CONTROL_PROTOCOL;
   schema_version: 2;
@@ -79,6 +87,7 @@ export interface AccordLockTaskAuthorizationDecisionAck {
   schema_version: 2;
   authorization_id: string;
   task_id: string;
+  reviewed_authorization_digest: string;
   authorization_digest: string;
   status: 'APPROVED' | 'REJECTED';
   reason_code: string;

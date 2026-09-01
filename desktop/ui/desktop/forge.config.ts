@@ -45,6 +45,9 @@ if (
   throw new Error('ACCORDLOCK_WINDOWS_TIMESTAMP_URL must be a credential-free HTTPS URL');
 }
 const windowsSignWithParams = `/fd sha256 /tr ${windowsTimestampUrl.toString()} /td sha256`;
+// Squirrel fetches the Programs and Features icon at install time and rejects file: URLs.
+const accordLockWindowsInstallerIconUrl =
+  'https://raw.githubusercontent.com/billmedj/accordlock/13488fd88bb758a8a23adca7ba9d193970dd0be5/desktop/ui/desktop/src/images/icon.ico';
 const windowsCertificateFile = process.env.WINDOWS_CERTIFICATE_FILE;
 const windowsCertificatePassword = process.env.WINDOWS_CERTIFICATE_PASSWORD;
 if (!!windowsCertificateFile !== !!windowsCertificatePassword) {
@@ -290,6 +293,7 @@ module.exports = {
           ? 'AccordLockDevelopmentSetup.exe'
           : 'AccordLockSetup.exe',
         setupIcon: 'src/images/icon.ico',
+        iconUrl: accordLockWindowsInstallerIconUrl,
         ...(accordLockSquirrelVendorDirectory
           ? { vendorDirectory: accordLockSquirrelVendorDirectory }
           : {}),

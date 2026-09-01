@@ -132,7 +132,7 @@ function fixture(
     policy_decision_hash: policyDecisionHash,
   };
   const response = {
-    schema_version: 2,
+    schema_version: 3,
     proposal_digest: proposalDigest,
     status: 'APPROVAL_REQUIRED',
     reason_code: 'ACTION_APPROVAL_REQUIRED',
@@ -142,7 +142,7 @@ function fixture(
   };
   return {
     path: '/api/v2/execution/filesystem/authorize-and-execute',
-    requestBody: Buffer.from(JSON.stringify({ schema_version: 2, proposal }), 'utf8'),
+    requestBody: Buffer.from(JSON.stringify({ schema_version: 3, proposal }), 'utf8'),
     responseBody: Buffer.from(JSON.stringify(response), 'utf8'),
   };
 }
@@ -309,6 +309,33 @@ function authorizedNetworkSession(): ApprovedSession {
 }
 
 describe('AccordLock native action approval binding', () => {
+  it('accepts the current v3 execution exchange and rejects stale v2 envelopes', () => {
+    const current = fixture();
+    expect(() => parseAccordLockActionApprovalChallenge(current)).not.toThrow();
+
+    const staleRequest = JSON.parse(Buffer.from(current.requestBody).toString('utf8')) as {
+      schema_version: number;
+    };
+    staleRequest.schema_version = 2;
+    expect(() =>
+      parseAccordLockActionApprovalChallenge({
+        ...current,
+        requestBody: Buffer.from(JSON.stringify(staleRequest), 'utf8'),
+      })
+    ).toThrow('AccordLock protected-action request is malformed');
+
+    const staleResponse = JSON.parse(Buffer.from(current.responseBody).toString('utf8')) as {
+      schema_version: number;
+    };
+    staleResponse.schema_version = 2;
+    expect(() =>
+      parseAccordLockActionApprovalChallenge({
+        ...current,
+        responseBody: Buffer.from(JSON.stringify(staleResponse), 'utf8'),
+      })
+    ).toThrow('AccordLock runtime did not return an exact approval request');
+  });
+
   it.each([
     ['write', 'Create file', 'hello\nworld'],
     ['edit', 'Edit file', 'Before\nhello\n\nAfter\ngoodbye'],

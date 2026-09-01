@@ -189,19 +189,36 @@ describe('AccordLock Desktop ↔ Rust ControlChannel', () => {
       });
 
       const argumentsValue = { content: 'must not execute', path: 'revoked.txt' };
+      const argumentsSha256 = digest(argumentsValue);
+      const toolCallId = `revoked-${randomUUID()}`;
+      const planMaterial = {
+        text: ['Execute the exact test action.'],
+        tool_requests: [
+          { id: toolCallId, name: 'developer__write', arguments_sha256: argumentsSha256 },
+        ],
+      };
       const executionBody = Buffer.from(
         JSON.stringify({
-          schema_version: 2,
+          schema_version: 3,
           proposal: {
-            schema_version: 2,
+            schema_version: 3,
             session_id: approvedSession.session_id,
             run_id: approvedSession.run_id,
-            tool_call_id: `revoked-${randomUUID()}`,
+            tool_call_id: toolCallId,
             workspace_root: approvedSession.workspace_root,
             extension_id: 'developer',
             tool_name: 'write',
             arguments: argumentsValue,
-            arguments_sha256: digest(argumentsValue),
+            arguments_sha256: argumentsSha256,
+            agent_plan_checkpoint: {
+              schema_version: 1,
+              session_id: approvedSession.session_id,
+              run_id: approvedSession.run_id,
+              tool_call_id: toolCallId,
+              material: planMaterial,
+              material_sha256: digest(planMaterial),
+              recorded_at: now,
+            },
           },
         }),
         'utf8'
@@ -213,7 +230,7 @@ describe('AccordLock Desktop ↔ Rust ControlChannel', () => {
       );
       expect(execution.status).toBe(200);
       expect(JSON.parse(Buffer.from(execution.body).toString('utf8'))).toMatchObject({
-        schema_version: 2,
+        schema_version: 3,
         status: 'DENIED',
         reason_code: 'SESSION_REVOKED',
       });
@@ -306,16 +323,33 @@ describe('AccordLock Desktop ↔ Rust ControlChannel', () => {
 
       const executeWrite = async (relativePath: string, content: string) => {
         const argumentsValue = { path: relativePath, content };
+        const argumentsSha256 = digest(argumentsValue);
+        const toolCallId = `write-${relativePath}-${randomUUID()}`;
+        const planMaterial = {
+          text: ['Execute the exact test action.'],
+          tool_requests: [
+            { id: toolCallId, name: 'developer__write', arguments_sha256: argumentsSha256 },
+          ],
+        };
         const proposal = {
-          schema_version: 2,
+          schema_version: 3,
           session_id: approvedSession.session_id,
           run_id: approvedSession.run_id,
-          tool_call_id: `write-${relativePath}-${randomUUID()}`,
+          tool_call_id: toolCallId,
           workspace_root: approvedSession.workspace_root,
           extension_id: 'developer',
           tool_name: 'write',
           arguments: argumentsValue,
-          arguments_sha256: digest(argumentsValue),
+          arguments_sha256: argumentsSha256,
+          agent_plan_checkpoint: {
+            schema_version: 1,
+            session_id: approvedSession.session_id,
+            run_id: approvedSession.run_id,
+            tool_call_id: toolCallId,
+            material: planMaterial,
+            material_sha256: digest(planMaterial),
+            recorded_at: now,
+          },
         };
         const response = await fetch(
           `${approvalProxy!.baseUrl}/api/v2/execution/filesystem/authorize-and-execute`,
@@ -325,7 +359,7 @@ describe('AccordLock Desktop ↔ Rust ControlChannel', () => {
               Authorization: `Bearer ${approvalProxy!.bearer}`,
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ schema_version: 2, proposal }),
+            body: JSON.stringify({ schema_version: 3, proposal }),
           }
         );
         expect(response.status).toBe(200);

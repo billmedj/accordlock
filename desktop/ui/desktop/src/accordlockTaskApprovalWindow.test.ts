@@ -158,6 +158,19 @@ function navigationEvent(): { preventDefault: ReturnType<typeof vi.fn> } {
   return { preventDefault: vi.fn() };
 }
 
+function approvalQuery(
+  nonce: string,
+  overrides: Partial<Record<'file_changes' | 'terminal' | 'network', 'ASK' | 'BLOCKED'>> = {}
+): string {
+  return new URLSearchParams({
+    nonce,
+    decision: 'approve',
+    file_changes: overrides.file_changes ?? 'ASK',
+    terminal: overrides.terminal ?? 'ASK',
+    network: overrides.network ?? 'BLOCKED',
+  }).toString();
+}
+
 describe('AccordLock trusted task approval window', () => {
   let module: ApprovalWindowModule;
 
@@ -238,7 +251,7 @@ describe('AccordLock trusted task approval window', () => {
     expect(document).not.toMatch(/ipcRenderer|preload|require\s*\(/u);
   });
 
-  it('renders a compact, calm and accurate access summary', async () => {
+  it('renders a compact, editable and accurate access review', async () => {
     const { child } = await openApproval();
     const document = decodedDocument(child);
 
@@ -246,17 +259,22 @@ describe('AccordLock trusted task approval window', () => {
     expect(document).toContain('Prepare the release notes.');
     expect(document).toContain('C:\\workspace');
     expect(document).not.toContain('\\\\?\\');
-    expect(document).toContain('Task access is fixed once work starts.');
+    expect(document).toContain('Choose what the agent can use.');
     expect(document).toContain('<dt>Outcome</dt>');
     expect(document).toContain('<dt>Folder</dt>');
     expect(document).toContain('Read files and browse folders');
     expect(document).toContain('Automatic');
-    expect(document).toContain('The selected model may receive file content from this folder.');
-    expect(document).toContain('Change files or run commands');
+    expect(document).toContain('Change files');
+    expect(document).toContain('Run terminal commands');
     expect(document).toContain('Ask each time');
-    expect(document).toContain('Use network or administrator tools');
+    expect(document).toContain('Read allowed websites');
+    expect(document).toContain('Set up in Settings');
+    expect(document).toContain('Administrator access');
     expect(document).toContain('Open protected settings or credentials');
     expect(document.match(/<span class="access-state">Blocked<\/span>/gu)).toHaveLength(2);
+    expect(document).toContain('name="file_changes"');
+    expect(document).toContain('name="terminal"');
+    expect(document).toContain('name="network" value="BLOCKED"');
     expect(document).toContain('grid-template-rows: 40px minmax(0, 1fr) auto;');
     expect(document).toContain('overflow-y: auto;');
     expect(document).not.toContain('position: fixed');
@@ -292,11 +310,11 @@ describe('AccordLock trusted task approval window', () => {
     const { child } = await openApproval(configured);
     const document = decodedDocument(child);
 
-    expect(document).toContain('Read configured websites (GET/HEAD only)');
-    expect(document).toContain('Use other network or administrator tools');
-    expect(document.match(/<span class="access-state">Ask each time<\/span>/gu)).toHaveLength(2);
+    expect(document).toContain('Read allowed websites');
+    expect(document).toContain('id="access-network"');
+    expect(document).toContain('<option value="ASK" selected>Ask each time</option>');
     expect(document.match(/<span class="access-state">Blocked<\/span>/gu)).toHaveLength(2);
-    expect(document).not.toContain('Use network or administrator tools</span>');
+    expect(document).not.toContain('Set up in Settings');
   });
 
   it('surfaces literal user limits without model-generated interpretation', async () => {
@@ -322,11 +340,10 @@ describe('AccordLock trusted task approval window', () => {
     const document = decodedDocument(child);
 
     expect(document).toContain('<li>Do not change files.</li>');
-    expect(document).toContain('Change files or run commands');
-    expect(document).toContain('Blocked by your limit');
-    expect(document).not.toContain(
-      'Change files or run commands</span><span class="access-state">Ask each time'
-    );
+    expect(document).toContain('Change files');
+    expect(document).toContain('Blocked by your request');
+    expect(document).toContain('name="file_changes" value="BLOCKED"');
+    expect(document).not.toContain('id="access-file_changes"');
   });
 
   it('splits protected actions when only commands are categorically blocked', async () => {
@@ -337,12 +354,10 @@ describe('AccordLock trusted task approval window', () => {
     );
     const document = decodedDocument(child);
 
-    expect(document).toContain(
-      'Change files</span><span class="access-state">Ask each time</span>'
-    );
-    expect(document).toContain(
-      'Run commands</span><span class="access-state">Blocked by your limit</span>'
-    );
+    expect(document).toContain('id="access-file_changes"');
+    expect(document).toContain('Run terminal commands');
+    expect(document).toContain('name="terminal" value="BLOCKED"');
+    expect(document).toContain('Blocked by your request');
   });
 
   it('blocks configured network access when the task categorically requires offline work', async () => {
@@ -361,9 +376,9 @@ describe('AccordLock trusted task approval window', () => {
     const { child } = await openApproval(configured);
     const document = decodedDocument(child);
 
-    expect(document).toContain(
-      'Read configured websites (GET/HEAD only)</span><span class="access-state">Blocked by your limit</span>'
-    );
+    expect(document).toContain('Read allowed websites');
+    expect(document).toContain('name="network" value="BLOCKED"');
+    expect(document).toContain('Blocked by your request');
   });
 
   it('keeps scoped file wording as a review reminder without globally blocking changes', async () => {
@@ -373,10 +388,8 @@ describe('AccordLock trusted task approval window', () => {
     const document = decodedDocument(child);
 
     expect(document).toContain('<li>Do not change package files.</li>');
-    expect(document).toContain(
-      'Change files or run commands</span><span class="access-state">Ask each time</span>'
-    );
-    expect(document).not.toContain('Blocked by your limit');
+    expect(document).toContain('id="access-file_changes"');
+    expect(document).not.toContain('Blocked by your request');
   });
 
   it('uses the resolved application theme instead of the operating-system preference', async () => {
@@ -414,10 +427,16 @@ describe('AccordLock trusted task approval window', () => {
     child.webContents.emit(
       'will-navigate',
       event,
-      `https://accordlock.invalid/task-decision?nonce=${nonce}&decision=approve`
+      `https://accordlock.invalid/task-decision?${approvalQuery(nonce, {
+        file_changes: 'BLOCKED',
+        network: 'ASK',
+      })}`
     );
 
-    await expect(result).resolves.toBe('APPROVED');
+    await expect(result).resolves.toEqual({
+      status: 'APPROVED',
+      access: { file_changes: 'BLOCKED', terminal: 'ASK', network: 'ASK' },
+    });
     expect(event.preventDefault).toHaveBeenCalledOnce();
     expect(child.isDestroyed()).toBe(true);
   });
@@ -433,16 +452,21 @@ describe('AccordLock trusted task approval window', () => {
       `https://accordlock.invalid/task-decision?nonce=${nonce}&decision=deny`
     );
 
-    await expect(result).resolves.toBe('CANCELLED');
+    await expect(result).resolves.toEqual({ status: 'CANCELLED' });
     expect(event.preventDefault).toHaveBeenCalledOnce();
     expect(child.isDestroyed()).toBe(true);
   });
 
   it.each([
-    ['a wrong nonce', () => `nonce=${'0'.repeat(64)}&decision=approve`],
-    ['an extra field', (nonce: string) => `nonce=${nonce}&decision=approve&extra=1`],
-    ['a duplicate nonce', (nonce: string) => `nonce=${nonce}&nonce=${nonce}&decision=approve`],
-    ['a duplicate decision', (nonce: string) => `nonce=${nonce}&decision=approve&decision=deny`],
+    ['a wrong nonce', () => approvalQuery('0'.repeat(64))],
+    ['an extra field', (nonce: string) => `${approvalQuery(nonce)}&extra=1`],
+    ['a duplicate nonce', (nonce: string) => `${approvalQuery(nonce)}&nonce=${nonce}`],
+    ['a duplicate decision', (nonce: string) => `${approvalQuery(nonce)}&decision=deny`],
+    ['a missing access field', (nonce: string) => `nonce=${nonce}&decision=approve`],
+    [
+      'an unknown access mode',
+      (nonce: string) => approvalQuery(nonce).replace('terminal=ASK', 'terminal=AUTOMATIC'),
+    ],
     ['an unknown decision', (nonce: string) => `nonce=${nonce}&decision=continue`],
     ['a missing decision', (nonce: string) => `nonce=${nonce}`],
   ])('returns FAILED for %s', async (_, query) => {
@@ -456,7 +480,7 @@ describe('AccordLock trusted task approval window', () => {
       `https://accordlock.invalid/task-decision?${query(nonce)}`
     );
 
-    await expect(result).resolves.toBe('FAILED');
+    await expect(result).resolves.toEqual({ status: 'FAILED' });
     expect(event.preventDefault).toHaveBeenCalledOnce();
   });
 
@@ -471,7 +495,7 @@ describe('AccordLock trusted task approval window', () => {
       `https://example.com/task-decision?nonce=${nonce}&decision=approve`
     );
 
-    await expect(result).resolves.toBe('FAILED');
+    await expect(result).resolves.toEqual({ status: 'FAILED' });
     expect(event.preventDefault).toHaveBeenCalledOnce();
   });
 
@@ -498,7 +522,7 @@ describe('AccordLock trusted task approval window', () => {
 
     child.webContents.emit('will-navigate', event, navigation(nonce));
 
-    await expect(result).resolves.toBe('FAILED');
+    await expect(result).resolves.toEqual({ status: 'FAILED' });
     expect(event.preventDefault).toHaveBeenCalledOnce();
   });
 
@@ -528,7 +552,7 @@ describe('AccordLock trusted task approval window', () => {
     if (failure === 'parent-destroyed') parent.webContents.destroyContents();
     if (failure === 'redirect') child.webContents.emit('will-redirect', navigationEvent(), 'x');
 
-    await expect(result).resolves.toBe(expected);
+    await expect(result).resolves.toEqual({ status: expected });
     expect(child.isDestroyed()).toBe(true);
   });
 
@@ -541,7 +565,7 @@ describe('AccordLock trusted task approval window', () => {
       authorization()
     );
 
-    await expect(result).resolves.toBe('FAILED');
+    await expect(result).resolves.toEqual({ status: 'FAILED' });
     expect(MockBrowserWindow.instances).toHaveLength(1);
   });
 
@@ -560,7 +584,7 @@ describe('AccordLock trusted task approval window', () => {
       const child = MockBrowserWindow.instances[1];
       if (!child) throw new Error('approval child was not created');
 
-      await expect(result).resolves.toBe('FAILED');
+      await expect(result).resolves.toEqual({ status: 'FAILED' });
       expect(child.isDestroyed()).toBe(true);
       expect(child.show).not.toHaveBeenCalled();
     }
@@ -576,7 +600,7 @@ describe('AccordLock trusted task approval window', () => {
         >[0],
         authorization()
       )
-    ).resolves.toBe('FAILED');
+    ).resolves.toEqual({ status: 'FAILED' });
     expect(MockBrowserWindow.instances).toHaveLength(1);
 
     const activeParent = new MockBrowserWindow({});
@@ -587,7 +611,7 @@ describe('AccordLock trusted task approval window', () => {
         >[0],
         authorization({ expires_at: Math.floor(Date.now() / 1_000) })
       )
-    ).resolves.toBe('FAILED');
+    ).resolves.toEqual({ status: 'FAILED' });
     expect(MockBrowserWindow.instances).toHaveLength(2);
 
     await expect(
@@ -607,7 +631,7 @@ describe('AccordLock trusted task approval window', () => {
           ],
         })
       )
-    ).resolves.toBe('FAILED');
+    ).resolves.toEqual({ status: 'FAILED' });
     expect(MockBrowserWindow.instances).toHaveLength(2);
   });
 
@@ -619,7 +643,7 @@ describe('AccordLock trusted task approval window', () => {
 
     await vi.advanceTimersByTimeAsync(2_000);
 
-    await expect(result).resolves.toBe('FAILED');
+    await expect(result).resolves.toEqual({ status: 'FAILED' });
     expect(child.isDestroyed()).toBe(true);
   });
 
@@ -630,7 +654,7 @@ describe('AccordLock trusted task approval window', () => {
 
     await vi.advanceTimersByTimeAsync(5 * 60 * 1_000);
 
-    await expect(result).resolves.toBe('FAILED');
+    await expect(result).resolves.toEqual({ status: 'FAILED' });
     expect(child.isDestroyed()).toBe(true);
   });
 });

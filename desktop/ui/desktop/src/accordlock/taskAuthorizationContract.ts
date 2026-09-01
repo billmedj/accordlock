@@ -139,6 +139,7 @@ export const accordLockTaskAuthorizationDecisionAckSchema = z
     schema_version: z.literal(2),
     authorization_id: z.string().uuid(),
     task_id: z.string().uuid(),
+    reviewed_authorization_digest: sha256Digest,
     authorization_digest: sha256Digest,
     status: z.enum(['APPROVED', 'REJECTED']),
     reason_code: boundedText(128),
@@ -254,13 +255,19 @@ export function parseAccordLockTaskAuthorizationDecisionAck(
   const sameAuthorization =
     acknowledgement.authorization_id === authorization.authorization_id &&
     acknowledgement.task_id === authorization.task_id &&
-    acknowledgement.authorization_digest === authorization.authorization_digest;
+    acknowledgement.reviewed_authorization_digest === authorization.authorization_digest;
 
   if (!sameAuthorization) {
     throw new Error('AccordLock acknowledgement does not match the task authorization');
   }
   if (requestedDecision === 'REJECT' && acknowledgement.status !== 'REJECTED') {
     throw new Error('AccordLock acknowledgement contradicts the rejection');
+  }
+  if (
+    acknowledgement.status === 'REJECTED' &&
+    acknowledgement.authorization_digest !== authorization.authorization_digest
+  ) {
+    throw new Error('AccordLock rejection changed the reviewed task authorization');
   }
 
   return acknowledgement;

@@ -223,6 +223,10 @@ import {
   readSelectedRecipe,
 } from './desktopFileAccess';
 import { findSupportedDeepLink, SUPPORTED_DEEP_LINK_SCHEMES } from './utils/deepLinks';
+import {
+  accordLockWindowsAppUserModelId,
+  resolveAccordLockWindowIconPath,
+} from './accordlockDesktopBranding';
 
 const ACCORDLOCK_SESSION_PARTITION = 'persist:accordlock';
 const getAccordLockElectronSession = () => session.fromPartition(ACCORDLOCK_SESSION_PARTITION);
@@ -235,12 +239,16 @@ const accordLockTitleBarOverlay = (dark: boolean) => ({
   height: 32,
 });
 
-const accordLockWindowIconName =
-  process.platform === 'darwin'
-    ? 'icon.icns'
-    : process.platform === 'win32'
-      ? 'icon.ico'
-      : 'icon.png';
+const accordLockWindowIconPath = resolveAccordLockWindowIconPath({
+  appPath: app.getAppPath(),
+  isPackaged: app.isPackaged,
+  platform: process.platform,
+  resourcesPath: process.resourcesPath,
+});
+
+if (process.platform === 'win32') {
+  app.setAppUserModelId(accordLockWindowsAppUserModelId(isEmbeddedAccordLockDevelopmentPackage()));
+}
 
 function shouldSetupUpdater(): boolean {
   // A packaged AccordLock build must never consume Goose's upstream update
@@ -2320,7 +2328,7 @@ const createChat = async (
       minWidth: 480,
       minHeight: 400,
       resizable: true,
-      icon: path.join(__dirname, '../images', accordLockWindowIconName),
+      icon: accordLockWindowIconPath,
       webPreferences: {
         spellcheck: settings.spellcheckEnabled ?? true,
         preload: path.join(__dirname, 'preload.js'),
@@ -3873,6 +3881,12 @@ ipcMain.handle(ACCORDLOCK_TASK_AUTHORIZATION_PREPARE, async (event, request) => 
 ipcMain.handle(ACCORDLOCK_TASK_AUTHORIZATION_DECIDE, async (event, request) => {
   const senderWindow = requireRegularRendererWindow(event);
   const taskDecision = accordLockTaskControl.authorizationForDecision(senderWindow.id, request);
+  // The runtime may have committed this exact decision even if its IPC reply
+  // never reached the renderer. Recover that acknowledgement without opening
+  // another confirmation window or attempting to reconfigure settled access.
+  if (taskDecision.acknowledgement) {
+    return taskDecision.acknowledgement;
+  }
   return accordLockTaskDecisionSingleFlight.run(
     taskDecision.authorization.authorization_id,
     taskDecision.request.decision,
@@ -3882,13 +3896,20 @@ ipcMain.handle(ACCORDLOCK_TASK_AUTHORIZATION_DECIDE, async (event, request) => {
         const approvalResult = await showAccordLockTaskApprovalWindow(
           senderWindow,
           taskDecision.authorization,
-          resolveAccordLockDarkTheme() ? 'dark' : 'light'
+          resolveAccordLockDarkTheme() ? 'dark' : 'light',
+          (accordLockStartupNetworkPolicy?.allowed_domains.length ?? 0) > 0
         );
-        if (approvalResult === 'FAILED') {
+        if (approvalResult.status === 'FAILED') {
           throw new Error('Trusted task confirmation could not be completed');
         }
-        if (approvalResult === 'CANCELLED') {
+        if (approvalResult.status === 'CANCELLED') {
           effectiveRequest = { ...taskDecision.request, decision: 'REJECT' };
+        } else {
+          effectiveRequest = accordLockTaskControl.configurePendingTaskAccess(
+            senderWindow.id,
+            taskDecision.request,
+            approvalResult.access
+          );
         }
       }
       const runtime = await requireAccordLockRuntime();

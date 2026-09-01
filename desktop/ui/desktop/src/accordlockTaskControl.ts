@@ -11,6 +11,7 @@ import {
 export type { ApprovedSession } from './accordlockRuntime';
 import {
   ACCORDLOCK_CONTROL_PROTOCOL,
+  type AccordLockTaskAccessSelection,
   type AccordLockTaskAuthorizationDecisionAck,
   type AccordLockTaskAuthorizationDecisionRequest,
   type AccordLockTaskCapability,
@@ -136,9 +137,26 @@ function projectApprovedCapabilities(
   });
 }
 
+function taskAccessAllows(
+  selection: AccordLockTaskAccessSelection,
+  capability: Pick<AccordLockCapability, 'extension_id' | 'tool_name'>
+): boolean {
+  if (capability.extension_id === 'accordlock_network') return true;
+  if (capability.tool_name === 'shell') return selection.terminal === 'ASK';
+  if (
+    capability.tool_name === 'edit' ||
+    capability.tool_name === 'write' ||
+    capability.tool_name === 'delete_file'
+  ) {
+    return selection.file_changes === 'ASK';
+  }
+  return true;
+}
+
 interface TaskRecord {
   windowId: number;
   objective: string;
+  reviewedAuthorizationDigest: string;
   authorization: AccordLockTaskAuthorization;
   approvedSession: ApprovedSession;
   decision: 'PENDING' | 'APPROVED' | 'REJECTED';
@@ -329,12 +347,13 @@ function parseTaskAuthorizationDecisionRequest(
 
 function exactDecisionBinding(
   request: AccordLockTaskAuthorizationDecisionRequest,
-  authorization: AccordLockTaskAuthorization
+  record: TaskRecord
 ): boolean {
   return (
-    request.authorization_id === authorization.authorization_id &&
-    request.task_id === authorization.task_id &&
-    request.authorization_digest === authorization.authorization_digest
+    request.authorization_id === record.authorization.authorization_id &&
+    request.task_id === record.authorization.task_id &&
+    (request.authorization_digest === record.authorization.authorization_digest ||
+      request.authorization_digest === record.reviewedAuthorizationDigest)
   );
 }
 
@@ -375,11 +394,7 @@ export class AccordLockTaskControl {
     const record = [...this.recordsBySession.values()].find(
       (candidate) => candidate.authorization.authorization_id === request.authorization_id
     );
-    if (
-      !record ||
-      record.windowId !== windowId ||
-      !exactDecisionBinding(request, record.authorization)
-    ) {
+    if (!record || record.windowId !== windowId || !exactDecisionBinding(request, record)) {
       throw new Error('Task decision does not match a pending authorization');
     }
     if (record.revocation) {
@@ -435,12 +450,67 @@ export class AccordLockTaskControl {
     return {
       windowId,
       objective: request.objective,
+      reviewedAuthorizationDigest: authorization.authorization_digest,
       authorization,
       approvedSession,
       decision: 'PENDING',
       acknowledgement: null,
       inFlight: null,
       revocation: null,
+    };
+  }
+
+  configurePendingTaskAccess(
+    windowId: number,
+    rawRequest: unknown,
+    selection: AccordLockTaskAccessSelection,
+    nowSeconds = Math.floor(Date.now() / 1_000)
+  ): AccordLockTaskAuthorizationDecisionRequest {
+    const request = parseTaskAuthorizationDecisionRequest(rawRequest);
+    if (request.decision !== 'APPROVE') {
+      throw new Error('Only a pending approval can configure task access');
+    }
+    const record = this.recordForDecision(windowId, request);
+    if (
+      record.decision !== 'PENDING' ||
+      record.acknowledgement ||
+      record.inFlight ||
+      nowSeconds >= record.authorization.expires_at
+    ) {
+      throw new Error('Task access can only change before approval');
+    }
+    if (
+      !selection ||
+      !['ASK', 'BLOCKED'].includes(selection.file_changes) ||
+      !['ASK', 'BLOCKED'].includes(selection.terminal) ||
+      !['ASK', 'BLOCKED'].includes(selection.network)
+    ) {
+      throw new Error('Task access selection is malformed');
+    }
+    if (selection.network === 'ASK' && !this.governedNetworkEnabled) {
+      throw new Error('Governed network access is not configured');
+    }
+
+    const capabilities = approvedCapabilities(
+      this.governedNetworkEnabled && selection.network === 'ASK'
+    ).filter((capability) => taskAccessAllows(selection, capability));
+    const approvedSession: ApprovedSession = {
+      ...record.approvedSession,
+      capabilities,
+    };
+    const authorization: AccordLockTaskAuthorization = {
+      ...record.authorization,
+      authorization_digest: accordLockDigest(approvedSession),
+      capabilities: projectApprovedCapabilities(
+        this.governedNetworkEnabled && selection.network === 'ASK'
+      ).filter((capability) => taskAccessAllows(selection, capability)),
+    };
+    record.approvedSession = approvedSession;
+    record.authorization = authorization;
+
+    return {
+      ...request,
+      authorization_digest: authorization.authorization_digest,
     };
   }
 
@@ -460,6 +530,7 @@ export class AccordLockTaskControl {
   ): {
     request: AccordLockTaskAuthorizationDecisionRequest;
     authorization: AccordLockTaskAuthorization;
+    acknowledgement: AccordLockTaskAuthorizationDecisionAck | null;
   } {
     const request = parseTaskAuthorizationDecisionRequest(rawRequest);
     const record = this.recordForDecision(windowId, request);
@@ -473,7 +544,13 @@ export class AccordLockTaskControl {
     } else if (!record.inFlight && nowSeconds >= record.authorization.expires_at) {
       throw new Error('Task authorization expired before a decision was recorded');
     }
-    return { request, authorization: record.authorization };
+    return {
+      request,
+      authorization: globalThis.structuredClone(record.authorization),
+      acknowledgement: record.acknowledgement
+        ? globalThis.structuredClone(record.acknowledgement)
+        : null,
+    };
   }
 
   prepareTask(
@@ -689,6 +766,7 @@ export class AccordLockTaskControl {
         schema_version: 2,
         authorization_id: record.authorization.authorization_id,
         task_id: record.authorization.task_id,
+        reviewed_authorization_digest: record.reviewedAuthorizationDigest,
         authorization_digest: record.authorization.authorization_digest,
         status: 'APPROVED',
         reason_code: runtimeAck.code,
@@ -708,7 +786,7 @@ export class AccordLockTaskControl {
         record_id: recordId,
         authorization_id: record.authorization.authorization_id,
         task_id: record.authorization.task_id,
-        authorization_digest: record.authorization.authorization_digest,
+        authorization_digest: record.reviewedAuthorizationDigest,
         decision: 'REJECT',
         recorded_at: nowSeconds,
       };
@@ -717,7 +795,8 @@ export class AccordLockTaskControl {
         schema_version: 2,
         authorization_id: record.authorization.authorization_id,
         task_id: record.authorization.task_id,
-        authorization_digest: record.authorization.authorization_digest,
+        reviewed_authorization_digest: record.reviewedAuthorizationDigest,
+        authorization_digest: record.reviewedAuthorizationDigest,
         status: 'REJECTED',
         reason_code: 'TASK_AUTHORIZATION_REJECTED',
         reason: 'No task authorization was installed.',

@@ -246,6 +246,76 @@ describe('AccordLockTaskControl', () => {
     });
   });
 
+  it('seals the reviewed access choices into the authority installed by the runtime', async () => {
+    const control = new AccordLockTaskControl(null, LEDGER_ID, true);
+    const authorization = control.prepareTask(
+      7,
+      request,
+      '/trusted/workspace',
+      trustedRunId(request.session_id),
+      1_000
+    );
+    const reviewedDecision = decision(authorization, 'APPROVE');
+    const effectiveDecision = control.configurePendingTaskAccess(
+      7,
+      reviewedDecision,
+      { file_changes: 'BLOCKED', terminal: 'BLOCKED', network: 'ASK' },
+      1_001
+    );
+
+    expect(effectiveDecision.authorization_digest).not.toBe(reviewedDecision.authorization_digest);
+    const trustedRuntime = runtime();
+    const acknowledgement = await control.decideTaskAuthorization(
+      7,
+      effectiveDecision,
+      trustedRuntime,
+      1_002
+    );
+
+    expect(acknowledgement.reviewed_authorization_digest).toBe(
+      reviewedDecision.authorization_digest
+    );
+    expect(acknowledgement.authorization_digest).toBe(effectiveDecision.authorization_digest);
+    expect(trustedRuntime.authorizeTask.mock.calls[0]?.[0].capabilities).toEqual([
+      { extension_id: 'accordlock_network', tool_name: 'https_request' },
+      { extension_id: 'developer', tool_name: 'read' },
+      { extension_id: 'developer', tool_name: 'tree' },
+    ]);
+    expect(control.authorizedContextForSession(request.session_id, 1_003)).toMatchObject({
+      authorization: {
+        authorization_digest: effectiveDecision.authorization_digest,
+        capabilities: [
+          expect.objectContaining({
+            extension_id: 'accordlock_network',
+            tool_name: 'https_request',
+          }),
+          expect.objectContaining({ extension_id: 'developer', tool_name: 'read' }),
+          expect.objectContaining({ extension_id: 'developer', tool_name: 'tree' }),
+        ],
+      },
+    });
+  });
+
+  it('cannot enable network authority without an active governed network policy', () => {
+    const control = new AccordLockTaskControl();
+    const authorization = control.prepareTask(
+      7,
+      request,
+      '/trusted/workspace',
+      trustedRunId(request.session_id),
+      1_000
+    );
+
+    expect(() =>
+      control.configurePendingTaskAccess(
+        7,
+        decision(authorization, 'APPROVE'),
+        { file_changes: 'ASK', terminal: 'ASK', network: 'ASK' },
+        1_001
+      )
+    ).toThrow('Governed network access is not configured');
+  });
+
   it('keeps the window-bound audit identity available after revocation', async () => {
     const control = new AccordLockTaskControl();
     const authorization = control.prepareTask(
@@ -555,6 +625,14 @@ describe('AccordLockTaskControl', () => {
     const [first, retry] = await Promise.all([firstApproval, exactRetry]);
     expect(first.status).toBe('APPROVED');
     expect(retry).toEqual(first);
+    const recovered = control.authorizationForDecision(
+      7,
+      decision(authorization, 'APPROVE'),
+      1_002
+    );
+    expect(recovered.acknowledgement).toEqual(first);
+    expect(recovered.acknowledgement).not.toBe(first);
+    expect(trustedRuntime.authorizeTask).toHaveBeenCalledOnce();
     await expect(
       control.decideTaskAuthorization(7, decision(authorization, 'REJECT'), trustedRuntime, 1_002)
     ).rejects.toThrow('different recorded decision');

@@ -1,7 +1,11 @@
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { BrowserWindow } from 'electron';
 
-import type { AccordLockTaskAuthorization } from './accordlock/taskIpc';
+import type {
+  AccordLockTaskAccessMode,
+  AccordLockTaskAccessSelection,
+  AccordLockTaskAuthorization,
+} from './accordlock/taskIpc';
 import { buildTaskIntentBrief, literalBlockingUserLimit } from './accordlock/taskIntent';
 
 const DECISION_ORIGIN = 'https://accordlock.invalid';
@@ -9,7 +13,10 @@ const DECISION_PATH = '/task-decision';
 const NONCE_BYTES = 32;
 const MAX_APPROVAL_OPEN_MILLISECONDS = 5 * 60 * 1_000;
 
-export type AccordLockTaskApprovalResult = 'APPROVED' | 'CANCELLED' | 'FAILED';
+export type AccordLockTaskApprovalResult =
+  | { status: 'APPROVED'; access: AccordLockTaskAccessSelection }
+  | { status: 'CANCELLED' }
+  | { status: 'FAILED' };
 export type AccordLockTaskApprovalTheme = 'light' | 'dark';
 
 const EXPECTED_CAPABILITIES = [
@@ -21,6 +28,12 @@ const EXPECTED_CAPABILITIES = [
   'developer/write/WRITE',
 ] as const;
 const EXPECTED_NETWORK_CAPABILITY = 'accordlock_network/https_request/NETWORK' as const;
+const REQUIRED_CAPABILITIES = ['developer/read/READ', 'developer/tree/READ'] as const;
+const FILE_CHANGE_CAPABILITIES = [
+  'developer/delete_file/WRITE',
+  'developer/edit/WRITE',
+  'developer/write/WRITE',
+] as const;
 const EXPECTED_AUTOMATIC_CAPABILITIES = ['developer/read', 'developer/tree'] as const;
 const EXPECTED_PROTECTED_PATHS = [
   '.accordlock',
@@ -137,9 +150,19 @@ function hasSupportedPresentationProfile(authorization: AccordLockTaskAuthorizat
   const automaticCapabilities = authorization.task_policy.preauthorized_capabilities.map(
     ({ extension_id, tool_name }) => `${extension_id}/${tool_name}`
   );
+  const capabilitySet = new Set(capabilities);
+  const supportedCapabilities = new Set<string>([
+    EXPECTED_NETWORK_CAPABILITY,
+    ...EXPECTED_CAPABILITIES,
+  ]);
+  const fileChangeCount = FILE_CHANGE_CAPABILITIES.filter((value) =>
+    capabilitySet.has(value)
+  ).length;
   return (
-    (sameSortedValues(capabilities, EXPECTED_CAPABILITIES) ||
-      sameSortedValues(capabilities, [EXPECTED_NETWORK_CAPABILITY, ...EXPECTED_CAPABILITIES])) &&
+    capabilitySet.size === capabilities.length &&
+    capabilities.every((value) => supportedCapabilities.has(value)) &&
+    REQUIRED_CAPABILITIES.every((value) => capabilitySet.has(value)) &&
+    (fileChangeCount === 0 || fileChangeCount === FILE_CHANGE_CAPABILITIES.length) &&
     sameSortedValues(automaticCapabilities, EXPECTED_AUTOMATIC_CAPABILITIES) &&
     sameSortedValues(authorization.task_policy.protected_paths, EXPECTED_PROTECTED_PATHS)
   );
@@ -154,17 +177,53 @@ function decisionForm(
 ): string {
   const autofocus = decision === 'deny' && css === 'cancel' ? ' autofocus' : '';
   const accessibleName = ariaLabel ? ` aria-label="${escapeHtml(ariaLabel)}"` : '';
-  return `<form action="${DECISION_ORIGIN}${DECISION_PATH}" method="get" autocomplete="off">
+  const id = decision === 'approve' ? ' id="task-approval-form"' : '';
+  return `<form${id} action="${DECISION_ORIGIN}${DECISION_PATH}" method="get" autocomplete="off">
     <input type="hidden" name="nonce" value="${nonce}">
     <input type="hidden" name="decision" value="${decision}">
     <button class="${css}" type="submit"${autofocus}${accessibleName}>${label}</button>
   </form>`;
 }
 
+function taskHasCapability(
+  authorization: AccordLockTaskAuthorization,
+  extensionId: string,
+  toolName: string
+): boolean {
+  return authorization.capabilities.some(
+    ({ extension_id, tool_name }) => extension_id === extensionId && tool_name === toolName
+  );
+}
+
+function accessControl(
+  name: keyof AccordLockTaskAccessSelection,
+  label: string,
+  value: AccordLockTaskAccessMode,
+  fixedState?: string
+): string {
+  if (fixedState) {
+    return `<li>
+      <span class="dot"></span>
+      <span class="access-label">${label}</span>
+      <input form="task-approval-form" type="hidden" name="${name}" value="BLOCKED">
+      <span class="access-state">${fixedState}</span>
+    </li>`;
+  }
+  return `<li>
+    <span class="dot${value === 'ASK' ? ' ask' : ''}"></span>
+    <label class="access-label" for="access-${name}">${label}</label>
+    <select form="task-approval-form" id="access-${name}" name="${name}">
+      <option value="ASK"${value === 'ASK' ? ' selected' : ''}>Ask each time</option>
+      <option value="BLOCKED"${value === 'BLOCKED' ? ' selected' : ''}>Blocked</option>
+    </select>
+  </li>`;
+}
+
 function buildApprovalDocument(
   authorization: AccordLockTaskAuthorization,
   nonce: string,
-  theme: AccordLockTaskApprovalTheme
+  theme: AccordLockTaskApprovalTheme,
+  networkAvailable: boolean
 ): string {
   const intent = buildTaskIntentBrief(authorization);
   const objective = escapeHtml(visibleTrustedReviewText(intent.outcome));
@@ -188,23 +247,30 @@ function buildApprovalDocument(
   );
   const escapedNonce = escapeHtml(nonce);
   const darkTheme = theme === 'dark';
-  const networkEnabled = authorization.capabilities.some(
-    ({ extension_id, tool_name }) =>
-      extension_id === 'accordlock_network' && tool_name === 'https_request'
-  );
+  const fileChangesEnabled = taskHasCapability(authorization, 'developer', 'write');
+  const commandsEnabled = taskHasCapability(authorization, 'developer', 'shell');
+  const networkEnabled = taskHasCapability(authorization, 'accordlock_network', 'https_request');
   const fileChangesBlocked = literalBlockingUserLimit(intent.outcome, 'write') !== null;
   const commandsBlocked = literalBlockingUserLimit(intent.outcome, 'shell') !== null;
   const networkBlocked = literalBlockingUserLimit(intent.outcome, 'https_request') !== null;
-  const protectedActionRows =
-    fileChangesBlocked === commandsBlocked
-      ? `<li><span class="dot${fileChangesBlocked ? '' : ' ask'}"></span><span class="access-label">Change files or run commands</span><span class="access-state">${
-          fileChangesBlocked ? 'Blocked by your limit' : 'Ask each time'
-        }</span></li>`
-      : `<li><span class="dot${fileChangesBlocked ? '' : ' ask'}"></span><span class="access-label">Change files</span><span class="access-state">${
-          fileChangesBlocked ? 'Blocked by your limit' : 'Ask each time'
-        }</span></li><li><span class="dot${commandsBlocked ? '' : ' ask'}"></span><span class="access-label">Run commands</span><span class="access-state">${
-          commandsBlocked ? 'Blocked by your limit' : 'Ask each time'
-        }</span></li>`;
+  const fileAccessControl = accessControl(
+    'file_changes',
+    'Change files',
+    fileChangesEnabled ? 'ASK' : 'BLOCKED',
+    fileChangesBlocked ? 'Blocked by your request' : undefined
+  );
+  const terminalAccessControl = accessControl(
+    'terminal',
+    'Run terminal commands',
+    commandsEnabled ? 'ASK' : 'BLOCKED',
+    commandsBlocked ? 'Blocked by your request' : undefined
+  );
+  const networkAccessControl = accessControl(
+    'network',
+    'Read allowed websites',
+    networkEnabled ? 'ASK' : 'BLOCKED',
+    networkBlocked ? 'Blocked by your request' : networkAvailable ? undefined : 'Set up in Settings'
+  );
   const darkThemeStyles = darkTheme
     ? `
       :root, body { background: #191a18; color: #f3f4f1; }
@@ -215,7 +281,7 @@ function buildApprovalDocument(
       .field + .field, .access li + li { border-color: #353834; }
       dd, .access-label { color: #f1f2ee; }
       .actions-shell { border-color: #383b37; background: rgb(28 30 27 / 96%); }
-      button { border-color: #484c46; background: #282b27; color: #f2f3ef; }
+      button, select { border-color: #484c46; background: #282b27; color: #f2f3ef; }
       .start { border-color: #f1f2ee; background: #f1f2ee; color: #171816; }
     `
     : '';
@@ -322,6 +388,19 @@ function buildApprovalDocument(
       .dot.ask { background: #b78532; }
       .access-label { min-width: 0; font-size: 13px; }
       .access-state { color: #777b73; font-size: 11px; white-space: nowrap; }
+      select {
+        min-width: 112px;
+        min-height: 30px;
+        padding: 0 28px 0 10px;
+        border: 1px solid #d7d9d3;
+        border-radius: 8px;
+        background: #fff;
+        color: #282a26;
+        font: inherit;
+        font-size: 11px;
+        cursor: pointer;
+      }
+      select:focus-visible { outline: 3px solid #7896e8; outline-offset: 2px; }
       .expiry { margin: 12px 2px 0; color: #777b73; font-size: 11px; }
       .actions-shell {
         border-top: 1px solid #dedfda;
@@ -365,7 +444,7 @@ function buildApprovalDocument(
     </header>
     <main>
       <h1>Review this task</h1>
-      <p class="intro">Task access is fixed once work starts. The selected model may receive file content from this folder.</p>
+      <p class="intro">Choose what the agent can use. These limits lock when the task starts.</p>
 
       <dl class="card">
         <div class="field">
@@ -382,12 +461,10 @@ function buildApprovalDocument(
       <section class="card" aria-label="Access">
         <ul class="access">
           <li><span class="dot allowed"></span><span class="access-label">Read files and browse folders</span><span class="access-state">Automatic</span></li>
-          ${protectedActionRows}
-          ${
-            networkEnabled
-              ? `<li><span class="dot${networkBlocked ? '' : ' ask'}"></span><span class="access-label">Read configured websites (GET/HEAD only)</span><span class="access-state">${networkBlocked ? 'Blocked by your limit' : 'Ask each time'}</span></li><li><span class="dot"></span><span class="access-label">Use other network or administrator tools</span><span class="access-state">Blocked</span></li>`
-              : '<li><span class="dot"></span><span class="access-label">Use network or administrator tools</span><span class="access-state">Blocked</span></li>'
-          }
+          ${fileAccessControl}
+          ${terminalAccessControl}
+          ${networkAccessControl}
+          <li><span class="dot"></span><span class="access-label">Administrator access</span><span class="access-state">Blocked</span></li>
           <li><span class="dot"></span><span class="access-label">Open protected settings or credentials</span><span class="access-state">Blocked</span></li>
         </ul>
       </section>
@@ -421,7 +498,7 @@ function decisionNavigationResult(
   try {
     url = new URL(rawUrl);
   } catch {
-    return 'FAILED';
+    return { status: 'FAILED' };
   }
 
   if (
@@ -431,12 +508,10 @@ function decisionNavigationResult(
     url.username !== '' ||
     url.password !== ''
   ) {
-    return 'FAILED';
+    return { status: 'FAILED' };
   }
 
   const keys = [...url.searchParams.keys()].sort();
-  if (keys.length !== 2 || keys[0] !== 'decision' || keys[1] !== 'nonce') return 'FAILED';
-
   const nonceValues = url.searchParams.getAll('nonce');
   const decisionValues = url.searchParams.getAll('decision');
   if (
@@ -444,12 +519,32 @@ function decisionNavigationResult(
     decisionValues.length !== 1 ||
     !nonceMatches(nonceValues[0], expectedNonce)
   ) {
-    return 'FAILED';
+    return { status: 'FAILED' };
   }
 
-  if (decisionValues[0] === 'approve') return 'APPROVED';
-  if (decisionValues[0] === 'deny') return 'CANCELLED';
-  return 'FAILED';
+  if (decisionValues[0] === 'deny') {
+    return keys.length === 2 && keys[0] === 'decision' && keys[1] === 'nonce'
+      ? { status: 'CANCELLED' }
+      : { status: 'FAILED' };
+  }
+  if (decisionValues[0] !== 'approve') return { status: 'FAILED' };
+  const expectedKeys = ['decision', 'file_changes', 'network', 'nonce', 'terminal'];
+  if (
+    keys.length !== expectedKeys.length ||
+    keys.some((key, index) => key !== expectedKeys[index])
+  ) {
+    return { status: 'FAILED' };
+  }
+  const accessNames = ['file_changes', 'terminal', 'network'] as const;
+  const access = {} as AccordLockTaskAccessSelection;
+  for (const name of accessNames) {
+    const values = url.searchParams.getAll(name);
+    if (values.length !== 1 || (values[0] !== 'ASK' && values[0] !== 'BLOCKED')) {
+      return { status: 'FAILED' };
+    }
+    access[name] = values[0];
+  }
+  return { status: 'APPROVED', access };
 }
 
 /**
@@ -459,7 +554,8 @@ function decisionNavigationResult(
 export function showAccordLockTaskApprovalWindow(
   parent: BrowserWindow,
   authorization: AccordLockTaskAuthorization,
-  theme: AccordLockTaskApprovalTheme = 'light'
+  theme: AccordLockTaskApprovalTheme = 'light',
+  networkAvailable = taskHasCapability(authorization, 'accordlock_network', 'https_request')
 ): Promise<AccordLockTaskApprovalResult> {
   const now = Date.now();
   const taskDeadline = authorization.expires_at * 1_000;
@@ -471,12 +567,12 @@ export function showAccordLockTaskApprovalWindow(
     taskDeadline <= now ||
     !hasSupportedPresentationProfile(authorization)
   ) {
-    return Promise.resolve('FAILED');
+    return Promise.resolve({ status: 'FAILED' });
   }
   const approvalDeadline = Math.min(taskDeadline, now + MAX_APPROVAL_OPEN_MILLISECONDS);
 
   const nonce = randomBytes(NONCE_BYTES).toString('hex');
-  const document = buildApprovalDocument(authorization, nonce, theme);
+  const document = buildApprovalDocument(authorization, nonce, theme, networkAvailable);
   const dataUrl = buildDataUrl(document);
 
   let approvalWindow: BrowserWindow;
@@ -515,7 +611,7 @@ export function showAccordLockTaskApprovalWindow(
       },
     });
   } catch {
-    return Promise.resolve('FAILED');
+    return Promise.resolve({ status: 'FAILED' });
   }
 
   approvalWindow.removeMenu();
@@ -551,16 +647,16 @@ export function showAccordLockTaskApprovalWindow(
       resolve(result);
     };
 
-    const onParentClosed = () => settle('CANCELLED');
-    const onParentContentsDestroyed = () => settle('FAILED');
-    const onApprovalClosed = () => settle('CANCELLED');
-    const onApprovalUnresponsive = () => settle('FAILED');
-    const onRendererGone = () => settle('FAILED');
-    const onLoadFailure = () => settle('FAILED');
+    const onParentClosed = () => settle({ status: 'CANCELLED' });
+    const onParentContentsDestroyed = () => settle({ status: 'FAILED' });
+    const onApprovalClosed = () => settle({ status: 'CANCELLED' });
+    const onApprovalUnresponsive = () => settle({ status: 'FAILED' });
+    const onRendererGone = () => settle({ status: 'FAILED' });
+    const onLoadFailure = () => settle({ status: 'FAILED' });
     const onWillAttachWebview = (event: PreventableEvent) => event.preventDefault();
     const onWillRedirect = (event: PreventableEvent) => {
       event.preventDefault();
-      settle('FAILED');
+      settle({ status: 'FAILED' });
     };
     const onWillNavigate = (event: PreventableEvent, url: string) => {
       event.preventDefault();
@@ -569,7 +665,7 @@ export function showAccordLockTaskApprovalWindow(
     const onBeforeInput = (event: PreventableEvent, input: KeyboardInput) => {
       if (input.type === 'keyDown' && input.key === 'Escape') {
         event.preventDefault();
-        settle('CANCELLED');
+        settle({ status: 'CANCELLED' });
       }
     };
 
@@ -581,11 +677,11 @@ export function showAccordLockTaskApprovalWindow(
     contents.once('did-fail-load', onLoadFailure);
     contents.once('render-process-gone', onRendererGone);
     contents.on('will-attach-webview', onWillAttachWebview);
-    deadlineTimer = setTimeout(() => settle('FAILED'), approvalDeadline - Date.now());
+    deadlineTimer = setTimeout(() => settle({ status: 'FAILED' }), approvalDeadline - Date.now());
     if (typeof deadlineTimer.unref === 'function') deadlineTimer.unref();
 
     if (parent.isDestroyed() || parent.webContents.isDestroyed()) {
-      settle(parent.isDestroyed() ? 'CANCELLED' : 'FAILED');
+      settle({ status: parent.isDestroyed() ? 'CANCELLED' : 'FAILED' });
       return;
     }
 
@@ -595,7 +691,7 @@ export function showAccordLockTaskApprovalWindow(
         .then(() => {
           if (settled) return;
           if (parent.isDestroyed() || parent.webContents.isDestroyed()) {
-            settle(parent.isDestroyed() ? 'CANCELLED' : 'FAILED');
+            settle({ status: parent.isDestroyed() ? 'CANCELLED' : 'FAILED' });
             return;
           }
           contents.on('will-navigate', onWillNavigate);
@@ -604,9 +700,9 @@ export function showAccordLockTaskApprovalWindow(
           approvalWindow.show();
           approvalWindow.focus();
         })
-        .catch(() => settle('FAILED'));
+        .catch(() => settle({ status: 'FAILED' }));
     } catch {
-      settle('FAILED');
+      settle({ status: 'FAILED' });
     }
   });
 }

@@ -64,6 +64,7 @@ const acknowledgementFor = (
   schema_version: 2,
   authorization_id: authorizedTask.authorization_id,
   task_id: authorizedTask.task_id,
+  reviewed_authorization_digest: authorizedTask.authorization_digest,
   authorization_digest: authorizedTask.authorization_digest,
   status,
   reason_code: status === 'APPROVED' ? 'SESSION_APPROVED' : 'TASK_AUTHORIZATION_REJECTED',
@@ -153,6 +154,18 @@ describe('TaskAuthorizationDialog', () => {
     }
   );
 
+  it('accepts the effective authority sealed by the trusted native review', async () => {
+    const onResolved = vi.fn();
+    const submitDecision = vi.fn().mockResolvedValue({
+      ...acknowledgementFor(authorization, 'APPROVED'),
+      authorization_digest: `sha256:${'e'.repeat(64)}`,
+    });
+
+    renderDialog(submitDecision, { onResolved });
+
+    await waitFor(() => expect(onResolved).toHaveBeenCalledOnce());
+  });
+
   it('fails closed when the default work mode cannot be persisted, then retries safely', async () => {
     const persistAutonomyMode = vi
       .fn()
@@ -194,7 +207,7 @@ describe('TaskAuthorizationDialog', () => {
     const onProtocolError = vi.fn();
     const submitDecision = vi.fn().mockResolvedValue({
       ...acknowledgementFor(authorization, 'APPROVED'),
-      authorization_digest: `sha256:${'e'.repeat(64)}`,
+      reviewed_authorization_digest: `sha256:${'e'.repeat(64)}`,
     });
     renderDialog(submitDecision, { onResolved, onProtocolError });
 

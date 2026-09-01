@@ -10,6 +10,7 @@ import type {
 const FILESYSTEM_EXECUTE_PATH = '/api/v2/execution/filesystem/authorize-and-execute' as const;
 const TERMINAL_EXECUTE_PATH = '/api/v2/execution/terminal/authorize-and-execute' as const;
 const NETWORK_EXECUTE_PATH = '/api/v2/execution/network/authorize-and-execute' as const;
+const TOOL_EXECUTION_SCHEMA_VERSION = 3;
 const APPROVAL_REQUEST_DIGEST_DOMAIN = 'accordlock:v2:action-approval-request';
 const SHA256_DIGEST = /^sha256:[0-9a-f]{64}$/u;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/u;
@@ -592,7 +593,7 @@ export function parseAccordLockActionApprovalChallenge(
   if (
     !isRecord(requestValue) ||
     !hasExactKeys(requestValue, ['proposal', 'schema_version']) ||
-    requestValue.schema_version !== 2 ||
+    requestValue.schema_version !== TOOL_EXECUTION_SCHEMA_VERSION ||
     !isRecord(requestValue.proposal)
   ) {
     throw new Error('AccordLock protected-action request is malformed');
@@ -642,7 +643,7 @@ export function parseAccordLockActionApprovalChallenge(
       'approval_request',
       'approval_request_hash',
     ]) ||
-    responseValue.schema_version !== 2 ||
+    responseValue.schema_version !== TOOL_EXECUTION_SCHEMA_VERSION ||
     responseValue.status !== 'APPROVAL_REQUIRED' ||
     responseValue.reason_code !== 'ACTION_APPROVAL_REQUIRED' ||
     !nonzeroDigest(responseValue.proposal_digest) ||

@@ -625,6 +625,27 @@ test('Forge revalidates the macOS payload before optional signing checks', () =>
   assert.ok(signingBranch > payloadAssertion);
 });
 
+test('Windows installer metadata uses the AccordLock icon from an immutable public URL', () => {
+  const forgeConfig = fs.readFileSync(path.resolve(__dirname, '..', 'forge.config.ts'), 'utf8');
+  const iconUrlMatch =
+    /const accordLockWindowsInstallerIconUrl\s*=\s*\r?\n?\s*'(?<url>[^']+)'/u.exec(forgeConfig);
+
+  assert.ok(iconUrlMatch?.groups?.url);
+  const iconUrl = new URL(iconUrlMatch.groups.url);
+  assert.equal(iconUrl.protocol, 'https:');
+  assert.equal(iconUrl.hostname, 'raw.githubusercontent.com');
+  assert.equal(iconUrl.username, '');
+  assert.equal(iconUrl.password, '');
+  assert.equal(iconUrl.search, '');
+  assert.equal(iconUrl.hash, '');
+  assert.match(
+    iconUrl.pathname,
+    /^\/billmedj\/accordlock\/[0-9a-f]{40}\/desktop\/ui\/desktop\/src\/images\/icon\.ico$/u
+  );
+  assert.match(forgeConfig, /setupIcon:\s*'src\/images\/icon\.ico'/u);
+  assert.match(forgeConfig, /iconUrl:\s*accordLockWindowsInstallerIconUrl/u);
+});
+
 test('Windows build contract pins host, Cargo targets, and excludes wildcard DLL copying', () => {
   const buildScript = fs.readFileSync(
     path.resolve(__dirname, '..', '..', '..', 'scripts', 'build-windows.ps1'),
