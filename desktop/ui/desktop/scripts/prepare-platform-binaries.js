@@ -50,19 +50,12 @@ const windowsSourceOnlyEntries = new Set([
     'system-tool-wrapper.sh',
     'uvx',
 ]);
-const macOSSupportFiles = Object.freeze([
-    'jbang',
-    'node',
-    'npx',
-    'system-tool-wrapper.sh',
-    'uvx',
-]);
+const macOSSupportFiles = Object.freeze(['jbang', 'node', 'npx', 'system-tool-wrapper.sh', 'uvx']);
 const macOSSupportFileHashes = Object.freeze({
     jbang: '30daf17ccbc0b030d5bec15854ff31a249f650e0ad14a575eb8250e4d983e444',
     node: '38a3e65d6e8c8c554ba54036d596b6183762b396a145d0c3116a683e4501514e',
     npx: '84ad66e6895a1631aa660efd237bfceee5e5bdf2ca1d2b0c759771c504d42bd3',
-    'system-tool-wrapper.sh':
-        '8473f77e2911c30ea28af25db9c9cde09d55e6b5d94220ad24a297ad46dc07a6',
+    'system-tool-wrapper.sh': '8473f77e2911c30ea28af25db9c9cde09d55e6b5d94220ad24a297ad46dc07a6',
     uvx: '218c7121887f294b664157d1d4c55737d57aa02fe2accd5d6eb22c8c0dbd47c3',
 });
 const macOSDistributionFiles = Object.freeze(
@@ -80,12 +73,7 @@ const macOSSourceOnlyEntries = new Set([
 ]);
 
 // Platform-specific file patterns
-const windowsFiles = [
-    '*.exe',
-    '*.dll',
-    '*.cmd',
-    'goose-npm/**/*'
-];
+const windowsFiles = ['*.exe', '*.dll', '*.cmd', 'goose-npm/**/*'];
 
 // Helper function to check if file matches patterns
 function matchesPattern(filename, patterns) {
@@ -136,18 +124,43 @@ function sameCanonicalPath(left, right) {
 
 function assertRealNonLinkDirectory(binDirectory, platform) {
     let directoryStat;
-    let realDirectory;
     try {
         directoryStat = fs.lstatSync(binDirectory);
-        realDirectory = fs.realpathSync.native(binDirectory);
     } catch {
         failDistribution(platform, `binary staging directory is missing: ${binDirectory}`);
     }
     if (!directoryStat.isDirectory() || directoryStat.isSymbolicLink()) {
         failDistribution(platform, `binary staging path must be one regular non-link directory`);
     }
-    if (!sameCanonicalPath(realDirectory, path.resolve(binDirectory))) {
-        failDistribution(platform, `binary staging directory must not traverse a link or junction`);
+}
+
+function assertNoOwnedPathRedirection(directory, ownedBoundary, platform) {
+    const resolvedDirectory = path.resolve(directory);
+    const resolvedBoundary = path.resolve(ownedBoundary);
+    const relativeDirectory = path.relative(resolvedBoundary, resolvedDirectory);
+    if (
+        relativeDirectory === '' ||
+        relativeDirectory === '..' ||
+        relativeDirectory.startsWith(`..${path.sep}`) ||
+        path.isAbsolute(relativeDirectory)
+    ) {
+        failDistribution(platform, `binary staging directory escapes its package boundary`);
+    }
+
+    let current = resolvedDirectory;
+    while (!sameCanonicalPath(current, resolvedBoundary)) {
+        assertRealNonLinkDirectory(current, platform);
+        current = path.dirname(current);
+    }
+
+    const realBoundary = fs.realpathSync.native(resolvedBoundary);
+    const expectedRealDirectory = path.resolve(realBoundary, relativeDirectory);
+    const realDirectory = fs.realpathSync.native(resolvedDirectory);
+    if (!sameCanonicalPath(realDirectory, expectedRealDirectory)) {
+        failDistribution(
+            platform,
+            `binary staging directory must not traverse a link or junction inside its package boundary`
+        );
     }
 }
 
@@ -161,13 +174,7 @@ function assertCanonicalStagingDirectory(binDirectory = srcBinDir) {
         );
     }
     assertRealNonLinkDirectory(requestedDirectory, 'desktop');
-    const realDirectory = fs.realpathSync.native(requestedDirectory);
-    if (!sameCanonicalPath(realDirectory, expectedDirectory)) {
-        failDistribution(
-            'desktop',
-            `binary staging real path must be exactly ${expectedDirectory}`
-        );
-    }
+    assertNoOwnedPathRedirection(requestedDirectory, desktopRoot, 'desktop');
 }
 
 function assertRegularNonLinkFile(filePath, label, platform) {
@@ -189,10 +196,7 @@ function assertWindowsX64Pe(filePath) {
         failDistribution('Windows', `${path.basename(filePath)} is not a valid PE file`);
     }
     const peOffset = bytes.readUInt32LE(0x3c);
-    if (
-        peOffset > bytes.length - 6 ||
-        bytes.readUInt32LE(peOffset) !== 0x00004550
-    ) {
+    if (peOffset > bytes.length - 6 || bytes.readUInt32LE(peOffset) !== 0x00004550) {
         failDistribution('Windows', `${path.basename(filePath)} has an invalid PE header`);
     }
     const machine = bytes.readUInt16LE(peOffset + 4);
@@ -210,10 +214,7 @@ function assertAllowedWindowsDistributionHash(name, actualHash, hashPolicy) {
         failDistribution('Windows', `${name} has no approved checksum policy`);
     }
     if (!allowedHashes.includes(actualHash)) {
-        failDistribution(
-            'Windows',
-            `${name} checksum mismatch: got ${actualHash}`
-        );
+        failDistribution('Windows', `${name} checksum mismatch: got ${actualHash}`);
     }
 }
 
@@ -222,7 +223,11 @@ function assertWindowsDistributionFileHashes(
     hashPolicy = windowsDistributionFileHashPolicy
 ) {
     for (const name of Object.keys(windowsDistributionFileHashPolicy)) {
-        assertAllowedWindowsDistributionHash(name, sha256(path.join(binDirectory, name)), hashPolicy);
+        assertAllowedWindowsDistributionHash(
+            name,
+            sha256(path.join(binDirectory, name)),
+            hashPolicy
+        );
     }
 }
 
@@ -264,10 +269,7 @@ function assertWindowsDistributionFilesWithHashPolicy(binDirectory, hashPolicy) 
 }
 
 function assertWindowsDistributionFiles(binDirectory = srcBinDir) {
-    assertWindowsDistributionFilesWithHashPolicy(
-        binDirectory,
-        windowsDistributionFileHashPolicy
-    );
+    assertWindowsDistributionFilesWithHashPolicy(binDirectory, windowsDistributionFileHashPolicy);
 }
 
 function assertMacOSDistributionFiles(binDirectory = srcBinDir) {
@@ -290,31 +292,33 @@ function assertMacOSDistributionFiles(binDirectory = srcBinDir) {
 
 function downloadFile(url, destPath, redirectsRemaining = 5) {
     return new Promise((resolve, reject) => {
-        https.get(url, response => {
-            if (
-                response.statusCode >= 300 &&
-                response.statusCode < 400 &&
-                response.headers.location &&
-                redirectsRemaining > 0
-            ) {
-                response.resume();
-                downloadFile(response.headers.location, destPath, redirectsRemaining - 1)
-                    .then(resolve)
-                    .catch(reject);
-                return;
-            }
+        https
+            .get(url, response => {
+                if (
+                    response.statusCode >= 300 &&
+                    response.statusCode < 400 &&
+                    response.headers.location &&
+                    redirectsRemaining > 0
+                ) {
+                    response.resume();
+                    downloadFile(response.headers.location, destPath, redirectsRemaining - 1)
+                        .then(resolve)
+                        .catch(reject);
+                    return;
+                }
 
-            if (response.statusCode !== 200) {
-                response.resume();
-                reject(new Error(`Failed to download ${url}: HTTP ${response.statusCode}`));
-                return;
-            }
+                if (response.statusCode !== 200) {
+                    response.resume();
+                    reject(new Error(`Failed to download ${url}: HTTP ${response.statusCode}`));
+                    return;
+                }
 
-            const file = fs.createWriteStream(destPath);
-            response.pipe(file);
-            file.on('finish', () => file.close(resolve));
-            file.on('error', reject);
-        }).on('error', reject);
+                const file = fs.createWriteStream(destPath);
+                response.pipe(file);
+                file.on('finish', () => file.close(resolve));
+                file.on('error', reject);
+            })
+            .on('error', reject);
     });
 }
 
@@ -394,10 +398,10 @@ function cleanBinDirectory(targetPlatform, binDirectory = srcBinDir) {
     }
 
     const files = fs.readdirSync(binDirectory, { withFileTypes: true });
-    
+
     files.forEach(file => {
         const filePath = path.join(binDirectory, file.name);
-        
+
         if (targetPlatform === 'darwin') {
             if (macOSSourceOnlyEntries.has(file.name)) {
                 console.log(`Removing non-macOS support file: ${file.name}`);
@@ -435,7 +439,7 @@ function cleanBinDirectory(targetPlatform, binDirectory = srcBinDir) {
 async function copyPlatformFiles(targetPlatform, binDirectory = srcBinDir) {
     if (targetPlatform === 'win32') {
         console.log('Copying Windows-specific files...');
-        
+
         if (!fs.existsSync(platformWinDir)) {
             console.warn('Windows platform directory does not exist');
             return;
@@ -492,14 +496,14 @@ async function copyPlatformFiles(targetPlatform, binDirectory = srcBinDir) {
 // Main function
 async function preparePlatformBinaries() {
     const targetPlatform = process.env.ELECTRON_PLATFORM || process.platform;
-    
+
     console.log(`Preparing binaries for platform: ${targetPlatform}`);
 
     assertCanonicalStagingDirectory();
-    
+
     // First copy platform-specific files if needed
     await copyPlatformFiles(targetPlatform);
-    
+
     // Then clean up cross-platform files
     cleanBinDirectory(targetPlatform);
 
@@ -508,7 +512,7 @@ async function preparePlatformBinaries() {
     } else if (targetPlatform === 'darwin') {
         assertMacOSDistributionFiles();
     }
-    
+
     console.log('Platform binary preparation complete');
 }
 
@@ -521,6 +525,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+    _testOnlyAssertNoOwnedPathRedirection: assertNoOwnedPathRedirection,
     _testOnlyAssertWindowsDistributionFilesWithHashPolicy:
         assertWindowsDistributionFilesWithHashPolicy,
     assertAllowedWindowsDistributionHash,

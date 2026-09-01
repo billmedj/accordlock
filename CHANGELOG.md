@@ -36,6 +36,9 @@ must still be called out explicitly.
 - Corrected Windows 8.3 path-alias handling by comparing native stable file or
   directory identities instead of normalized path strings. Terminal executable
   identity is also checked before and after hashing.
+- Anchored staging-path validation at the desktop package boundary. A
+  host-managed checkout alias is accepted, while every link or junction inside
+  the product-owned path to `src/bin` remains rejected.
 - Bound the four text-based native packaging helpers to LF checkouts on every
   host and made CI verify that attribute contract before auditing their exact
   raw-byte hashes.

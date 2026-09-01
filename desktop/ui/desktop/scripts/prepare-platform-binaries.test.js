@@ -7,6 +7,7 @@ const path = require('node:path');
 const test = require('node:test');
 
 const {
+  _testOnlyAssertNoOwnedPathRedirection: assertNoOwnedPathRedirection,
   _testOnlyAssertWindowsDistributionFilesWithHashPolicy:
     assertWindowsDistributionFilesWithHashPolicy,
   assertAllowedWindowsDistributionHash,
@@ -59,9 +60,9 @@ function writeApprovedDistribution(directory, distributionFiles, peFiles = []) {
     }
   }
   const hashedWindowsFiles = Object.keys(windowsDistributionFileHashPolicy);
-  return hashedWindowsFiles.every(name => fs.existsSync(path.join(directory, name)))
+  return hashedWindowsFiles.every((name) => fs.existsSync(path.join(directory, name)))
     ? Object.fromEntries(
-        hashedWindowsFiles.map(name => [name, [sha256(path.join(directory, name))]])
+        hashedWindowsFiles.map((name) => [name, [sha256(path.join(directory, name))]])
       )
     : null;
 }
@@ -69,10 +70,7 @@ function writeApprovedDistribution(directory, distributionFiles, peFiles = []) {
 function writeApprovedMacOSDistribution(directory) {
   writeApprovedDistribution(directory, macOSDistributionFiles);
   for (const name of Object.keys(macOSSupportFileHashes)) {
-    fs.copyFileSync(
-      path.join(canonicalMacOSSupportDirectory, name),
-      path.join(directory, name)
-    );
+    fs.copyFileSync(path.join(canonicalMacOSSupportDirectory, name), path.join(directory, name));
   }
 }
 
@@ -125,7 +123,9 @@ for (const unexpectedName of ['stale.dll', 'unreviewed.exe', 'goose-npm']) {
 
     assert.throws(
       () => cleanBinDirectory('win32', directory),
-      new RegExp(`unapproved staged payload: ${unexpectedName.replace('.', '\\.').replace('-', '\\-')}`)
+      new RegExp(
+        `unapproved staged payload: ${unexpectedName.replace('.', '\\.').replace('-', '\\-')}`
+      )
     );
   });
 }
@@ -288,7 +288,7 @@ test('macOS staging rejects a non-regular approved entry', () => {
   );
 });
 
-test('macOS staging rejects a symbolic-link approved entry', t => {
+test('macOS staging rejects a symbolic-link approved entry', (t) => {
   const directory = temporaryDirectory();
   writeApprovedMacOSDistribution(directory);
   const wrapperPath = path.join(directory, 'uvx');
@@ -309,13 +309,17 @@ test('macOS staging rejects a symbolic-link approved entry', t => {
   );
 });
 
-test('staging rejects a linked or junction directory root', t => {
+test('staging rejects a linked or junction directory root', (t) => {
   const container = temporaryDirectory();
   const realDirectory = path.join(container, 'real-bin');
   const linkedDirectory = path.join(container, 'linked-bin');
   writeApprovedMacOSDistribution(realDirectory);
   try {
-    fs.symlinkSync(realDirectory, linkedDirectory, process.platform === 'win32' ? 'junction' : 'dir');
+    fs.symlinkSync(
+      realDirectory,
+      linkedDirectory,
+      process.platform === 'win32' ? 'junction' : 'dir'
+    );
   } catch (error) {
     if (error?.code === 'EPERM' || error?.code === 'EACCES') {
       t.skip(`directory-link creation is unavailable: ${error.code}`);
@@ -327,6 +331,53 @@ test('staging rejects a linked or junction directory root', t => {
   assert.throws(
     () => assertMacOSDistributionFiles(linkedDirectory),
     /binary staging (?:path must be one regular non-link directory|directory must not traverse a link or junction)/
+  );
+});
+
+test('the owned-path guard permits a host alias but rejects redirection below it', (t) => {
+  const container = temporaryDirectory();
+  const realBoundary = path.join(container, 'real-package');
+  const aliasedBoundary = path.join(container, 'host-alias');
+  const realBin = path.join(realBoundary, 'src', 'bin');
+  fs.mkdirSync(realBin, { recursive: true });
+  try {
+    fs.symlinkSync(
+      realBoundary,
+      aliasedBoundary,
+      process.platform === 'win32' ? 'junction' : 'dir'
+    );
+  } catch (error) {
+    if (error?.code === 'EPERM' || error?.code === 'EACCES') {
+      t.skip(`directory-link creation is unavailable: ${error.code}`);
+      return;
+    }
+    throw error;
+  }
+
+  assert.doesNotThrow(() =>
+    assertNoOwnedPathRedirection(
+      path.join(aliasedBoundary, 'src', 'bin'),
+      aliasedBoundary,
+      'desktop'
+    )
+  );
+
+  const externalSource = path.join(container, 'external-source');
+  const redirectedSource = path.join(realBoundary, 'redirected-source');
+  fs.mkdirSync(path.join(externalSource, 'bin'), { recursive: true });
+  fs.symlinkSync(
+    externalSource,
+    redirectedSource,
+    process.platform === 'win32' ? 'junction' : 'dir'
+  );
+  assert.throws(
+    () =>
+      assertNoOwnedPathRedirection(
+        path.join(aliasedBoundary, 'redirected-source', 'bin'),
+        aliasedBoundary,
+        'desktop'
+      ),
+    /binary staging path must be one regular non-link directory/
   );
 });
 

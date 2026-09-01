@@ -196,7 +196,7 @@
       "upstreamRepository": "https://github.com/aaif-goose/goose.git",
       "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
       "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
-      "assembledTree": "3e44c0edddbd67cf7978e2bb045f06974b0fd22b",
+      "assembledTree": "2f74b573d6d2033cf84a73b2944ca4c200f08f63",
       "trackedTreeExclusions": [
         {
           "path": "documentation/",
@@ -342,11 +342,11 @@
         },
         {
           "path": "ui/desktop/scripts/prepare-platform-binaries.js",
-          "reason": "Replaced permissive platform cleanup with exact Windows and macOS payload allowlists, canonical non-link staging checks, pinned support-wrapper hashes, and x64 PE validation."
+          "reason": "Replaced permissive platform cleanup with exact payload allowlists, package-boundary-anchored non-link staging checks, pinned support-wrapper hashes, and x64 PE validation."
         },
         {
           "path": "ui/desktop/scripts/prepare-platform-binaries.test.js",
-          "reason": "Added adversarial tests for payload contamination, missing files, wrong architecture, symlinks, junction staging roots, wrapper hashes, Forge revalidation, and fresh native build targets."
+          "reason": "Added adversarial tests for payload contamination, missing files, wrong architecture, host aliases, product-owned junctions, wrapper hashes, Forge revalidation, and fresh native build targets."
         },
         {
           "path": "ui/package.json",
@@ -589,7 +589,7 @@
         },
         {
           "baseTree": "7734083400d8ee2b198c41c769f8690983f4ebbf",
-          "resultTree": "3e44c0edddbd67cf7978e2bb045f06974b0fd22b",
+          "resultTree": "2f74b573d6d2033cf84a73b2944ca4c200f08f63",
           "changes": [
             {
               "path": ".gitattributes",
@@ -659,12 +659,12 @@
             {
               "path": "ui/desktop/scripts/prepare-platform-binaries.js",
               "effect": "modified",
-              "reason": "Enforced exact platform payloads, canonical non-link staging, pinned wrapper hashes, regular files, and x64 PE binaries."
+              "reason": "Enforced exact platform payloads and non-link staging below the package boundary while accepting host-managed checkout aliases above it."
             },
             {
               "path": "ui/desktop/scripts/prepare-platform-binaries.test.js",
               "effect": "added",
-              "reason": "Added adversarial regression coverage for both platform payload and release-build contracts."
+              "reason": "Added adversarial regression coverage for platform payloads, release-build contracts, host aliases, and product-owned path redirection."
             },
             {
               "path": "ui/desktop/src/accordlockTerminalPrograms.ts",
