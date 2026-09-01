@@ -226,7 +226,7 @@
       "upstreamRepository": "https://github.com/aaif-goose/goose.git",
       "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
       "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
-      "assembledTree": "a9bc60a4b379776d1b1b9fbb8feee2ba7d3b8839",
+      "assembledTree": "2f045c4be5b7f943fce73ef97fe9e52b1ff9db43",
       "trackedTreeExclusions": [
         {
           "path": "documentation/",
@@ -256,7 +256,7 @@
         },
         {
           "path": "MODIFICATIONS.md",
-          "reason": "Recorded the deterministic file-by-file inventory of 366 modified, 1106 unchanged, 220 AccordLock-only, and 42 omitted upstream paths."
+          "reason": "Recorded the deterministic file-by-file inventory of 366 modified, 1106 unchanged, 222 AccordLock-only, and 42 omitted upstream paths."
         },
         {
           "path": "Cargo.toml",
@@ -780,6 +780,102 @@
               "path": "ui/desktop/src/platform/darwin/bin/uvx",
               "effect": "added",
               "reason": "Added the reviewed macOS uvx wrapper source outside generated staging."
+            }
+          ]
+        },
+        {
+          "baseTree": "a9bc60a4b379776d1b1b9fbb8feee2ba7d3b8839",
+          "resultTree": "2f045c4be5b7f943fce73ef97fe9e52b1ff9db43",
+          "changes": [
+            {
+              "path": "MODIFICATIONS.md",
+              "effect": "modified",
+              "reason": "Regenerated the exact Goose inheritance inventory for 366 modified, 1106 unchanged, 222 AccordLock-only, and 42 omitted files."
+            },
+            {
+              "path": "crates/goose/src/agents/accordlock_filesystem.rs",
+              "effect": "modified",
+              "reason": "Strictly decoded and independently recomputed every typed approval record and deterministic binding before an approved filesystem action can execute."
+            },
+            {
+              "path": "scripts/check_upstream_modifications.py",
+              "effect": "modified",
+              "reason": "Advanced the reviewed AccordLock-only path count and exact path-set digest for the two desktop branding modules and emitted the deterministic report with byte-exact LF endings on every host."
+            },
+            {
+              "path": "ui/desktop/forge.config.ts",
+              "effect": "modified",
+              "reason": "Bound Windows installer branding to the reviewed local icon and an immutable public source asset."
+            },
+            {
+              "path": "ui/desktop/scripts/prepare-platform-binaries.test.js",
+              "effect": "modified",
+              "reason": "Verified the immutable installer icon source and preserved the native desktop packaging contract."
+            },
+            {
+              "path": "ui/desktop/src/accordlock/taskAuthorizationContract.ts",
+              "effect": "modified",
+              "reason": "Added explicit pre-start choices for file changes, terminal commands, and controlled network access to the task authorization contract."
+            },
+            {
+              "path": "ui/desktop/src/accordlock/taskIpc.ts",
+              "effect": "modified",
+              "reason": "Carried the exact reviewed task-access selection through the typed desktop IPC boundary."
+            },
+            {
+              "path": "ui/desktop/src/accordlockActionApproval.test.ts",
+              "effect": "modified",
+              "reason": "Added regression coverage for current protocol responses and rejection of stale approval schemas."
+            },
+            {
+              "path": "ui/desktop/src/accordlockActionApproval.ts",
+              "effect": "modified",
+              "reason": "Required the current tool-execution schema for both approval challenges and execution responses."
+            },
+            {
+              "path": "ui/desktop/src/accordlockDesktopBranding.test.ts",
+              "effect": "added",
+              "reason": "Added deterministic tests for development and packaged icon resolution and Windows application identity."
+            },
+            {
+              "path": "ui/desktop/src/accordlockDesktopBranding.ts",
+              "effect": "added",
+              "reason": "Centralized the AccordLock application icon path and stable Windows application identity for development and packaged builds."
+            },
+            {
+              "path": "ui/desktop/src/accordlockTaskApprovalWindow.test.ts",
+              "effect": "modified",
+              "reason": "Covered editable task limits, controlled network availability, and the reviewed authorization payload."
+            },
+            {
+              "path": "ui/desktop/src/accordlockTaskApprovalWindow.ts",
+              "effect": "modified",
+              "reason": "Replaced the fixed access summary with concise pre-start controls that lock to the reviewed task authorization."
+            },
+            {
+              "path": "ui/desktop/src/accordlockTaskControl.test.ts",
+              "effect": "modified",
+              "reason": "Covered capability reduction, network allowlist requirements, and idempotent authorization acknowledgements."
+            },
+            {
+              "path": "ui/desktop/src/accordlockTaskControl.ts",
+              "effect": "modified",
+              "reason": "Derived executable capabilities from the reviewed task limits and retained completed acknowledgements for safe IPC retries."
+            },
+            {
+              "path": "ui/desktop/src/components/accordlock/TaskAuthorizationDialog.test.tsx",
+              "effect": "modified",
+              "reason": "Updated interface coverage for the explicit task-access selection contract."
+            },
+            {
+              "path": "ui/desktop/src/main.ts",
+              "effect": "modified",
+              "reason": "Applied stable desktop branding and returned cached authorization acknowledgements without reopening review or reinstalling runtime state."
+            },
+            {
+              "path": "ui/desktop/tests/integration/accordlock_control_channel.test.ts",
+              "effect": "modified",
+              "reason": "Exercised the current protocol through the native runtime, including exact file creation, denial, and stale-state rejection."
             }
           ]
         }

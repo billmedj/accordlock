@@ -21,7 +21,7 @@ without placing invalid comments inside strict data formats or binary assets.
 - 349 modified text/source files with an in-file notice
 - 17 modified generated, strict-data, or binary files documented as exceptions
 - 1106 inherited files distributed unchanged
-- 220 AccordLock-only files
+- 222 AccordLock-only files
 - 42 other upstream files omitted from this distribution
 
 The standard in-file notice is:
@@ -536,6 +536,8 @@ confirm that the out-of-band handling is sufficient for the intended distributio
 - `ui/desktop/src/accordlockBackendBinding.ts`
 - `ui/desktop/src/accordlockBootstrap.test.ts`
 - `ui/desktop/src/accordlockBootstrap.ts`
+- `ui/desktop/src/accordlockDesktopBranding.test.ts`
+- `ui/desktop/src/accordlockDesktopBranding.ts`
 - `ui/desktop/src/accordlockDesktopSecurity.test.ts`
 - `ui/desktop/src/accordlockDesktopSecurity.ts`
 - `ui/desktop/src/accordlockEmbeddedIntegrity.test.ts`

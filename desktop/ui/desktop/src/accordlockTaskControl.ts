@@ -488,7 +488,7 @@ export class AccordLockTaskControl {
       throw new Error('Task access selection is malformed');
     }
     if (selection.network === 'ASK' && !this.governedNetworkEnabled) {
-      throw new Error('Governed network access is not configured');
+      throw new Error('Controlled network access is not configured');
     }
 
     const capabilities = approvedCapabilities(

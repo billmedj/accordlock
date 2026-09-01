@@ -296,7 +296,7 @@ describe('AccordLockTaskControl', () => {
     });
   });
 
-  it('cannot enable network authority without an active governed network policy', () => {
+  it('cannot enable network access without an active domain allowlist', () => {
     const control = new AccordLockTaskControl();
     const authorization = control.prepareTask(
       7,
@@ -313,7 +313,7 @@ describe('AccordLockTaskControl', () => {
         { file_changes: 'ASK', terminal: 'ASK', network: 'ASK' },
         1_001
       )
-    ).toThrow('Governed network access is not configured');
+    ).toThrow('Controlled network access is not configured');
   });
 
   it('keeps the window-bound audit identity available after revocation', async () => {

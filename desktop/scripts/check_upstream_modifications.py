@@ -85,12 +85,12 @@ EXPECTED_EXCLUDED_UPSTREAM_FILES = 855
 EXPECTED_MODIFIED_FILES = 366
 EXPECTED_UNCHANGED_FILES = 1106
 EXPECTED_REMOVED_FILES = 42
-EXPECTED_ADDED_FILES = 220
+EXPECTED_ADDED_FILES = 222
 EXPECTED_MANIFEST_SHA256 = "92274f915d061559f6f42a067bfbfe2ff49eedb5d453afd6900ca8c5220220d8"
 EXPECTED_PATH_SET_SHA256 = {
     "modified": "ca3bfc1df8105186e50daa49c29f31bd9008f17ee4822ac0fe1727e7b950e11e",
     "unchanged": "939ebc128e0cd355f69a2361debf3da49faab700b4730da8af86fcf42ea00525",
-    "added": "51ef8fce00aff4f482ec01ffa98ff71e0c4f6b5395ef1c315060d6e7b0261f30",
+    "added": "3e2171141559bf45624e9fe1dd1a003d5f80efccac4b14f98ae3ebb8cc1ea768",
     "removed": "da11415cd924363118ddfbc78ac557138f3ac2a61d4606cd923bea94b5b12ad3",
     "excluded": "e151bf44b2acf79b34a680f7173a7fed91d9f532ff8897d3f931cda27822eb83",
 }
@@ -494,7 +494,7 @@ def main() -> int:
     try:
         inventory = analyze()
         if arguments.print_report:
-            sys.stdout.write(render_report(inventory))
+            sys.stdout.buffer.write(render_report(inventory).encode("utf-8"))
             return 0
         inventory, errors = audit()
     except (AuditError, OSError, subprocess.SubprocessError) as error:
