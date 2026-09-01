@@ -23,8 +23,8 @@ use std::time::Duration;
 #[cfg(test)]
 use super::accordlock_authorization::ToolExecutionRequestParams;
 use super::accordlock_authorization::{
-    canonical_json_bytes, sha256_digest, validate_authorization_id, validate_digest,
-    validate_reason_code, PolicyEnforcementError, RuntimePolicyEnforcementPoint,
+    approval_aware_runtime_timeout, canonical_json_bytes, sha256_digest, validate_authorization_id,
+    validate_digest, validate_reason_code, PolicyEnforcementError, RuntimePolicyEnforcementPoint,
     ToolExecutionRequest, PROTOCOL_VERSION,
 };
 use super::accordlock_filesystem::ExecutionEvidence;
@@ -48,7 +48,6 @@ const MAX_TIMEOUT_SECONDS: u32 = 5 * 60;
 const DEFAULT_TIMEOUT_SECONDS: u32 = 60;
 const MAX_OUTPUT_BYTES: u32 = 256 * 1024;
 const DEFAULT_OUTPUT_BYTES: u32 = 64 * 1024;
-const HTTP_COMPLETION_GRACE_SECONDS: u64 = 20;
 
 const ALLOWED_ENVIRONMENT: &[&str] = &[
     "CARGO_TERM_COLOR",
@@ -479,9 +478,7 @@ impl TerminalBroker for RuntimeTerminalBroker {
 }
 
 fn terminal_http_timeout(operation: &ValidatedTerminalOperation) -> Duration {
-    Duration::from_secs(
-        u64::from(operation.arguments.timeout_seconds) + HTTP_COMPLETION_GRACE_SECONDS,
-    )
+    approval_aware_runtime_timeout(u64::from(operation.arguments.timeout_seconds))
 }
 
 #[cfg(feature = "accordlock-distribution")]
@@ -1352,7 +1349,7 @@ mod tests {
         let (_workspace, request) = make_request(arguments);
         let operation = validate_execution_request(&request).unwrap();
 
-        assert_eq!(terminal_http_timeout(&operation), Duration::from_secs(320));
+        assert_eq!(terminal_http_timeout(&operation), Duration::from_secs(640));
 
         let mut invalid = valid_arguments();
         invalid["timeout_seconds"] = json!(MAX_TIMEOUT_SECONDS + 1);

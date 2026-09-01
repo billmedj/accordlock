@@ -70,6 +70,32 @@ fn platform_notification(result: &CallToolResult) -> Option<rmcp::model::ServerN
     ))
 }
 
+fn is_accordlock_execution_status_unknown(
+    result: &std::result::Result<CallToolResult, ErrorData>,
+) -> bool {
+    let Err(error) = result else {
+        return false;
+    };
+    error
+        .data
+        .as_ref()
+        .and_then(|data| data.get("accordlock"))
+        .and_then(|accordlock| accordlock.get("reasonCode"))
+        .and_then(serde_json::Value::as_str)
+        == Some("EXECUTION_STATUS_UNKNOWN")
+}
+
+fn finish_tool_execution(
+    effects: Vec<GooseEffect>,
+    execution_status_unknown: bool,
+) -> Result<OperationResult<GooseEffect>> {
+    if execution_status_unknown {
+        yielded_with(effects)
+    } else {
+        applied(effects)
+    }
+}
+
 pub(super) fn tool_span(tool_name: &str, tool_call_id: &str, session_id: &str) -> tracing::Span {
     tracing::info_span!(
         target: "goose::state_machine",
@@ -780,6 +806,7 @@ impl Operation<Session, GooseEffect> for ToolExecutionOperation<'_> {
         let mut combined = futures::stream::select_all(tool_streams);
         let mut response = Message::user();
         let mut effects = Vec::new();
+        let mut execution_status_unknown = false;
         for (request, disposition) in &pending {
             match disposition {
                 ToolDisposition::Execute => {}
@@ -812,6 +839,8 @@ impl Operation<Session, GooseEffect> for ToolExecutionOperation<'_> {
                     let Some((request_id, item)) = item else { break };
                     match item {
                         ToolStreamItem::Result(output) => {
+                            execution_status_unknown |=
+                                is_accordlock_execution_status_unknown(&output);
                             if manage_extensions_ids.contains(request_id.as_str())
                                 && output.is_err()
                             {
@@ -869,7 +898,10 @@ impl Operation<Session, GooseEffect> for ToolExecutionOperation<'_> {
 
         let response = emit.message(response).await;
         effects.push(response.into());
-        applied(effects)
+        // An ambiguous external effect is a hard turn boundary. Persist the
+        // exact tool response, then yield before the model can improvise a
+        // retry, alternate tool, or different path.
+        finish_tool_execution(effects, execution_status_unknown)
     }
 }
 
@@ -899,5 +931,50 @@ mod tests {
             notification.params,
             Some(serde_json::json!({ "event_type": "app_updated" }))
         );
+    }
+
+    #[test]
+    fn accordlock_execution_unknown_ends_state_machine_turn() {
+        let unknown = Err(ErrorData::new(
+            rmcp::model::ErrorCode::INTERNAL_ERROR,
+            "status unknown".to_owned(),
+            Some(serde_json::json!({
+                "accordlock": {
+                    "reasonCode": "EXECUTION_STATUS_UNKNOWN",
+                    "executionStatus": "UNKNOWN"
+                }
+            })),
+        ));
+        let ordinary_failure = Err(ErrorData::new(
+            rmcp::model::ErrorCode::INVALID_REQUEST,
+            "invalid".to_owned(),
+            Some(serde_json::json!({
+                "accordlock": {
+                    "reasonCode": "INVALID_TOOL_REQUEST",
+                    "executionStatus": "NOT_EXECUTED"
+                }
+            })),
+        ));
+
+        assert!(is_accordlock_execution_status_unknown(&unknown));
+        assert!(!is_accordlock_execution_status_unknown(&ordinary_failure));
+
+        let OperationResult::Applied(unknown_step) = finish_tool_execution(
+            Vec::<GooseEffect>::new(),
+            is_accordlock_execution_status_unknown(&unknown),
+        )
+        .expect("unknown execution should produce a state-machine result") else {
+            panic!("unknown execution should apply the hard-stop step");
+        };
+        assert!(unknown_step.yield_to_client);
+
+        let OperationResult::Applied(ordinary_step) = finish_tool_execution(
+            Vec::<GooseEffect>::new(),
+            is_accordlock_execution_status_unknown(&ordinary_failure),
+        )
+        .expect("ordinary failure should produce a state-machine result") else {
+            panic!("ordinary failure should apply the normal continuation step");
+        };
+        assert!(!ordinary_step.yield_to_client);
     }
 }

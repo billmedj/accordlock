@@ -100,6 +100,39 @@ const EMPTY_TURN_MESSAGE: &str =
     "The model returned an empty response. Please resend your message to continue.";
 const DEFAULT_FRONTEND_INSTRUCTIONS: &str = "The following tools are provided directly by the frontend and will be executed by the frontend when called.";
 
+fn is_accordlock_execution_status_unknown(result: &ToolResult<CallToolResult>) -> bool {
+    let Err(error) = result else {
+        return false;
+    };
+    error
+        .data
+        .as_ref()
+        .and_then(|data| data.get("accordlock"))
+        .and_then(|accordlock| accordlock.get("reasonCode"))
+        .and_then(Value::as_str)
+        == Some("EXECUTION_STATUS_UNKNOWN")
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum ExitBoundaryAction {
+    ResumeForPendingSteer,
+    StopImmediately,
+    RunBlockingStopHook,
+}
+
+fn exit_boundary_action(
+    execution_status_unknown: bool,
+    has_pending_steer: bool,
+) -> ExitBoundaryAction {
+    if execution_status_unknown {
+        ExitBoundaryAction::StopImmediately
+    } else if has_pending_steer {
+        ExitBoundaryAction::ResumeForPendingSteer
+    } else {
+        ExitBoundaryAction::RunBlockingStopHook
+    }
+}
+
 fn provider_creation_error(error: anyhow::Error, context: impl fmt::Display) -> anyhow::Error {
     let message = format!("{context}: {error}");
     error.context(message)
@@ -2490,6 +2523,7 @@ impl Agent {
                 let mut tools_updated = false;
                 let mut did_recovery_compact_this_iteration = false;
                 let mut exit_chat = false;
+                let mut hard_stop_execution_unknown = false;
                 let mut provider_errored = false;
                 let mut provider_produced_content = false;
                 let mut provider_reached_output_token_limit = false;
@@ -2720,6 +2754,7 @@ impl Agent {
 
                                     let mut combined = stream::select_all(with_id);
                                     let mut all_install_successful = true;
+                                    let mut execution_status_unknown = false;
 
                                     loop {
                                         if is_token_cancelled(&cancel_token) {
@@ -2741,6 +2776,8 @@ impl Agent {
                                                                 yield AgentEvent::Message(msg);
                                                             }
                                                             ToolStreamItem::Result(output) => {
+                                                                execution_status_unknown |=
+                                                                    is_accordlock_execution_status_unknown(&output);
                                                                 if let Ok(ref call_result) = output {
                                                                     if let Some(ref meta) = call_result.meta {
                                                                         if let Some(notification_data) = meta.0.get("platform_notification") {
@@ -2786,6 +2823,16 @@ impl Agent {
                                             warn!("Failed to save extension state after runtime changes: {}", e);
                                         }
                                         tools_updated = true;
+                                    }
+
+                                    // A genuinely ambiguous effect is a hard turn boundary. The
+                                    // model must never improvise a retry, a different tool, or a
+                                    // different path while the first effect may already exist.
+                                    // The exact tool response remains visible in the conversation;
+                                    // a later user action can start a deliberate reconciliation.
+                                    if execution_status_unknown {
+                                        hard_stop_execution_unknown = true;
+                                        exit_chat = true;
                                     }
                                 }
 
@@ -3387,41 +3434,44 @@ impl Agent {
                 }
                 conversation.extend(messages_to_add);
 
-                if exit_chat && self.has_pending_steers(&session_config.id).await {
-                    exit_chat = false;
-                }
-
                 if exit_chat {
-                    match self
-                        .emit_stop_hook_blocking(&session_config.id, &last_assistant_text, &session.working_dir.to_string_lossy())
-                        .await
-                    {
-                        crate::hooks::HookDecision::Allow => {
-                            stop_hook_handled_for_exit = true;
-                            break;
-                        }
-                        crate::hooks::HookDecision::Deny { reason, plugin } => {
-                            consecutive_stop_hook_blocks += 1;
-                            if consecutive_stop_hook_blocks > stop_hook_block_cap {
-                                let message = persist_message_with_id(
-                                    &session_manager,
-                                    &session_config.id,
-                                    stop_hook_block_cap_warning(&plugin, stop_hook_block_cap),
-                                )
-                                .await?;
-                                yield AgentEvent::Message(message);
+                    match exit_boundary_action(
+                        hard_stop_execution_unknown,
+                        self.has_pending_steers(&session_config.id).await,
+                    ) {
+                        ExitBoundaryAction::ResumeForPendingSteer => {}
+                        ExitBoundaryAction::StopImmediately => break,
+                        ExitBoundaryAction::RunBlockingStopHook => match self
+                            .emit_stop_hook_blocking(&session_config.id, &last_assistant_text, &session.working_dir.to_string_lossy())
+                            .await
+                        {
+                            crate::hooks::HookDecision::Allow => {
                                 stop_hook_handled_for_exit = true;
                                 break;
                             }
-                            persist_and_push_message_with_id(
-                                &session_manager,
-                                &session_config.id,
-                                &mut conversation,
-                                stop_hook_denial_context_message(&plugin, &reason),
-                            )
-                            .await?;
-                            yield AgentEvent::Message(stop_hook_denial_notification(&plugin));
-                            retrying_after_stop_hook_denial = true;
+                            crate::hooks::HookDecision::Deny { reason, plugin } => {
+                                consecutive_stop_hook_blocks += 1;
+                                if consecutive_stop_hook_blocks > stop_hook_block_cap {
+                                    let message = persist_message_with_id(
+                                        &session_manager,
+                                        &session_config.id,
+                                        stop_hook_block_cap_warning(&plugin, stop_hook_block_cap),
+                                    )
+                                    .await?;
+                                    yield AgentEvent::Message(message);
+                                    stop_hook_handled_for_exit = true;
+                                    break;
+                                }
+                                persist_and_push_message_with_id(
+                                    &session_manager,
+                                    &session_config.id,
+                                    &mut conversation,
+                                    stop_hook_denial_context_message(&plugin, &reason),
+                                )
+                                .await?;
+                                yield AgentEvent::Message(stop_hook_denial_notification(&plugin));
+                                retrying_after_stop_hook_denial = true;
+                            }
                         }
                     }
                 }
@@ -4034,6 +4084,49 @@ mod tests {
     use std::path::PathBuf;
     use std::sync::atomic::{AtomicUsize, Ordering};
     use tempfile::TempDir;
+
+    #[test]
+    fn accordlock_execution_unknown_is_a_machine_readable_hard_stop() {
+        let unknown = Err(ErrorData::new(
+            ErrorCode::INTERNAL_ERROR,
+            "status unknown".to_owned(),
+            Some(serde_json::json!({
+                "accordlock": {
+                    "reasonCode": "EXECUTION_STATUS_UNKNOWN",
+                    "executionStatus": "UNKNOWN"
+                }
+            })),
+        ));
+        let ordinary_failure = Err(ErrorData::new(
+            ErrorCode::INVALID_REQUEST,
+            "invalid".to_owned(),
+            Some(serde_json::json!({
+                "accordlock": {
+                    "reasonCode": "INVALID_TOOL_REQUEST",
+                    "executionStatus": "NOT_EXECUTED"
+                }
+            })),
+        ));
+
+        assert!(is_accordlock_execution_status_unknown(&unknown));
+        assert!(!is_accordlock_execution_status_unknown(&ordinary_failure));
+        assert!(!is_accordlock_execution_status_unknown(&Ok(
+            CallToolResult::success(vec![])
+        )));
+
+        assert_eq!(
+            exit_boundary_action(true, true),
+            ExitBoundaryAction::StopImmediately
+        );
+        assert_eq!(
+            exit_boundary_action(false, true),
+            ExitBoundaryAction::ResumeForPendingSteer
+        );
+        assert_eq!(
+            exit_boundary_action(false, false),
+            ExitBoundaryAction::RunBlockingStopHook
+        );
+    }
 
     #[test]
     fn provider_creation_context_preserves_acp_error_code() {

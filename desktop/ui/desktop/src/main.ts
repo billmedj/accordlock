@@ -1622,8 +1622,10 @@ const requireAccordLockRuntime = async (): Promise<AccordLockRuntimeHandle | nul
 
 const resolveAccordLockActionApproval = async (
   challenge: AccordLockActionApprovalChallenge,
-  runtime: AccordLockRuntimeHandle
+  runtime: AccordLockRuntimeHandle,
+  signal: AbortSignal
 ): Promise<boolean> => {
+  if (signal.aborted) return false;
   const taskContext = accordLockTaskControl.authorizedContextForSession(challenge.sessionId);
   const categoricalLimit = literalBlockingUserLimit(
     taskContext.objective,
@@ -1673,6 +1675,9 @@ const resolveAccordLockActionApproval = async (
     throw new Error('The approved task window is unavailable');
   }
   const pending = openAccordLockApprovalInboxEntry(challenge, taskContext, approvalWindow);
+  const cancelDisconnectedApproval = () => pending.gate.cancel();
+  signal.addEventListener('abort', cancelDisconnectedApproval, { once: true });
+  if (signal.aborted) cancelDisconnectedApproval();
 
   try {
     const selection = await pending.gate.selection;
@@ -1681,6 +1686,7 @@ const resolveAccordLockActionApproval = async (
     let effectiveIntent = selection?.intent ?? 'DENY_ACTION';
     if (selection) {
       effectiveIntent = await resolveTrustedApprovalCenterIntent(selection, async () => {
+        if (signal.aborted) return false;
         if (Math.floor(Date.now() / 1_000) >= pending.item.binding.requestExpiresAt) return false;
         if (!canApproveAccordLockAction(challenge)) return false;
         if (accordLockVerifiedRemoteAllowances.delete(selection.itemId)) return true;
@@ -1696,6 +1702,7 @@ const resolveAccordLockActionApproval = async (
         });
       });
     }
+    if (signal.aborted) effectiveIntent = 'DENY_ACTION';
 
     const decidedAt = Math.floor(Date.now() / 1_000);
     if (effectiveIntent === 'ALLOW_ONCE' && decidedAt >= pending.item.binding.requestExpiresAt) {
@@ -1765,6 +1772,7 @@ const resolveAccordLockActionApproval = async (
     );
     throw error;
   } finally {
+    signal.removeEventListener('abort', cancelDisconnectedApproval);
     closeAccordLockApprovalInboxEntry(pending);
   }
 };
@@ -1773,9 +1781,10 @@ const resolveAccordLockApprovalRequest = (
   request: AccordLockApprovalRequest,
   runtime: AccordLockRuntimeHandle
 ): Promise<boolean> => {
+  if (request.signal.aborted) return Promise.resolve(false);
   const challenge = parseAccordLockActionApprovalChallenge(request);
   return enqueueAccordLockActionApproval(challenge.sessionId, () =>
-    resolveAccordLockActionApproval(challenge, runtime)
+    resolveAccordLockActionApproval(challenge, runtime, request.signal)
   );
 };
 

@@ -144,6 +144,7 @@ function fixture(
     path: '/api/v2/execution/filesystem/authorize-and-execute',
     requestBody: Buffer.from(JSON.stringify({ schema_version: 3, proposal }), 'utf8'),
     responseBody: Buffer.from(JSON.stringify(response), 'utf8'),
+    signal: new AbortController().signal,
   };
 }
 
@@ -186,6 +187,7 @@ function terminalApprovalFixture(): AccordLockApprovalRequest {
     path: '/api/v2/execution/terminal/authorize-and-execute',
     requestBody: Buffer.from(JSON.stringify(request), 'utf8'),
     responseBody: Buffer.from(JSON.stringify(response), 'utf8'),
+    signal: new AbortController().signal,
   };
 }
 
@@ -228,6 +230,7 @@ function networkApprovalFixture(): AccordLockApprovalRequest {
     path: '/api/v2/execution/network/authorize-and-execute',
     requestBody: Buffer.from(JSON.stringify(request), 'utf8'),
     responseBody: Buffer.from(JSON.stringify(response), 'utf8'),
+    signal: new AbortController().signal,
   };
 }
 
@@ -261,6 +264,7 @@ function deleteApprovalFixture(): AccordLockApprovalRequest {
     path: '/api/v2/execution/filesystem/authorize-and-execute',
     requestBody: Buffer.from(JSON.stringify(request), 'utf8'),
     responseBody: Buffer.from(JSON.stringify(response), 'utf8'),
+    signal: new AbortController().signal,
   };
 }
 

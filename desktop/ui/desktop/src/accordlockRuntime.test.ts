@@ -267,6 +267,7 @@ const successfulHealth = async (): Promise<Response> =>
   });
 
 afterEach(() => {
+  vi.restoreAllMocks();
   while (tempDirectories.length > 0) {
     const directory = tempDirectories.pop();
     if (directory) {
@@ -695,6 +696,53 @@ describe('AccordLock private control channel', () => {
       'Content-Type': 'application/json',
     });
     expect(Buffer.from(init.body as Uint8Array)).toEqual(requestBody);
+    await runtime.cleanup();
+  });
+
+  it('selects a runtime-forward timeout that covers each execution route', async () => {
+    const fake = createFakeRuntimeProcess();
+    const runtimeFetch = vi
+      .fn()
+      .mockResolvedValueOnce(await successfulHealth())
+      .mockImplementation(
+        async () =>
+          new Response('{}', {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+      );
+    const timeoutSpy = vi.spyOn(globalThis.AbortSignal, 'timeout');
+    const runtimePromise = startAccordLockRuntime({
+      binDirectory: createRuntimeBundle(),
+      dataDirectory: makeTempDirectory(),
+      logger: { info: () => {}, error: () => {} },
+      readinessFetch: runtimeFetch,
+      spawnProcess: () => fake.child,
+      tokenFactory: () => 'A'.repeat(43),
+    });
+    fake.stdout.write(readyLine);
+    const runtime = await runtimePromise;
+
+    await runtime.forwardPolicyRequest(
+      '/api/v2/execution/filesystem/authorize-and-execute',
+      'POST',
+      Buffer.from('{}')
+    );
+    await runtime.forwardPolicyRequest(
+      '/api/v2/execution/network/authorize-and-execute',
+      'POST',
+      Buffer.from('{}')
+    );
+    await runtime.forwardPolicyRequest(
+      '/api/v2/execution/terminal/authorize-and-execute',
+      'POST',
+      Buffer.from('{}')
+    );
+
+    expect(timeoutSpy.mock.calls.map(([milliseconds]) => milliseconds)).toEqual([
+      10_000, 150_000, 330_000,
+    ]);
+    timeoutSpy.mockRestore();
     await runtime.cleanup();
   });
 

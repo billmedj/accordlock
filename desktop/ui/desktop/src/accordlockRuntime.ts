@@ -26,6 +26,7 @@ const RUNTIME_DISTRIBUTION = 'AccordLock';
 const RUNTIME_BUILD_MARKER_SCHEMA_VERSION = 2;
 const RUNTIME_PROTOCOL_VERSION = 2;
 const RUNTIME_HEALTH_PATH = '/api/v2/health';
+const NETWORK_EXECUTION_PATH = '/api/v2/execution/network/authorize-and-execute';
 const TERMINAL_EXECUTION_PATH = '/api/v2/execution/terminal/authorize-and-execute';
 const TOKEN_BYTES = 32;
 const MAX_READY_LINE_BYTES = 4_096;
@@ -33,6 +34,7 @@ const MAX_HEALTH_RESPONSE_BYTES = 4_096;
 const DEFAULT_STARTUP_TIMEOUT_MS = 15_000;
 const DEFAULT_SHUTDOWN_TIMEOUT_MS = 5_000;
 const DEFAULT_CONTROL_REQUEST_TIMEOUT_MS = 10_000;
+const NETWORK_EXECUTION_REQUEST_TIMEOUT_MS = 150_000;
 const TERMINAL_EXECUTION_REQUEST_TIMEOUT_MS = 330_000;
 const MAX_APPROVAL_LIFETIME_SECONDS = 7 * 24 * 60 * 60;
 const MAX_CAPABILITIES = 256;
@@ -834,7 +836,9 @@ const forwardRuntimeRequest = async (
   const requestTimeoutMs =
     requestPath === TERMINAL_EXECUTION_PATH
       ? TERMINAL_EXECUTION_REQUEST_TIMEOUT_MS
-      : DEFAULT_CONTROL_REQUEST_TIMEOUT_MS;
+      : requestPath === NETWORK_EXECUTION_PATH
+        ? NETWORK_EXECUTION_REQUEST_TIMEOUT_MS
+        : DEFAULT_CONTROL_REQUEST_TIMEOUT_MS;
   const requestLimit = accordLockApprovalProxyRequestLimit(requestPath);
   const responseLimit = accordLockApprovalProxyResponseLimit(requestPath);
   if ((isHealth && method !== 'GET') || (!isHealth && method !== 'POST')) {

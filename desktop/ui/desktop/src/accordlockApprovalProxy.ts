@@ -25,6 +25,7 @@ export interface AccordLockApprovalRequest {
   path: AccordLockRuntimePath;
   requestBody: Uint8Array;
   responseBody: Uint8Array;
+  signal: AbortSignal;
 }
 
 export interface AccordLockApprovalProxyOptions {
@@ -69,6 +70,8 @@ const JSON_CONTENT_TYPE = 'application/json';
 class BodyTooLargeError extends Error {}
 
 class InvalidBodyError extends Error {}
+
+class ClientDisconnectedError extends Error {}
 
 function rawHeaderValues(request: IncomingMessage, target: string): string[] {
   const values: string[] = [];
@@ -265,20 +268,64 @@ function approvalFlightKey(
 }
 
 class ApprovalResolutionSingleFlight {
-  private readonly resolutions = new Map<string, Promise<boolean>>();
+  private readonly resolutions = new Map<
+    string,
+    {
+      controller: AbortController;
+      promise: Promise<boolean>;
+      waiters: number;
+    }
+  >();
 
-  resolve(key: string, operation: () => Promise<boolean>): Promise<boolean> {
-    const existing = this.resolutions.get(key);
-    if (existing !== undefined) return existing;
+  resolve(
+    key: string,
+    clientSignal: AbortSignal,
+    operation: (signal: AbortSignal) => Promise<boolean>
+  ): Promise<boolean> {
+    let resolution = this.resolutions.get(key);
+    if (resolution === undefined) {
+      const controller = new AbortController();
+      const promise = Promise.resolve().then(() => operation(controller.signal));
+      resolution = { controller, promise, waiters: 0 };
+      this.resolutions.set(key, resolution);
+      const remove = () => {
+        if (this.resolutions.get(key) === resolution) this.resolutions.delete(key);
+      };
+      void promise.then(remove, remove);
+    }
 
-    const resolution = Promise.resolve().then(operation);
-    this.resolutions.set(key, resolution);
-    const remove = () => {
-      if (this.resolutions.get(key) === resolution) this.resolutions.delete(key);
-    };
-    void resolution.then(remove, remove);
-    return resolution;
+    resolution.waiters += 1;
+    return waitForApprovalResolution(resolution.promise, clientSignal).finally(() => {
+      resolution.waiters -= 1;
+      if (resolution.waiters === 0 && this.resolutions.get(key) === resolution) {
+        resolution.controller.abort();
+      }
+    });
   }
+}
+
+function waitForApprovalResolution(
+  resolution: Promise<boolean>,
+  signal: AbortSignal
+): Promise<boolean> {
+  if (signal.aborted) return Promise.reject(new ClientDisconnectedError());
+  return new Promise((resolve, reject) => {
+    const onAbort = () => {
+      signal.removeEventListener('abort', onAbort);
+      reject(new ClientDisconnectedError());
+    };
+    signal.addEventListener('abort', onAbort, { once: true });
+    void resolution.then(
+      (approved) => {
+        signal.removeEventListener('abort', onAbort);
+        resolve(approved);
+      },
+      (error: unknown) => {
+        signal.removeEventListener('abort', onAbort);
+        reject(error);
+      }
+    );
+  });
 }
 
 export function isAccordLockApprovalProxyLoopbackAddress(address: string | undefined): boolean {
@@ -336,6 +383,13 @@ async function handleRequest(
     return;
   }
 
+  const clientAbort = new AbortController();
+  const abortDisconnectedClient = () => {
+    if (!response.writableFinished) clientAbort.abort();
+  };
+  response.once('close', abortDisconnectedClient);
+  if (response.destroyed) clientAbort.abort();
+
   try {
     const first = normalizeForwardedResponse(
       await options.forward(path, expectedMethod, Buffer.from(requestBody)),
@@ -349,11 +403,13 @@ async function handleRequest(
 
     const approved = await approvalResolutions.resolve(
       approvalFlightKey(path, requestBody, marker),
-      () =>
+      clientAbort.signal,
+      (signal) =>
         options.resolveApproval({
           path,
           requestBody: Buffer.from(requestBody),
           responseBody: Buffer.from(first.body),
+          signal,
         })
     );
     if (typeof approved !== 'boolean') throw new Error('Invalid approval resolution');
@@ -361,6 +417,7 @@ async function handleRequest(
       sendForwardedResponse(response, first);
       return;
     }
+    if (clientAbort.signal.aborted || response.destroyed) return;
 
     const retried = normalizeForwardedResponse(
       await options.forward(path, expectedMethod, Buffer.from(requestBody)),
@@ -368,7 +425,9 @@ async function handleRequest(
     );
     sendForwardedResponse(response, retried);
   } catch {
-    sendError(response, 503);
+    if (!clientAbort.signal.aborted && !response.destroyed) sendError(response, 503);
+  } finally {
+    response.removeListener('close', abortDisconnectedClient);
   }
 }
 

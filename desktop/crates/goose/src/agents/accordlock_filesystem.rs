@@ -10,13 +10,14 @@ use rmcp::model::{CallToolResult, ContentBlock};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::sync::Arc;
+use std::time::Duration;
 
 #[cfg(test)]
 use super::accordlock_authorization::ToolExecutionRequestParams;
 use super::accordlock_authorization::{
-    canonical_json_bytes, sha256_digest, validate_authorization_id, validate_digest,
-    validate_reason_code, PolicyEnforcementError, RuntimePolicyEnforcementPoint,
-    ToolExecutionRequest, PROTOCOL_VERSION,
+    approval_aware_runtime_timeout, canonical_json_bytes, sha256_digest, validate_authorization_id,
+    validate_digest, validate_reason_code, PolicyEnforcementError, RuntimePolicyEnforcementPoint,
+    ToolExecutionRequest, PROTOCOL_VERSION, RUNTIME_TIMEOUT,
 };
 
 pub(super) const FILESYSTEM_EXECUTE_PATH: &str =
@@ -537,12 +538,14 @@ impl FilesystemBroker for RuntimeFilesystemBroker {
             schema_version: PROTOCOL_VERSION,
             proposal: execution_request,
         };
+        let request_timeout = filesystem_http_timeout(&operation);
         let response: FilesystemExecutionResponse = self
             .runtime
-            .post_json_bounded(
+            .post_json_bounded_with_timeout(
                 FILESYSTEM_EXECUTE_PATH,
                 &request,
                 MAX_FILESYSTEM_RESPONSE_BYTES,
+                request_timeout,
             )
             .await
             .map_err(|_| PolicyEnforcementError::ExecutionUnknown)?;
@@ -552,6 +555,15 @@ impl FilesystemBroker for RuntimeFilesystemBroker {
             execution_request,
             &expected_proposal_digest,
         )
+    }
+}
+
+fn filesystem_http_timeout(operation: &ValidatedOperation) -> Duration {
+    match operation.kind {
+        FilesystemOperationKind::Read | FilesystemOperationKind::Tree => RUNTIME_TIMEOUT,
+        FilesystemOperationKind::Write
+        | FilesystemOperationKind::Edit
+        | FilesystemOperationKind::Delete => approval_aware_runtime_timeout(0),
     }
 }
 
@@ -1500,6 +1512,34 @@ mod tests {
     }
 
     #[test]
+    fn filesystem_deadline_waits_for_approval_only_for_mutations() {
+        for (tool_name, arguments) in [
+            ("read", json!({"path": "safe.txt"})),
+            ("tree", json!({"path": ".", "depth": 2})),
+        ] {
+            let (_workspace, request) = make_request(tool_name, arguments);
+            let operation = validate_execution_request(&request).unwrap();
+            assert_eq!(filesystem_http_timeout(&operation), RUNTIME_TIMEOUT);
+        }
+
+        for (tool_name, arguments) in [
+            ("write", json!({"path": "safe.txt", "content": "hello"})),
+            (
+                "edit",
+                json!({"path": "safe.txt", "before": "hello", "after": "world"}),
+            ),
+            ("delete_file", json!({"path": "safe.txt"})),
+        ] {
+            let (_workspace, request) = make_request(tool_name, arguments);
+            let operation = validate_execution_request(&request).unwrap();
+            assert_eq!(
+                filesystem_http_timeout(&operation),
+                Duration::from_secs(5 * 60 + 40)
+            );
+        }
+    }
+
+    #[test]
     fn approval_required_response_is_parsed_and_bound_to_the_exact_write() {
         let (_workspace, request) =
             make_request("write", json!({"path": "notes.txt", "content": "hello"}));
@@ -1742,7 +1782,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn runtime_broker_uses_combined_endpoint_and_accepts_a_recorded_result() {
+    async fn runtime_broker_waits_beyond_default_timeout_for_a_mutation_response() {
         use wiremock::matchers::{bearer_token, body_json, method, path};
         use wiremock::{Mock, MockServer, ResponseTemplate};
 
@@ -1774,7 +1814,11 @@ mod tests {
                 "schema_version": PROTOCOL_VERSION,
                 "proposal": request.clone(),
             })))
-            .respond_with(ResponseTemplate::new(200).set_body_json(response))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_delay(Duration::from_millis(5_200))
+                    .set_body_json(response),
+            )
             .expect(1)
             .mount(&server)
             .await;

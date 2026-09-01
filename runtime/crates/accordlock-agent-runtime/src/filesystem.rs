@@ -2002,7 +2002,7 @@ impl ToolError {
 mod tests {
     use super::*;
     use crate::{
-        ActionApproval, ApprovalDecision, Capability, TaskPolicy,
+        ActionApproval, ApprovalDecision, Capability, PreauthorizedCapability, TaskPolicy,
         model::{ApprovedSession, TOOL_EXECUTION_SCHEMA_VERSION},
     };
 
@@ -2024,12 +2024,13 @@ mod tests {
             "filesystem test objective",
             TaskPolicy::new(
                 Digest32::sha256(b"filesystem test objective"),
-                [],
+                [PreauthorizedCapability::new("developer", "read")],
                 [".accordlock".to_owned()],
             )?,
             [
                 Capability::new("developer", "delete_file"),
                 Capability::new("developer", "edit"),
+                Capability::new("developer", "read"),
                 Capability::new("developer", "write"),
             ],
             TEST_NOW - 10,
@@ -2421,6 +2422,53 @@ mod tests {
         assert!(
             matches!(tree, FilesystemResult::Tree { ref content, entries: 2, .. } if content.contains("src/lib.rs"))
         );
+        Ok(())
+    }
+
+    #[test]
+    fn governed_read_distinguishes_an_existing_file_from_a_missing_file()
+    -> Result<(), Box<dyn std::error::Error>> {
+        let (_root, workspace, ledger) = governed_fixture()?;
+        std::fs::write(workspace.join("accordlock-e2e.txt"), "ACCORDLOCK_E2E_OK")?;
+
+        let existing = FilesystemExecutionRequest {
+            schema_version: TOOL_EXECUTION_SCHEMA_VERSION,
+            proposal: proposal(
+                &workspace,
+                "read-existing",
+                "read",
+                serde_json::json!({"path": "accordlock-e2e.txt"}),
+            )?,
+        };
+        let existing_response = execute_governed(&ledger, &existing, TEST_NOW, 30)?;
+        assert_eq!(
+            existing_response.status,
+            FilesystemExecutionStatus::Succeeded,
+            "{existing_response:?}"
+        );
+        assert_eq!(existing_response.reason_code, "EXECUTED");
+        assert!(matches!(
+            existing_response.result,
+            Some(FilesystemResult::Read { ref content, .. }) if content == "ACCORDLOCK_E2E_OK"
+        ));
+
+        let missing = FilesystemExecutionRequest {
+            schema_version: TOOL_EXECUTION_SCHEMA_VERSION,
+            proposal: proposal(
+                &workspace,
+                "read-missing",
+                "read",
+                serde_json::json!({"path": "not-created.txt"}),
+            )?,
+        };
+        let missing_response = execute_governed(&ledger, &missing, TEST_NOW + 1, 30)?;
+        assert_eq!(
+            missing_response.status,
+            FilesystemExecutionStatus::ToolError,
+            "{missing_response:?}"
+        );
+        assert_eq!(missing_response.reason_code, "READ_FAILED");
+        assert!(missing_response.result.is_none());
         Ok(())
     }
 

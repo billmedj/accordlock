@@ -164,6 +164,12 @@ fn policy_enforcement_error_data(error: PolicyEnforcementError) -> ErrorData {
             "AccordLock could not commit the execution record. The execution status is unknown; do not retry automatically."
                 .to_owned(),
         ),
+        PolicyEnforcementError::InvalidField(_) | PolicyEnforcementError::ArgumentsTooLarge => (
+            ErrorCode::INVALID_REQUEST,
+            "INVALID_TOOL_REQUEST",
+            "The tool request is invalid. No tool was executed. Correct the arguments before trying again."
+                .to_owned(),
+        ),
         _ => (
             ErrorCode::INTERNAL_ERROR,
             "POLICY_ENFORCEMENT_UNAVAILABLE",
@@ -2792,6 +2798,18 @@ mod tests {
             envs,
             HashMap::from([("SAFE_EXTENSION_VALUE".to_string(), "kept".to_string())])
         );
+    }
+
+    #[test]
+    fn malformed_tool_arguments_are_reported_as_safe_correctable_input() {
+        let error =
+            policy_enforcement_error_data(PolicyEnforcementError::InvalidField("arguments"));
+        let data = error.data.expect("structured AccordLock error");
+
+        assert_eq!(error.code, ErrorCode::INVALID_REQUEST);
+        assert_eq!(data["accordlock"]["reasonCode"], "INVALID_TOOL_REQUEST");
+        assert_eq!(data["accordlock"]["executionStatus"], "NOT_EXECUTED");
+        assert_eq!(data["accordlock"]["executionMayHaveOccurred"], false);
     }
 
     mod static_oauth_client {

@@ -9,6 +9,18 @@ must still be called out explicitly.
 
 ## [Unreleased]
 
+### Fixed
+
+- Kept protected filesystem mutations, terminal commands, and HTTPS requests
+  connected while an exact human approval is pending, instead of abandoning the
+  runtime after the default five-second control-plane timeout.
+- Cancelled orphaned approval requests when their agent client disconnects and
+  stopped both agent execution loops at an explicitly unknown effect, preventing
+  an automatic retry or alternate-tool fallback while the first effect may have
+  occurred.
+- Classified malformed protected-tool arguments as safe, correctable requests
+  with a definite `NOT_EXECUTED` result.
+
 ### Security
 
 - Updated `h2` from `0.4.15` to `0.4.16` in the runtime and desktop

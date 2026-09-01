@@ -18,6 +18,7 @@ interface ProxyRequest {
   contentType?: string | null;
   body?: Uint8Array;
   rawHeaders?: string[];
+  signal?: AbortSignal;
 }
 
 interface ProxyResult {
@@ -81,6 +82,7 @@ function callProxy(
         path: input.path ?? '/api/v2/execution/filesystem/authorize-and-execute',
         method: input.method ?? 'POST',
         headers,
+        signal: input.signal,
       },
       (response) => {
         const chunks: Buffer[] = [];
@@ -302,6 +304,86 @@ describe('AccordLock approval proxy', () => {
     expect(results.map((result) => result.status).sort()).toEqual([200, 409]);
     expect(resolveApproval).toHaveBeenCalledOnce();
     expect(forward).toHaveBeenCalledTimes(4);
+  });
+
+  it('cancels a pending resolution and never retries after the client disconnects', async () => {
+    const approval = runtimeResponse(
+      '{"status":"APPROVAL_REQUIRED","proposal_digest":"sha256:cancelled"}',
+      409
+    );
+    const forward = vi.fn(async () => approval);
+    let resolutionSignal: AbortSignal | undefined;
+    const resolveApproval = vi.fn(
+      ({ signal }: { signal: AbortSignal }) =>
+        new Promise<boolean>((resolve) => {
+          resolutionSignal = signal;
+          signal.addEventListener('abort', () => resolve(false), { once: true });
+        })
+    );
+    const { handle } = await start({ forward, resolveApproval });
+    const client = new AbortController();
+
+    const pending = callProxy(handle, {
+      body: Buffer.from('{"proposal":"cancelled"}'),
+      signal: client.signal,
+    });
+    await vi.waitFor(() => expect(resolveApproval).toHaveBeenCalledOnce());
+    client.abort();
+
+    await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    await vi.waitFor(() => expect(resolutionSignal?.aborted).toBe(true));
+    expect(forward).toHaveBeenCalledOnce();
+  });
+
+  it('keeps a shared approval alive while another identical client is connected', async () => {
+    const approval = runtimeResponse(
+      '{"status":"APPROVAL_REQUIRED","proposal_digest":"sha256:shared-cancel"}',
+      409
+    );
+    const forward = vi
+      .fn()
+      .mockResolvedValueOnce(approval)
+      .mockResolvedValueOnce(approval)
+      .mockResolvedValueOnce(runtimeResponse('{"status":"SUCCEEDED"}', 200));
+    let releaseApproval: ((approved: boolean) => void) | undefined;
+    let resolutionSignal: AbortSignal | undefined;
+    const resolveApproval = vi.fn(
+      ({ signal }: { signal: AbortSignal }) =>
+        new Promise<boolean>((resolve) => {
+          resolutionSignal = signal;
+          releaseApproval = resolve;
+        })
+    );
+    const { handle } = await start({ forward, resolveApproval });
+    const firstClient = new AbortController();
+    const body = Buffer.from('{"proposal":"shared-cancel"}');
+
+    const first = callProxy(handle, { body, signal: firstClient.signal });
+    const second = callProxy(handle, { body });
+    await vi.waitFor(() => {
+      expect(forward).toHaveBeenCalledTimes(2);
+      expect(resolveApproval).toHaveBeenCalledOnce();
+    });
+    firstClient.abort();
+
+    await expect(first).rejects.toMatchObject({ name: 'AbortError' });
+    await new Promise<void>((resolve) => setTimeout(resolve, 25));
+    expect(resolutionSignal?.aborted).toBe(false);
+    expect(forward).toHaveBeenCalledTimes(2);
+    releaseApproval?.(true);
+    await expect(second).resolves.toMatchObject({ status: 200 });
+    expect(forward).toHaveBeenCalledTimes(3);
+    expect(
+      forward.mock.calls.map(([requestPath, method, requestBody]) => [
+        requestPath,
+        method,
+        Buffer.from(requestBody),
+      ])
+    ).toEqual([
+      ['/api/v2/execution/filesystem/authorize-and-execute', 'POST', body],
+      ['/api/v2/execution/filesystem/authorize-and-execute', 'POST', body],
+      ['/api/v2/execution/filesystem/authorize-and-execute', 'POST', body],
+    ]);
   });
 
   it.each([

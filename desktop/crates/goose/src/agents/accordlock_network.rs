@@ -16,8 +16,8 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use super::accordlock_authorization::{
-    canonical_json_bytes, sha256_digest, validate_authorization_id, validate_digest,
-    validate_reason_code, PolicyEnforcementError, RuntimePolicyEnforcementPoint,
+    approval_aware_runtime_timeout, canonical_json_bytes, sha256_digest, validate_authorization_id,
+    validate_digest, validate_reason_code, PolicyEnforcementError, RuntimePolicyEnforcementPoint,
     ToolExecutionRequest, PROTOCOL_VERSION,
 };
 use super::accordlock_filesystem::ExecutionEvidence;
@@ -29,7 +29,6 @@ const DEFAULT_TIMEOUT_SECONDS: u32 = 30;
 const MAX_TIMEOUT_SECONDS: u32 = 120;
 const DEFAULT_RESPONSE_BYTES: u32 = 64 * 1024;
 const MAX_RESPONSE_BYTES: u32 = 256 * 1024;
-const HTTP_COMPLETION_GRACE_SECONDS: u64 = 20;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "UPPERCASE")]
@@ -236,14 +235,16 @@ impl NetworkBroker for RuntimeNetworkBroker {
                 NETWORK_EXECUTE_PATH,
                 &envelope,
                 MAX_NETWORK_RESPONSE_BYTES,
-                Duration::from_secs(
-                    u64::from(operation.arguments.timeout_seconds) + HTTP_COMPLETION_GRACE_SECONDS,
-                ),
+                network_http_timeout(&operation),
             )
             .await
             .map_err(|_| PolicyEnforcementError::ExecutionUnknown)?;
         validate_response(response, &operation, request, &expected_proposal_digest)
     }
+}
+
+fn network_http_timeout(operation: &ValidatedNetworkOperation) -> Duration {
+    approval_aware_runtime_timeout(u64::from(operation.arguments.timeout_seconds))
 }
 
 struct UnavailableNetworkBroker;
@@ -666,5 +667,20 @@ mod tests {
             name: "set-cookie".into(),
             value: "secret=1".into()
         },]));
+    }
+
+    #[test]
+    fn network_deadline_covers_approval_and_the_validated_request_timeout() {
+        let arguments: RuntimeHttpsArguments = serde_json::from_value(
+            normalize_tool_arguments(json!({
+                "url": "https://api.example.com/v1",
+                "timeout_seconds": MAX_TIMEOUT_SECONDS
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+        let operation = ValidatedNetworkOperation { arguments };
+
+        assert_eq!(network_http_timeout(&operation), Duration::from_secs(460));
     }
 }

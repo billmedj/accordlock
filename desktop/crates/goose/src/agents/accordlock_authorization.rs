@@ -30,11 +30,20 @@ const MAX_REASON_CODE_BYTES: usize = 128;
 const MIN_RUNTIME_TOKEN_BYTES: usize = 32;
 const BACKEND_BINDING_SECRET_BYTES: usize = 32;
 const BACKEND_BINDING_DOMAIN: &[u8] = b"accordlock.backend-run/v1";
-const MAX_AUTHORIZATION_LIFETIME_SECONDS: i64 = 5 * 60;
-const RUNTIME_TIMEOUT: Duration = Duration::from_secs(5);
+pub(super) const ACTION_APPROVAL_WAIT_SECONDS: u64 = 5 * 60;
+pub(super) const RUNTIME_COMPLETION_GRACE_SECONDS: u64 = 40;
+const MAX_AUTHORIZATION_LIFETIME_SECONDS: i64 = ACTION_APPROVAL_WAIT_SECONDS as i64;
+pub(super) const RUNTIME_TIMEOUT: Duration = Duration::from_secs(5);
+const MAX_RUNTIME_TIMEOUT: Duration = Duration::from_secs(11 * 60);
 const AUTHORIZE_PATH: &str = "/api/v2/authorization/tool-calls/authorize-and-consume";
 const RECORD_PATH: &str = "/api/v2/execution/tool-observations/record";
 const OBSERVATION_DIGEST_DOMAIN: &[u8] = b"accordlock:v2:agent-execution-observation";
+
+pub(super) fn approval_aware_runtime_timeout(operation_seconds: u64) -> Duration {
+    Duration::from_secs(
+        ACTION_APPROVAL_WAIT_SECONDS + operation_seconds + RUNTIME_COMPLETION_GRACE_SECONDS,
+    )
+}
 
 pub const RUNTIME_URL_ENV: &str = "ACCORDLOCK_RUNTIME_URL";
 pub const RUNTIME_TOKEN_ENV: &str = "ACCORDLOCK_RUNTIME_TOKEN";
@@ -595,7 +604,7 @@ impl RuntimePolicyEnforcementPoint {
         T: Serialize + Sync,
         R: for<'de> Deserialize<'de>,
     {
-        if timeout.is_zero() || timeout > Duration::from_secs(10 * 60) {
+        if timeout.is_zero() || timeout > MAX_RUNTIME_TIMEOUT {
             return Err(PolicyEnforcementError::InvalidField("runtime_timeout"));
         }
         let endpoint = self
@@ -1125,6 +1134,13 @@ mod tests {
         assert!(validate_runtime_url("http://10.0.0.2:43127").is_err());
         assert!(validate_runtime_url("http://127.0.0.1:43127/other").is_err());
         assert!(validate_runtime_url("http://127.0.0.1:43127?token=leak").is_err());
+    }
+
+    #[test]
+    fn approval_aware_deadline_fits_the_longest_brokered_operation() {
+        let terminal_deadline = approval_aware_runtime_timeout(5 * 60);
+        assert_eq!(terminal_deadline, Duration::from_secs(10 * 60 + 40));
+        assert!(terminal_deadline <= MAX_RUNTIME_TIMEOUT);
     }
 
     #[test]

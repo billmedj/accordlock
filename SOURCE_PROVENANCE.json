@@ -8,7 +8,7 @@
       "sourceRepository": "https://github.com/billmedj/accordlock-core.git",
       "commit": "27301d159feccf53bc565a5de68c1c307d9bff09",
       "tree": "3a02ebe252285cacf180ca9c46976477ec71cfa7",
-      "assembledTree": "0b312057206b9fc08d153c640c10225c69fc44ec",
+      "assembledTree": "f2b690b829aa69b84f6d913cef5ae493f0bfffd8",
       "trackedTreeExclusions": [],
       "postImportAdjustments": [
         {
@@ -33,7 +33,7 @@
         },
         {
           "path": "crates/accordlock-agent-runtime/src/filesystem.rs",
-          "reason": "Reopened the existing directory capability with a normal descriptor before durable flush so Linux does not pass an O_PATH handle to fsync."
+          "reason": "Reopened the existing directory capability with a normal descriptor before durable flush and added governed-read regression coverage that distinguishes existing content from a missing file."
         },
         {
           "path": "crates/accordlock-agent-runtime/src/http.rs",
@@ -61,7 +61,7 @@
         },
         {
           "path": "SOURCE_MANIFEST.sha256",
-          "reason": "Regenerated the exact source manifest for the complete public runtime component after the recorded public adjustments."
+          "reason": "Regenerated the exact source manifest for the complete public runtime component after the recorded public adjustments and governed-read regression coverage."
         },
         {
           "path": "scripts/check_profiled_rustsec_audit.py",
@@ -217,6 +217,22 @@
               "reason": "Replaced nondeterministic creation-order assumptions with an independent durable-order oracle and explicit time separation in retirement, conflict-skip, and global FIFO tests."
             }
           ]
+        },
+        {
+          "baseTree": "0b312057206b9fc08d153c640c10225c69fc44ec",
+          "resultTree": "f2b690b829aa69b84f6d913cef5ae493f0bfffd8",
+          "changes": [
+            {
+              "path": "SOURCE_MANIFEST.sha256",
+              "effect": "modified",
+              "reason": "Regenerated all 420 exact runtime source hashes after adding the governed-read regression."
+            },
+            {
+              "path": "crates/accordlock-agent-runtime/src/filesystem.rs",
+              "effect": "modified",
+              "reason": "Added a governed Windows-compatible read regression proving that an existing file succeeds while a missing file returns READ_FAILED."
+            }
+          ]
         }
       ]
     },
@@ -226,7 +242,7 @@
       "upstreamRepository": "https://github.com/aaif-goose/goose.git",
       "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
       "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
-      "assembledTree": "2f045c4be5b7f943fce73ef97fe9e52b1ff9db43",
+      "assembledTree": "671d81eb9bc12cdc63f8225ad6525bea6c34cbb9",
       "trackedTreeExclusions": [
         {
           "path": "documentation/",
@@ -291,12 +307,32 @@
           "reason": "Documented exact bundled library, model, tokenizer, source, digest, and license provenance in the notice file packaged with the desktop application."
         },
         {
+          "path": "crates/goose/src/agents/accordlock_authorization.rs",
+          "reason": "Aligned protected-operation client deadlines with the exact approval window, validated operation duration, and a bounded completion margin."
+        },
+        {
+          "path": "crates/goose/src/agents/accordlock_filesystem.rs",
+          "reason": "Kept mutating filesystem requests connected throughout exact approval while preserving the short bounded deadline for automatic reads and tree inspection."
+        },
+        {
           "path": "crates/goose/src/agents/accordlock_network.rs",
-          "reason": "Rejected wildcard and malformed DNS labels before a governed HTTPS request can reach the trusted runtime."
+          "reason": "Rejected wildcard and malformed DNS labels and aligned governed HTTPS client deadlines with exact approval and the validated request timeout."
+        },
+        {
+          "path": "crates/goose/src/agents/accordlock_terminal.rs",
+          "reason": "Aligned governed terminal client deadlines with exact approval, the validated command timeout, and a bounded completion margin."
+        },
+        {
+          "path": "crates/goose/src/agents/agent.rs",
+          "reason": "Made a machine-readable unknown execution effect end the current legacy agent turn before queued steering or blocking stop hooks can trigger another model iteration."
         },
         {
           "path": "crates/goose/src/agents/extension_manager.rs",
-          "reason": "Bound distribution-mode authorization regression fixtures to the exact plan checkpoint required by the production path."
+          "reason": "Bound distribution-mode authorization fixtures to the exact plan checkpoint and classified malformed protected-tool arguments as definite non-execution."
+        },
+        {
+          "path": "crates/goose/src/agents/state_machine/ops_toolcalling.rs",
+          "reason": "Made a machine-readable unknown execution effect persist its exact result and yield the state-machine turn before another model action."
         },
         {
           "path": "crates/goose/src/posthog.rs",
@@ -393,6 +429,30 @@
         {
           "path": "ui/sdk/package.json",
           "reason": "Updated the MCP and schema-generation SDK dependencies and recorded the inherited-file modification notice."
+        },
+        {
+          "path": "ui/desktop/src/accordlockActionApproval.test.ts",
+          "reason": "Updated exact-approval fixtures for cancellation-aware approval requests."
+        },
+        {
+          "path": "ui/desktop/src/accordlockApprovalProxy.test.ts",
+          "reason": "Added regression coverage for client disconnect cancellation and shared identical approval waiters."
+        },
+        {
+          "path": "ui/desktop/src/accordlockApprovalProxy.ts",
+          "reason": "Cancelled orphaned approval resolution on client disconnect while preserving an identical shared request that still has a connected waiter."
+        },
+        {
+          "path": "ui/desktop/src/accordlockRuntime.test.ts",
+          "reason": "Added route-specific runtime-forward deadline coverage for filesystem, network, and terminal execution."
+        },
+        {
+          "path": "ui/desktop/src/accordlockRuntime.ts",
+          "reason": "Gave governed HTTPS execution a bounded runtime-forward deadline that covers its validated network timeout."
+        },
+        {
+          "path": "ui/desktop/src/main.ts",
+          "reason": "Propagated client cancellation into pending exact approvals and prevented a disconnected request from producing an executable decision."
         }
       ],
       "postImportChangeSets": [
@@ -876,6 +936,77 @@
               "path": "ui/desktop/tests/integration/accordlock_control_channel.test.ts",
               "effect": "modified",
               "reason": "Exercised the current protocol through the native runtime, including exact file creation, denial, and stale-state rejection."
+            }
+          ]
+        },
+        {
+          "baseTree": "2f045c4be5b7f943fce73ef97fe9e52b1ff9db43",
+          "resultTree": "671d81eb9bc12cdc63f8225ad6525bea6c34cbb9",
+          "changes": [
+            {
+              "path": "crates/goose/src/agents/accordlock_authorization.rs",
+              "effect": "modified",
+              "reason": "Defined bounded approval-aware deadlines for protected operations."
+            },
+            {
+              "path": "crates/goose/src/agents/accordlock_filesystem.rs",
+              "effect": "modified",
+              "reason": "Kept mutating filesystem requests connected while exact human approval is pending."
+            },
+            {
+              "path": "crates/goose/src/agents/accordlock_network.rs",
+              "effect": "modified",
+              "reason": "Covered the exact approval window and validated HTTPS request duration in the network broker deadline."
+            },
+            {
+              "path": "crates/goose/src/agents/accordlock_terminal.rs",
+              "effect": "modified",
+              "reason": "Covered the exact approval window and validated command duration in the terminal broker deadline."
+            },
+            {
+              "path": "crates/goose/src/agents/agent.rs",
+              "effect": "modified",
+              "reason": "Stopped the current legacy agent turn on a machine-readable unknown execution effect, including across steering and stop-hook boundaries."
+            },
+            {
+              "path": "crates/goose/src/agents/extension_manager.rs",
+              "effect": "modified",
+              "reason": "Reported malformed protected-tool arguments as a correctable request with a definite NOT_EXECUTED result."
+            },
+            {
+              "path": "crates/goose/src/agents/state_machine/ops_toolcalling.rs",
+              "effect": "modified",
+              "reason": "Persisted the exact unknown-effect response and yielded the state-machine turn before another model action."
+            },
+            {
+              "path": "ui/desktop/src/accordlockActionApproval.test.ts",
+              "effect": "modified",
+              "reason": "Updated exact-approval fixtures for cancellation-aware requests."
+            },
+            {
+              "path": "ui/desktop/src/accordlockApprovalProxy.test.ts",
+              "effect": "modified",
+              "reason": "Covered disconnected and shared-client approval resolution."
+            },
+            {
+              "path": "ui/desktop/src/accordlockApprovalProxy.ts",
+              "effect": "modified",
+              "reason": "Cancelled an orphaned approval wait and prevented retry after client disconnect without cancelling another identical connected waiter."
+            },
+            {
+              "path": "ui/desktop/src/accordlockRuntime.test.ts",
+              "effect": "modified",
+              "reason": "Covered the runtime-forward deadline selected for each protected execution route."
+            },
+            {
+              "path": "ui/desktop/src/accordlockRuntime.ts",
+              "effect": "modified",
+              "reason": "Extended the governed HTTPS runtime-forward deadline to cover the maximum validated network operation."
+            },
+            {
+              "path": "ui/desktop/src/main.ts",
+              "effect": "modified",
+              "reason": "Propagated client cancellation into pending approval resolution and forced a disconnected request to denial."
             }
           ]
         }
