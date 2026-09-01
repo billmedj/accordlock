@@ -550,25 +550,6 @@ pub(super) fn validate_control_schema(transaction: &mut Transaction<'_>) -> Resu
     Ok(())
 }
 
-#[cfg(test)]
-mod tests {
-    use super::expected_control_schema_checksum;
-
-    #[test]
-    fn control_schema_fingerprints_are_bound_to_exact_server_versions() {
-        assert_eq!(
-            expected_control_schema_checksum(170_004),
-            Some("sha256:6955bdb6f22eda58b94019a63e0b13e97443483fcf8c3324724c9e01fd6154ea")
-        );
-        assert_eq!(
-            expected_control_schema_checksum(170_011),
-            Some("sha256:71b32cf28dbb4f7b3057304da0d59373bfa11521112688bcfc5c8b550562c799")
-        );
-        assert_eq!(expected_control_schema_checksum(170_010), None);
-        assert_eq!(expected_control_schema_checksum(180_000), None);
-    }
-}
-
 pub(super) fn validate_dispatch_acquisition_schema(
     transaction: &mut Transaction<'_>,
 ) -> Result<(), StateError> {
@@ -600,4 +581,23 @@ pub(super) fn validate_dispatch_acquisition_schema(
         ));
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::expected_control_schema_checksum;
+
+    #[test]
+    fn control_schema_fingerprints_are_bound_to_exact_server_versions() {
+        assert_eq!(
+            expected_control_schema_checksum(170_004),
+            Some("sha256:6955bdb6f22eda58b94019a63e0b13e97443483fcf8c3324724c9e01fd6154ea")
+        );
+        assert_eq!(
+            expected_control_schema_checksum(170_011),
+            Some("sha256:71b32cf28dbb4f7b3057304da0d59373bfa11521112688bcfc5c8b550562c799")
+        );
+        assert_eq!(expected_control_schema_checksum(170_010), None);
+        assert_eq!(expected_control_schema_checksum(180_000), None);
+    }
 }

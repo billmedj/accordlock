@@ -8,7 +8,7 @@
       "sourceRepository": "https://github.com/billmedj/accordlock-core.git",
       "commit": "27301d159feccf53bc565a5de68c1c307d9bff09",
       "tree": "3a02ebe252285cacf180ca9c46976477ec71cfa7",
-      "assembledTree": "ffa385a41be8d3a8dbaef0beacfbaac68549e9d6",
+      "assembledTree": "0d017eeb764e1e7f2a1a596f66de8edc1241655b",
       "trackedTreeExclusions": [],
       "postImportAdjustments": [
         {
@@ -129,7 +129,7 @@
         },
         {
           "baseTree": "39bbb72c6a4b9dcd6dbbed24981260544d4dfbe8",
-          "resultTree": "ffa385a41be8d3a8dbaef0beacfbaac68549e9d6",
+          "resultTree": "0d017eeb764e1e7f2a1a596f66de8edc1241655b",
           "changes": [
             {
               "path": "CHANGELOG.md",
