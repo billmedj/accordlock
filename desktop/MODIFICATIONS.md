@@ -17,12 +17,12 @@ without placing invalid comments inside strict data formats or binary assets.
 
 - 2369 files in the pinned upstream tree
 - 855 upstream files under the two explicit exclusions
-- 370 inherited files modified and distributed
-- 353 modified text/source files with an in-file notice
+- 366 inherited files modified and distributed
+- 349 modified text/source files with an in-file notice
 - 17 modified generated, strict-data, or binary files documented as exceptions
-- 1107 inherited files distributed unchanged
-- 216 AccordLock-only files
-- 37 other upstream files omitted from this distribution
+- 1106 inherited files distributed unchanged
+- 220 AccordLock-only files
+- 42 other upstream files omitted from this distribution
 
 The standard in-file notice is:
 
@@ -199,10 +199,6 @@ uses a schema-neutral top-level metadata field.
 - `ui/desktop/src/acp/prompts.ts`
 - `ui/desktop/src/acp/sessions.ts`
 - `ui/desktop/src/app-update.yml`
-- `ui/desktop/src/bin/jbang`
-- `ui/desktop/src/bin/node`
-- `ui/desktop/src/bin/npx`
-- `ui/desktop/src/bin/uvx`
 - `ui/desktop/src/components/BaseChat.tsx`
 - `ui/desktop/src/components/ChatInput.tsx`
 - `ui/desktop/src/components/ConfigContext.tsx`
@@ -576,7 +572,6 @@ confirm that the out-of-band handling is sufficient for the intended distributio
 - `ui/desktop/src/accordlockWorkspace.ts`
 - `ui/desktop/src/acp/__tests__/projects.test.ts`
 - `ui/desktop/src/acp/projects.ts`
-- `ui/desktop/src/bin/system-tool-wrapper.sh`
 - `ui/desktop/src/components/ErrorBoundary.test.tsx`
 - `ui/desktop/src/components/Hub.deploymentPreflight.test.tsx`
 - `ui/desktop/src/components/Hub.test.ts`
@@ -633,6 +628,11 @@ confirm that the out-of-band handling is sufficient for the intended distributio
 - `ui/desktop/src/images/iconTray@2x.png`
 - `ui/desktop/src/images/iconTrayUpdate.png`
 - `ui/desktop/src/images/iconTrayUpdate@2x.png`
+- `ui/desktop/src/platform/darwin/bin/jbang`
+- `ui/desktop/src/platform/darwin/bin/node`
+- `ui/desktop/src/platform/darwin/bin/npx`
+- `ui/desktop/src/platform/darwin/bin/system-tool-wrapper.sh`
+- `ui/desktop/src/platform/darwin/bin/uvx`
 - `ui/desktop/src/preload.bundle.test.ts`
 - `ui/desktop/src/themeBootstrap.ts`
 - `ui/desktop/src/utils/deepLinks.test.ts`
@@ -659,7 +659,12 @@ repeated here. The following additional upstream files are not distributed:
 - `ui/desktop/.env`
 - `ui/desktop/scripts/i18n-validate-locale.js`
 - `ui/desktop/scripts/unregister-deeplink-protocols.js`
+- `ui/desktop/src/bin/.gitkeep`
+- `ui/desktop/src/bin/jbang`
+- `ui/desktop/src/bin/node`
 - `ui/desktop/src/bin/node-setup-common.sh`
+- `ui/desktop/src/bin/npx`
+- `ui/desktop/src/bin/uvx`
 - `ui/desktop/src/i18n/messages/de.json`
 - `ui/desktop/src/i18n/messages/es.json`
 - `ui/desktop/src/i18n/messages/fr.json`

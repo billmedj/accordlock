@@ -10,6 +10,7 @@ const { SIDECAR_SPECS } = require('./accordlock-windows-signing');
 // Paths
 const desktopRoot = path.resolve(__dirname, '..');
 const srcBinDir = path.join(desktopRoot, 'src', 'bin');
+const platformDarwinDir = path.join(desktopRoot, 'src', 'platform', 'darwin', 'bin');
 const platformWinDir = path.join(desktopRoot, 'src', 'platform', 'windows', 'bin');
 const uvVersion = '0.11.11';
 const uvDownloadUrl = `https://github.com/astral-sh/uv/releases/download/${uvVersion}/uv-x86_64-pc-windows-msvc.zip`;
@@ -58,6 +59,13 @@ const macOSSupportFileHashes = Object.freeze({
     'system-tool-wrapper.sh': '8473f77e2911c30ea28af25db9c9cde09d55e6b5d94220ad24a297ad46dc07a6',
     uvx: '218c7121887f294b664157d1d4c55737d57aa02fe2accd5d6eb22c8c0dbd47c3',
 });
+const macOSSupportFileModes = Object.freeze({
+    jbang: 0o755,
+    node: 0o755,
+    npx: 0o755,
+    'system-tool-wrapper.sh': 0o644,
+    uvx: 0o755,
+});
 const macOSDistributionFiles = Object.freeze(
     [
         ...SIDECAR_SPECS.flatMap(spec => [spec.binary.replace(/\.exe$/u, ''), spec.marker]),
@@ -65,6 +73,15 @@ const macOSDistributionFiles = Object.freeze(
     ].sort()
 );
 const macOSDistributionFileSet = new Set(macOSDistributionFiles);
+const macOSDistributionFileModes = Object.freeze({
+    ...Object.fromEntries(
+        SIDECAR_SPECS.flatMap(spec => [
+            [spec.binary.replace(/\.exe$/u, ''), 0o755],
+            [spec.marker, 0o644],
+        ])
+    ),
+    ...macOSSupportFileModes,
+});
 const macOSSourceOnlyEntries = new Set([
     '.gitkeep',
     ...windowsAuthoredSupportFiles,
@@ -189,6 +206,18 @@ function assertRegularNonLinkFile(filePath, label, platform) {
     }
 }
 
+function assertPosixFileMode(filePath, label, platform, expectedMode) {
+    if (process.platform === 'win32') {
+        return;
+    }
+    const actualMode = fs.statSync(filePath).mode & 0o7777;
+    if (actualMode !== expectedMode) {
+        const expected = expectedMode.toString(8).padStart(4, '0');
+        const actual = actualMode.toString(8).padStart(4, '0');
+        failDistribution(platform, `${label} mode mismatch: expected ${expected}, got ${actual}`);
+    }
+}
+
 function assertWindowsX64Pe(filePath) {
     assertRegularNonLinkFile(filePath, path.basename(filePath), 'Windows');
     const bytes = fs.readFileSync(filePath);
@@ -280,7 +309,8 @@ function assertMacOSDistributionFiles(binDirectory = srcBinDir) {
         macOSDistributionFileSet
     );
     for (const [name, expectedHash] of Object.entries(macOSSupportFileHashes)) {
-        const actualHash = sha256(path.join(binDirectory, name));
+        const filePath = path.join(binDirectory, name);
+        const actualHash = sha256(filePath);
         if (actualHash !== expectedHash) {
             failDistribution(
                 'macOS',
@@ -288,6 +318,19 @@ function assertMacOSDistributionFiles(binDirectory = srcBinDir) {
             );
         }
     }
+    for (const [name, expectedMode] of Object.entries(macOSDistributionFileModes)) {
+        assertPosixFileMode(path.join(binDirectory, name), name, 'macOS', expectedMode);
+    }
+}
+
+function assertMacOSPackagedApplication(appDirectory) {
+    assertRealNonLinkDirectory(appDirectory, 'macOS');
+    const contentsDirectory = path.join(appDirectory, 'Contents');
+    const executableDirectory = path.join(contentsDirectory, 'MacOS');
+    const binDirectory = path.join(contentsDirectory, 'Resources', 'bin');
+    assertNoOwnedPathRedirection(executableDirectory, appDirectory, 'macOS');
+    assertNoOwnedPathRedirection(binDirectory, appDirectory, 'macOS');
+    assertMacOSDistributionFiles(binDirectory);
 }
 
 function downloadFile(url, destPath, redirectsRemaining = 5) {
@@ -435,8 +478,78 @@ function cleanBinDirectory(targetPlatform, binDirectory = srcBinDir) {
     });
 }
 
+function copyReviewedSupportFiles(
+    platform,
+    sourceDirectory,
+    names,
+    hashes,
+    binDirectory,
+    ownedBoundary = desktopRoot,
+    modes = null
+) {
+    assertNoOwnedPathRedirection(sourceDirectory, ownedBoundary, platform);
+    const expectedSourceEntries = new Set(names);
+    const sourceEntries = fs.readdirSync(sourceDirectory, { withFileTypes: true });
+    const unexpectedSourceEntries = sourceEntries
+        .map(entry => entry.name)
+        .filter(name => !expectedSourceEntries.has(name));
+    const missingSourceEntries = names.filter(
+        name => !sourceEntries.some(entry => entry.name === name)
+    );
+    if (missingSourceEntries.length > 0 || unexpectedSourceEntries.length > 0) {
+        failDistribution(
+            platform,
+            `support source mismatch: missing=[${missingSourceEntries.sort().join(', ')}] unexpected=[${unexpectedSourceEntries.sort().join(', ')}]`
+        );
+    }
+
+    for (const name of names) {
+        const srcPath = path.join(sourceDirectory, name);
+        const destPath = path.join(binDirectory, name);
+        assertRegularNonLinkFile(srcPath, `${platform} support source ${name}`, platform);
+        const expectedHash = hashes[name];
+        const sourceHash = sha256(srcPath);
+        if (sourceHash !== expectedHash) {
+            failDistribution(
+                platform,
+                `support source ${name} checksum mismatch: expected ${expectedHash}, got ${sourceHash}`
+            );
+        }
+        fs.rmSync(destPath, { recursive: true, force: true });
+        fs.copyFileSync(srcPath, destPath);
+        if (process.platform !== 'win32' && modes !== null) {
+            const expectedMode = modes[name];
+            if (!Number.isInteger(expectedMode)) {
+                failDistribution(platform, `support source ${name} has no approved mode policy`);
+            }
+            fs.chmodSync(destPath, expectedMode);
+        }
+        if (sha256(destPath) !== sourceHash) {
+            failDistribution(
+                platform,
+                `staged support file ${name} does not match its reviewed source`
+            );
+        }
+        console.log(`Copied: ${name}`);
+    }
+}
+
 // Helper function to copy platform-specific files
 async function copyPlatformFiles(targetPlatform, binDirectory = srcBinDir) {
+    if (targetPlatform === 'darwin') {
+        console.log('Copying macOS-specific files...');
+        copyReviewedSupportFiles(
+            'macOS',
+            platformDarwinDir,
+            macOSSupportFiles,
+            macOSSupportFileHashes,
+            binDirectory,
+            desktopRoot,
+            macOSSupportFileModes
+        );
+        return;
+    }
+
     if (targetPlatform === 'win32') {
         console.log('Copying Windows-specific files...');
 
@@ -528,14 +641,20 @@ module.exports = {
     _testOnlyAssertNoOwnedPathRedirection: assertNoOwnedPathRedirection,
     _testOnlyAssertWindowsDistributionFilesWithHashPolicy:
         assertWindowsDistributionFilesWithHashPolicy,
+    _testOnlyCopyReviewedSupportFiles: copyReviewedSupportFiles,
     assertAllowedWindowsDistributionHash,
     assertCanonicalStagingDirectory,
     assertMacOSDistributionFiles,
+    assertMacOSPackagedApplication,
     assertWindowsDistributionFiles,
     assertWindowsX64Pe,
     cleanBinDirectory,
+    copyPlatformFiles,
     macOSDistributionFiles,
+    macOSDistributionFileModes,
+    macOSSupportFiles,
     macOSSupportFileHashes,
+    macOSSupportFileModes,
     preparePlatformBinaries,
     windowsAuthoredSupportFileHashes,
     windowsDistributionFiles,

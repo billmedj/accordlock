@@ -17,6 +17,7 @@ on:
       - "desktop/ui/desktop/package.json"
       - "desktop/ui/desktop/forge.config.*"
       - "desktop/ui/desktop/scripts/**"
+      - "desktop/ui/desktop/src/platform/darwin/bin/**"
       - "desktop/ui/desktop/src/platform/windows/bin/**"
       - "desktop/ui/desktop/src/bin/**"
       - "assurance/**"
@@ -39,6 +40,7 @@ on:
       - "desktop/ui/desktop/package.json"
       - "desktop/ui/desktop/forge.config.*"
       - "desktop/ui/desktop/scripts/**"
+      - "desktop/ui/desktop/src/platform/darwin/bin/**"
       - "desktop/ui/desktop/src/platform/windows/bin/**"
       - "desktop/ui/desktop/src/bin/**"
       - "assurance/**"
@@ -92,6 +94,11 @@ jobs:
           paths=(
             desktop/scripts/build-macos.ps1
             desktop/scripts/build-windows.ps1
+            desktop/ui/desktop/src/platform/darwin/bin/jbang
+            desktop/ui/desktop/src/platform/darwin/bin/node
+            desktop/ui/desktop/src/platform/darwin/bin/npx
+            desktop/ui/desktop/src/platform/darwin/bin/system-tool-wrapper.sh
+            desktop/ui/desktop/src/platform/darwin/bin/uvx
             desktop/ui/desktop/src/platform/windows/bin/jbang.cmd
             desktop/ui/desktop/src/platform/windows/bin/npx.cmd
           )
@@ -101,6 +108,15 @@ jobs:
             grep -Fqx "$path: text: set" <<<"$attributes"
             grep -Fqx "$path: eol: lf" <<<"$attributes"
           done
+
+      - name: Activate the pinned Node.js runtime
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.10.0
+
+      - name: Exercise the native desktop payload contract
+        working-directory: desktop
+        run: node --test ui/desktop/scripts/prepare-platform-binaries.test.js
 
       - name: Activate the desktop-pinned native Rust toolchain
         working-directory: desktop

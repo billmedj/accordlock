@@ -23,7 +23,7 @@
   "buildScripts": {
     "macos": {
       "path": "scripts/build-macos.ps1",
-      "sha256": "6e5f16a57db7a62682791bc30a0989f6399e00f311cd227f01d7f1961c16175b"
+      "sha256": "a0520a872e007aae7f55ff465d2a0f90e1e34a66b5dab2f45e0c05011897270b"
     },
     "windows": {
       "path": "scripts/build-windows.ps1",

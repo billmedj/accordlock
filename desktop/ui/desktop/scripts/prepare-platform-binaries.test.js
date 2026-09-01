@@ -4,25 +4,41 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { execFileSync, spawnSync } = require('node:child_process');
 const test = require('node:test');
 
 const {
   _testOnlyAssertNoOwnedPathRedirection: assertNoOwnedPathRedirection,
   _testOnlyAssertWindowsDistributionFilesWithHashPolicy:
     assertWindowsDistributionFilesWithHashPolicy,
+  _testOnlyCopyReviewedSupportFiles: copyReviewedSupportFiles,
   assertAllowedWindowsDistributionHash,
   assertCanonicalStagingDirectory,
   assertMacOSDistributionFiles,
+  assertMacOSPackagedApplication,
   cleanBinDirectory,
+  copyPlatformFiles,
   macOSDistributionFiles,
+  macOSDistributionFileModes,
+  macOSSupportFiles,
   macOSSupportFileHashes,
+  macOSSupportFileModes,
   windowsAuthoredSupportFileHashes,
   windowsDistributionFiles,
   windowsDistributionFileHashPolicy,
   windowsX64PeFiles,
 } = require('./prepare-platform-binaries');
 
-const canonicalMacOSSupportDirectory = path.resolve(__dirname, '..', 'src', 'bin');
+const desktopRepositoryRoot = path.resolve(__dirname, '..', '..', '..');
+const canonicalStagingDirectory = path.resolve(__dirname, '..', 'src', 'bin');
+const canonicalMacOSSupportDirectory = path.resolve(
+  __dirname,
+  '..',
+  'src',
+  'platform',
+  'darwin',
+  'bin'
+);
 const canonicalWindowsSupportDirectory = path.resolve(
   __dirname,
   '..',
@@ -72,6 +88,11 @@ function writeApprovedMacOSDistribution(directory) {
   for (const name of Object.keys(macOSSupportFileHashes)) {
     fs.copyFileSync(path.join(canonicalMacOSSupportDirectory, name), path.join(directory, name));
   }
+  if (process.platform !== 'win32') {
+    for (const [name, mode] of Object.entries(macOSDistributionFileModes)) {
+      fs.chmodSync(path.join(directory, name), mode);
+    }
+  }
 }
 
 function sha256(filePath) {
@@ -108,6 +129,132 @@ test('reviewed platform wrappers match their pinned source hashes', () => {
   for (const [name, expectedHash] of Object.entries(macOSSupportFileHashes)) {
     assert.equal(sha256(path.join(canonicalMacOSSupportDirectory, name)), expectedHash);
   }
+});
+
+test('macOS support sources keep their reviewed executable modes in Git', () => {
+  const executableNames = new Set(['jbang', 'node', 'npx', 'uvx']);
+  const paths = macOSSupportFiles.map((name) => `ui/desktop/src/platform/darwin/bin/${name}`);
+  const index = execFileSync(
+    'git',
+    ['-C', desktopRepositoryRoot, 'ls-files', '--stage', '--', ...paths],
+    { encoding: 'utf8' }
+  );
+  const modes = new Map(
+    index
+      .trim()
+      .split(/\r?\n/u)
+      .map((line) => {
+        const match = /^(\d{6}) [0-9a-f]{40} \d+\t(.+)$/u.exec(line);
+        assert.notEqual(match, null);
+        return [match[2], match[1]];
+      })
+  );
+  for (const [name] of Object.entries(macOSSupportFileHashes)) {
+    const filePath = `ui/desktop/src/platform/darwin/bin/${name}`;
+    assert.equal(modes.get(filePath), executableNames.has(name) ? '100755' : '100644');
+  }
+});
+
+test('raw-byte-hashed text helpers are pinned to LF in the Git index', () => {
+  const paths = [
+    'scripts/build-macos.ps1',
+    'scripts/build-windows.ps1',
+    ...macOSSupportFiles.map((name) => `ui/desktop/src/platform/darwin/bin/${name}`),
+    'ui/desktop/src/platform/windows/bin/jbang.cmd',
+    'ui/desktop/src/platform/windows/bin/npx.cmd',
+  ];
+  const attributes = execFileSync(
+    'git',
+    ['-C', desktopRepositoryRoot, 'check-attr', '--cached', 'text', 'eol', '--', ...paths],
+    { encoding: 'utf8' }
+  );
+  const attributeLines = new Set(attributes.trim().split(/\r?\n/u));
+  for (const filePath of paths) {
+    assert.equal(attributeLines.has(`${filePath}: text: set`), true);
+    assert.equal(attributeLines.has(`${filePath}: eol: lf`), true);
+  }
+});
+
+test('src/bin contains no tracked sources and every approved payload path is ignored', () => {
+  const tracked = execFileSync(
+    'git',
+    ['-C', desktopRepositoryRoot, 'ls-files', '--', 'ui/desktop/src/bin'],
+    { encoding: 'utf8' }
+  );
+  assert.equal(tracked, '');
+
+  const payloads = new Set([...windowsDistributionFiles, ...macOSDistributionFiles]);
+  for (const name of payloads) {
+    execFileSync(
+      'git',
+      [
+        '-C',
+        desktopRepositoryRoot,
+        'check-ignore',
+        '--no-index',
+        '--quiet',
+        '--',
+        `ui/desktop/src/bin/${name}`,
+      ],
+      { stdio: 'ignore' }
+    );
+  }
+  for (const name of ['unexpected.exe', 'unexpected.cmd']) {
+    const result = spawnSync(
+      'git',
+      [
+        '-C',
+        desktopRepositoryRoot,
+        'check-ignore',
+        '--no-index',
+        '--quiet',
+        '--',
+        `ui/desktop/src/bin/${name}`,
+      ],
+      { stdio: 'ignore' }
+    );
+    assert.equal(result.status, 1);
+  }
+});
+
+test('reviewed support copying rejects mutated or unexpected source content', () => {
+  const root = temporaryDirectory();
+  const source = path.join(root, 'source');
+  const staging = path.join(root, 'staging');
+  fs.mkdirSync(source);
+  fs.mkdirSync(staging);
+  for (const name of macOSSupportFiles) {
+    fs.copyFileSync(path.join(canonicalMacOSSupportDirectory, name), path.join(source, name));
+  }
+
+  fs.appendFileSync(path.join(source, 'jbang'), 'mutated');
+  assert.throws(
+    () =>
+      copyReviewedSupportFiles(
+        'macOS',
+        source,
+        macOSSupportFiles,
+        macOSSupportFileHashes,
+        staging,
+        root
+      ),
+    /support source jbang checksum mismatch/
+  );
+
+  fs.copyFileSync(path.join(canonicalMacOSSupportDirectory, 'jbang'), path.join(source, 'jbang'));
+  fs.writeFileSync(path.join(source, 'unexpected'), 'unreviewed');
+  assert.throws(
+    () =>
+      copyReviewedSupportFiles(
+        'macOS',
+        source,
+        macOSSupportFiles,
+        macOSSupportFileHashes,
+        staging,
+        root
+      ),
+    /support source mismatch: missing=\[\] unexpected=\[unexpected\]/
+  );
 });
 
 for (const unexpectedName of ['stale.dll', 'unreviewed.exe', 'goose-npm']) {
@@ -218,9 +365,15 @@ test('Windows uv.exe checksum policy accepts upstream and sanitized reviewed byt
   assert.equal(windowsDistributionFileHashPolicy['uv.exe'].length, 2);
 });
 
-test('macOS staging keeps only the explicit distribution payload', () => {
+test('macOS staging copies reviewed sources and keeps only the explicit payload', async () => {
   const directory = temporaryDirectory();
-  writeApprovedMacOSDistribution(directory);
+  writeApprovedDistribution(directory, macOSDistributionFiles);
+  if (process.platform !== 'win32') {
+    for (const [name, mode] of Object.entries(macOSDistributionFileModes)) {
+      fs.chmodSync(path.join(directory, name), mode);
+    }
+  }
+  await copyPlatformFiles('darwin', directory);
   for (const name of [
     '.gitkeep',
     'goose.exe',
@@ -239,6 +392,31 @@ test('macOS staging keeps only the explicit distribution payload', () => {
 
   assert.deepEqual(fs.readdirSync(directory).sort(), [...macOSDistributionFiles]);
 });
+
+test(
+  'macOS staging rejects executable-mode drift after reviewed sources are copied',
+  { skip: process.platform === 'win32' },
+  async () => {
+    const directory = temporaryDirectory();
+    writeApprovedDistribution(directory, macOSDistributionFiles);
+    for (const [name, expectedMode] of Object.entries(macOSDistributionFileModes)) {
+      if (!macOSSupportFiles.includes(name)) {
+        fs.chmodSync(path.join(directory, name), expectedMode);
+      }
+    }
+    await copyPlatformFiles('darwin', directory);
+
+    for (const [name, expectedMode] of Object.entries(macOSDistributionFileModes)) {
+      assert.equal(fs.statSync(path.join(directory, name)).mode & 0o7777, expectedMode);
+    }
+
+    fs.chmodSync(path.join(directory, 'goose'), 0o644);
+    assert.throws(
+      () => assertMacOSDistributionFiles(directory),
+      /goose mode mismatch: expected 0755, got 0644/
+    );
+  }
+);
 
 for (const unexpectedName of [
   'temporal',
@@ -334,6 +512,37 @@ test('staging rejects a linked or junction directory root', (t) => {
   );
 });
 
+test('packaged macOS validation accepts regular in-bundle ancestors', () => {
+  const container = temporaryDirectory();
+  const appDirectory = path.join(container, 'AccordLock.app');
+  const contentsDirectory = path.join(appDirectory, 'Contents');
+  const executableDirectory = path.join(contentsDirectory, 'MacOS');
+  const binDirectory = path.join(contentsDirectory, 'Resources', 'bin');
+  fs.mkdirSync(executableDirectory, { recursive: true });
+  writeApprovedMacOSDistribution(binDirectory);
+  assert.doesNotThrow(() => assertMacOSPackagedApplication(appDirectory));
+});
+
+test(
+  'packaged macOS validation rejects a linked resource ancestor',
+  { skip: process.platform === 'win32' },
+  () => {
+    const container = temporaryDirectory();
+    const appDirectory = path.join(container, 'AccordLock.app');
+    const contentsDirectory = path.join(appDirectory, 'Contents');
+    const executableDirectory = path.join(contentsDirectory, 'MacOS');
+    const resourcesDirectory = path.join(contentsDirectory, 'Resources');
+    const externalResources = path.join(container, 'external-resources');
+    fs.mkdirSync(executableDirectory, { recursive: true });
+    writeApprovedMacOSDistribution(path.join(externalResources, 'bin'));
+    fs.symlinkSync(externalResources, resourcesDirectory, 'dir');
+    assert.throws(
+      () => assertMacOSPackagedApplication(appDirectory),
+      /binary staging path must be one regular non-link directory/
+    );
+  }
+);
+
 test('the owned-path guard permits a host alias but rejects redirection below it', (t) => {
   const container = temporaryDirectory();
   const realBoundary = path.join(container, 'real-package');
@@ -382,12 +591,22 @@ test('the owned-path guard permits a host alias but rejects redirection below it
 });
 
 test('the production staging guard accepts only the canonical real src/bin directory', () => {
-  assert.doesNotThrow(() => assertCanonicalStagingDirectory(canonicalMacOSSupportDirectory));
-  const otherDirectory = temporaryDirectory();
-  assert.throws(
-    () => assertCanonicalStagingDirectory(otherDirectory),
-    /binary staging directory must be exactly/
-  );
+  const createdStagingDirectory = !fs.existsSync(canonicalStagingDirectory);
+  if (createdStagingDirectory) {
+    fs.mkdirSync(canonicalStagingDirectory);
+  }
+  try {
+    assert.doesNotThrow(() => assertCanonicalStagingDirectory(canonicalStagingDirectory));
+    const otherDirectory = temporaryDirectory();
+    assert.throws(
+      () => assertCanonicalStagingDirectory(otherDirectory),
+      /binary staging directory must be exactly/
+    );
+  } finally {
+    if (createdStagingDirectory) {
+      fs.rmdirSync(canonicalStagingDirectory);
+    }
+  }
 });
 
 test('Forge revalidates the macOS payload before optional signing checks', () => {
@@ -464,6 +683,21 @@ test('macOS build contract uses distinct ephemeral release Cargo targets', () =>
     buildScript,
     /Assert-StagingDirectory -DesktopRoot \$DesktopRoot -Directory \$binDirectory/u
   );
+  assert.match(buildScript, /assertMacOSPackagedApplication\(process\.argv\[2\]\)/u);
+  assert.match(buildScript, /& \/usr\/bin\/test -x \$binary/u);
+  assert.equal(
+    (buildScript.match(/-ExpectedPayloadDigests \$stagedPayloadDigests/gu) ?? []).length,
+    3
+  );
+  assert.equal((buildScript.match(/-RequireCodeSignature:\$Release/gu) ?? []).length, 2);
+  assert.match(buildScript, /& \/usr\/bin\/unzip -Z1 \$zipFiles\[0\]\.FullName/u);
+  assert.match(buildScript, /-Description 'The mounted DMG root'/u);
+  assert.match(buildScript, /-Description 'The extracted ZIP root'/u);
+  assert.match(
+    buildScript,
+    /Remove-ControlledDirectoryTree -Boundary \$outputPlatformRoot -Directory \$outputRoot/u
+  );
+  assert.doesNotMatch(buildScript, /Remove-Item -LiteralPath \$outputRoot -Recurse/u);
   assert.match(buildScript, /-TargetDirectory \$gooseCargoTargetDirectory/u);
   assert.match(buildScript, /-TargetDirectory \$runtimeCargoTargetDirectory/u);
   assert.match(

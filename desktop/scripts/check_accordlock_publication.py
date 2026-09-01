@@ -118,11 +118,11 @@ SCOPED_SECRET_PATTERNS = (
 )
 
 EXTENSION_HELPER_SURFACES = (
-    "ui/desktop/src/bin/system-tool-wrapper.sh",
-    "ui/desktop/src/bin/node",
-    "ui/desktop/src/bin/npx",
-    "ui/desktop/src/bin/uvx",
-    "ui/desktop/src/bin/jbang",
+    "ui/desktop/src/platform/darwin/bin/system-tool-wrapper.sh",
+    "ui/desktop/src/platform/darwin/bin/node",
+    "ui/desktop/src/platform/darwin/bin/npx",
+    "ui/desktop/src/platform/darwin/bin/uvx",
+    "ui/desktop/src/platform/darwin/bin/jbang",
     "ui/desktop/src/platform/windows/bin/npx.cmd",
     "ui/desktop/src/platform/windows/bin/jbang.cmd",
     "ui/desktop/scripts/prepare-windows-npm.bat",
@@ -362,11 +362,22 @@ def check_macos_packaging_supply_chain(errors: list[str]) -> None:
         "'attach', '-readonly', '-nobrowse', '-mountpoint', $dmgMountPoint",
         "$mountedApplication = Join-Path $dmgMountPoint 'AccordLock.app'",
         "[string]$mountedApplicationsLink.Target -cne '/Applications'",
+        "'stapler', 'validate', '-v', $AppRoot",
+        "'--assess', '--type', 'execute', '--verbose=4', $AppRoot",
+        "-Description 'The mounted DMG root'",
+        "& /usr/bin/unzip -Z1 $zipFiles[0].FullName",
+        "-Description 'The extracted ZIP root'",
+        "Remove-ControlledDirectoryTree -Boundary $outputPlatformRoot -Directory $outputRoot",
     ):
         if required not in build_script:
             errors.append(
                 f"{build_script_path}: native DMG pipeline is missing {required}"
             )
+
+    if "Remove-Item -LiteralPath $outputRoot -Recurse" in build_script:
+        errors.append(
+            f"{build_script_path}: output cleanup must validate real non-link ancestors"
+        )
 
     staple_position = build_script.find("@('stapler', 'staple', '-v', $dmgFiles[0].FullName)")
     final_signature_position = build_script.find(

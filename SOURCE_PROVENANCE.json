@@ -196,7 +196,7 @@
       "upstreamRepository": "https://github.com/aaif-goose/goose.git",
       "commit": "36d8565611993d8c7b19ae1fa92db34ea0280261",
       "tree": "ff194bec2597187d6aaf969ed01cb69c05392987",
-      "assembledTree": "2f74b573d6d2033cf84a73b2944ca4c200f08f63",
+      "assembledTree": "a9bc60a4b379776d1b1b9fbb8feee2ba7d3b8839",
       "trackedTreeExclusions": [
         {
           "path": "documentation/",
@@ -214,7 +214,7 @@
       "postImportAdjustments": [
         {
           "path": ".gitattributes",
-          "reason": "Forced the four raw-byte-hashed packaging helpers to materialize with LF line endings on every native host."
+          "reason": "Forced all nine raw-byte-hashed packaging helpers to materialize with LF line endings on every native host."
         },
         {
           "path": "ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json",
@@ -226,7 +226,7 @@
         },
         {
           "path": "MODIFICATIONS.md",
-          "reason": "Recorded the deterministic file-by-file inventory of 370 modified, 1107 unchanged, 216 AccordLock-only, and 37 omitted upstream paths."
+          "reason": "Recorded the deterministic file-by-file inventory of 366 modified, 1106 unchanged, 220 AccordLock-only, and 42 omitted upstream paths."
         },
         {
           "path": "Cargo.toml",
@@ -282,11 +282,11 @@
         },
         {
           "path": "scripts/check_accordlock_publication.py",
-          "reason": "Scoped the public desktop boundary, rejected credentials and personal paths, enforced the native DMG pipeline and Forge-compatible audited archive extractor, rejected inherited analytics tokens and runtime download-and-execute helpers, and verified checksum-pinned build inputs."
+          "reason": "Scoped the public desktop boundary, rejected credentials and personal paths, enforced the native DMG pipeline, final artifact notarization, controlled output cleanup, and Forge-compatible audited archive extractor, rejected inherited analytics tokens and runtime download-and-execute helpers, and verified checksum-pinned build inputs."
         },
         {
           "path": "scripts/tests/test_check_accordlock_publication.py",
-          "reason": "Added regression coverage for global secret detection, analytics-token rejection, tracked-input enforcement, the final stapled-DMG signature check, Forge compatibility, and the fail-closed extension-helper supply-chain boundary."
+          "reason": "Added regression coverage for global secret detection, analytics-token rejection, tracked-input enforcement, final artifact notarization, controlled output cleanup, Forge compatibility, and the fail-closed extension-helper supply-chain boundary."
         },
         {
           "path": "scripts/check_upstream_modifications.py",
@@ -297,8 +297,8 @@
           "reason": "Added regression coverage for the exact upstream classification, modification notices, and deterministic provenance report."
         },
         {
-          "path": "ui/desktop/src/bin/system-tool-wrapper.sh",
-          "reason": "Replaced self-installing extension helpers with deterministic resolution of administrator-provisioned system tools outside the application bundle."
+          "path": "ui/desktop/src/platform/darwin/bin/system-tool-wrapper.sh",
+          "reason": "Replaced self-installing extension helpers with deterministic resolution of administrator-provisioned system tools and kept the reviewed macOS source outside generated staging."
         },
         {
           "path": "ui/desktop/src/platform/windows/bin/README.md",
@@ -318,11 +318,11 @@
         },
         {
           "path": "RELEASE.md",
-          "reason": "Separated source-only alpha gates from binary release gates and required an ephemeral exclusive runner, clean locked sources, and fresh native build targets for a later signed release."
+          "reason": "Separated source-only alpha gates from binary release gates and required an ephemeral exclusive runner, clean locked sources, fresh native build targets, and reopened final artifacts for a later signed release."
         },
         {
           "path": "RELEASE_CHECKLIST.md",
-          "reason": "Bound binary acceptance to the monorepo commit and component trees and added explicit checks for exclusive build execution, clean locked sources, canonical staging, and fresh native targets."
+          "reason": "Bound binary acceptance to the monorepo commit and component trees and added explicit checks for exclusive build execution, clean locked sources, canonical staging, fresh native targets, and final DMG and ZIP contents."
         },
         {
           "path": "scripts/build-windows.ps1",
@@ -330,7 +330,7 @@
         },
         {
           "path": "scripts/build-macos.ps1",
-          "reason": "Bound macOS release compilation to the native target, fresh per-component Cargo targets, canonical staging, checksum-pinned wrappers, repeated clean source-lock validation, and native signed and notarized DMG verification."
+          "reason": "Bound macOS release compilation to the native target, fresh per-component Cargo targets, canonical staging, checksum- and mode-pinned payloads, real non-link output cleanup, repeated clean source-lock validation, and complete app, DMG, and ZIP content, signature, notarization-ticket, and Gatekeeper verification."
         },
         {
           "path": "ui/desktop/forge.config.ts",
@@ -342,11 +342,11 @@
         },
         {
           "path": "ui/desktop/scripts/prepare-platform-binaries.js",
-          "reason": "Replaced permissive platform cleanup with exact payload allowlists, package-boundary-anchored non-link staging checks, pinned support-wrapper hashes, and x64 PE validation."
+          "reason": "Separated reviewed platform sources from generated staging, then enforced exact payload allowlists, non-link staging and application ancestors, source and destination hashes, native executable modes, and x64 PE validation."
         },
         {
           "path": "ui/desktop/scripts/prepare-platform-binaries.test.js",
-          "reason": "Added adversarial tests for payload contamination, missing files, wrong architecture, host aliases, product-owned junctions, wrapper hashes, Forge revalidation, and fresh native build targets."
+          "reason": "Added adversarial tests for payload contamination, source mutation, tracked staging, Git and packaged modes, LF attributes, wrong architecture, path redirection, and Forge revalidation."
         },
         {
           "path": "ui/package.json",
@@ -589,12 +589,12 @@
         },
         {
           "baseTree": "7734083400d8ee2b198c41c769f8690983f4ebbf",
-          "resultTree": "2f74b573d6d2033cf84a73b2944ca4c200f08f63",
+          "resultTree": "a9bc60a4b379776d1b1b9fbb8feee2ba7d3b8839",
           "changes": [
             {
               "path": ".gitattributes",
               "effect": "modified",
-              "reason": "Pinned the checked-out LF bytes of all four text-based helpers covered by native packaging hashes."
+              "reason": "Pinned the checked-out LF bytes of all nine text-based helpers covered by native packaging hashes at their reviewed source paths."
             },
             {
               "path": "ACCORDLOCK_DISTRIBUTION_RUST_PROFILE.json",
@@ -609,17 +609,17 @@
             {
               "path": "MODIFICATIONS.md",
               "effect": "modified",
-              "reason": "Regenerated the exact Goose inheritance inventory for 370 modified, 1107 unchanged, 216 AccordLock-only, and 37 omitted files."
+              "reason": "Regenerated the exact Goose inheritance inventory for 366 modified, 1106 unchanged, 220 AccordLock-only, and 42 omitted files."
             },
             {
               "path": "RELEASE.md",
               "effect": "modified",
-              "reason": "Required an ephemeral exclusive build runner, clean locked checkouts, and fresh native targets for future binary releases."
+              "reason": "Required an ephemeral exclusive build runner, clean locked checkouts, fresh native targets, and reopened final artifacts for future binary releases."
             },
             {
               "path": "RELEASE_CHECKLIST.md",
               "effect": "modified",
-              "reason": "Added acceptance checks for exclusive release execution, canonical staging, source revalidation, and fresh native build targets."
+              "reason": "Added acceptance checks for exclusive release execution, canonical staging, source revalidation, fresh native build targets, and exact final DMG and ZIP contents."
             },
             {
               "path": "crates/goose-cli/Cargo.toml",
@@ -634,7 +634,7 @@
             {
               "path": "scripts/build-macos.ps1",
               "effect": "modified",
-              "reason": "Required a native host-target pair, compiled both sidecars in fresh isolated targets, verified canonical staging, and rechecked locked clean sources before signing and packaging."
+              "reason": "Required a native host-target pair, compiled both sidecars in fresh isolated targets, confined cleanup to real non-link descendants, rechecked locked clean sources, and reopened both final artifacts to revalidate exact roots, payload digests, executable modes, architectures, signatures, notarization tickets, and Gatekeeper acceptance."
             },
             {
               "path": "scripts/build-windows.ps1",
@@ -642,9 +642,24 @@
               "reason": "Required Windows x64 end to end, compiled both sidecars in fresh isolated targets, removed wildcard DLL collection, verified canonical staging, and rechecked locked clean sources before signing and packaging."
             },
             {
+              "path": "scripts/check_accordlock_publication.py",
+              "effect": "modified",
+              "reason": "Moved public helper-surface enforcement to the reviewed platform-source paths and required final macOS notarization evidence and real non-link output cleanup."
+            },
+            {
               "path": "scripts/check_upstream_modifications.py",
               "effect": "modified",
-              "reason": "Advanced the deterministic upstream path-set counts and digests to include the packaging contract test and LF checkout policy."
+              "reason": "Advanced the deterministic upstream path-set counts and digests for isolated platform sources and generated staging."
+            },
+            {
+              "path": "scripts/tests/test_check_accordlock_publication.py",
+              "effect": "modified",
+              "reason": "Added regression checks that final macOS artifacts retain notarization evidence and that recursive output cleanup cannot bypass real non-link ancestor validation."
+            },
+            {
+              "path": "ui/desktop/.gitignore",
+              "effect": "modified",
+              "reason": "Ignored only exact generated payload destinations so release source-lock checks expose unknown staging files."
             },
             {
               "path": "ui/desktop/forge.config.ts",
@@ -659,17 +674,47 @@
             {
               "path": "ui/desktop/scripts/prepare-platform-binaries.js",
               "effect": "modified",
-              "reason": "Enforced exact platform payloads and non-link staging below the package boundary while accepting host-managed checkout aliases above it."
+              "reason": "Copied reviewed macOS sources into generated staging with exact hashes and modes and retained fail-closed payload and non-link checks through packaged application ancestors."
             },
             {
               "path": "ui/desktop/scripts/prepare-platform-binaries.test.js",
               "effect": "added",
-              "reason": "Added adversarial regression coverage for platform payloads, release-build contracts, host aliases, and product-owned path redirection."
+              "reason": "Added adversarial regression coverage for isolated sources, untracked staging, index and packaged modes, LF bytes, payloads, and staging or application path redirection."
             },
             {
               "path": "ui/desktop/src/accordlockTerminalPrograms.ts",
               "effect": "modified",
               "reason": "Replaced lexical executable-path equality with stable native file identity and revalidated it after hashing."
+            },
+            {
+              "path": "ui/desktop/src/bin/.gitkeep",
+              "effect": "removed",
+              "reason": "Removed the tracked placeholder so src/bin is exclusively generated staging."
+            },
+            {
+              "path": "ui/desktop/src/bin/jbang",
+              "effect": "removed",
+              "reason": "Moved the reviewed macOS wrapper source out of generated staging."
+            },
+            {
+              "path": "ui/desktop/src/bin/node",
+              "effect": "removed",
+              "reason": "Moved the reviewed macOS wrapper source out of generated staging."
+            },
+            {
+              "path": "ui/desktop/src/bin/npx",
+              "effect": "removed",
+              "reason": "Moved the reviewed macOS wrapper source out of generated staging."
+            },
+            {
+              "path": "ui/desktop/src/bin/system-tool-wrapper.sh",
+              "effect": "removed",
+              "reason": "Moved the reviewed macOS wrapper source out of generated staging."
+            },
+            {
+              "path": "ui/desktop/src/bin/uvx",
+              "effect": "removed",
+              "reason": "Moved the reviewed macOS wrapper source out of generated staging."
             },
             {
               "path": "ui/desktop/src/desktopFileAccess.test.ts",
@@ -680,6 +725,31 @@
               "path": "ui/desktop/src/desktopFileAccess.ts",
               "effect": "modified",
               "reason": "Canonicalized directories before containment checks and required stable native directory identity."
+            },
+            {
+              "path": "ui/desktop/src/platform/darwin/bin/jbang",
+              "effect": "added",
+              "reason": "Added the reviewed macOS jbang wrapper source outside generated staging."
+            },
+            {
+              "path": "ui/desktop/src/platform/darwin/bin/node",
+              "effect": "added",
+              "reason": "Added the reviewed macOS Node wrapper source outside generated staging."
+            },
+            {
+              "path": "ui/desktop/src/platform/darwin/bin/npx",
+              "effect": "added",
+              "reason": "Added the reviewed macOS npx wrapper source outside generated staging."
+            },
+            {
+              "path": "ui/desktop/src/platform/darwin/bin/system-tool-wrapper.sh",
+              "effect": "added",
+              "reason": "Added the reviewed shared macOS system-tool resolver source outside generated staging."
+            },
+            {
+              "path": "ui/desktop/src/platform/darwin/bin/uvx",
+              "effect": "added",
+              "reason": "Added the reviewed macOS uvx wrapper source outside generated staging."
             }
           ]
         }

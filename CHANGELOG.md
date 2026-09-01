@@ -28,7 +28,12 @@ must still be called out explicitly.
   and wildcard DLL collection.
 - Restricted the macOS package to eleven named sidecar, marker, and support
   files. Both platforms reject redirected staging directories, and the seven
-  authored support wrappers are checksum-bound before packaging.
+  authored support wrappers are checksum-bound before packaging. macOS builds
+  also pin every payload mode, reopen the final DMG and ZIP, require exact
+  archive roots, and revalidate payload digests, executable architectures, and
+  release signatures, stapled notarization tickets, and Gatekeeper acceptance
+  from the distributed artifacts themselves. Output cleanup is confined to
+  real non-link descendants of the desktop build boundary.
 - Isolated each native release build in new, platform-specific Cargo target
   directories that are removed after staging. On the required exclusive build
   runner, both source checkouts are revalidated against the release lock before
@@ -39,9 +44,12 @@ must still be called out explicitly.
 - Anchored staging-path validation at the desktop package boundary. A
   host-managed checkout alias is accepted, while every link or junction inside
   the product-owned path to `src/bin` remains rejected.
-- Bound the four text-based native packaging helpers to LF checkouts on every
+- Bound all nine text-based native packaging helpers to LF checkouts on every
   host and made CI verify that attribute contract before auditing their exact
   raw-byte hashes.
+- Moved reviewed macOS wrapper sources out of `src/bin`, which is now generated
+  staging only. Windows and macOS preparation copy and re-hash those sources
+  without making the release checkout dirty before Forge runs.
 - Added the exact durable-control catalog fingerprint produced by the
   checksum-pinned PostgreSQL 17.11 CI image while retaining the PostgreSQL 17.4
   fingerprint. Each fingerprint is bound to its exact server version, and any

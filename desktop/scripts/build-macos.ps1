@@ -294,6 +294,173 @@ function Invoke-Checked {
     }
 }
 
+function Assert-RegularDirectory {
+    param(
+        [Parameter(Mandatory)][string]$Path,
+        [Parameter(Mandatory)][string]$Description
+    )
+
+    $item = Get-Item -LiteralPath $Path -Force -ErrorAction Stop
+    if (-not $item.PSIsContainer -or
+        -not [string]::IsNullOrEmpty($item.LinkType) -or
+        (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)) {
+        throw "$Description must be one regular non-link directory: '$Path'."
+    }
+    return $item
+}
+
+function Assert-ExactDirectoryEntries {
+    param(
+        [Parameter(Mandatory)][string]$Directory,
+        [Parameter(Mandatory)][string[]]$ExpectedNames,
+        [Parameter(Mandatory)][string]$Description
+    )
+
+    $null = Assert-RegularDirectory -Path $Directory -Description $Description
+    $actualNames = @(Get-ChildItem -LiteralPath $Directory -Force | ForEach-Object { $_.Name } | Sort-Object)
+    $expected = @($ExpectedNames | Sort-Object)
+    $difference = @(Compare-Object -ReferenceObject $expected -DifferenceObject $actualNames)
+    if ($difference.Count -ne 0) {
+        throw "$Description entries differ: expected=[$($expected -join ', ')] actual=[$($actualNames -join ', ')]."
+    }
+}
+
+function Get-RealDirectoryPath {
+    param([Parameter(Mandatory)][string]$Path)
+
+    $realPathScript = @'
+const fs = require('node:fs');
+const path = require('node:path');
+const requested = path.resolve(process.argv[1]);
+const real = fs.realpathSync.native(requested);
+if (!fs.statSync(real).isDirectory()) {
+    throw new Error(`not a directory: ${requested}`);
+}
+process.stdout.write(real);
+'@
+    $realPath = & node -e $realPathScript $Path
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace([string]$realPath)) {
+        throw "Could not resolve the real directory identity for '$Path'."
+    }
+    return [IO.Path]::GetFullPath(([string]$realPath).Trim())
+}
+
+function Assert-ControlledDirectoryChain {
+    param(
+        [Parameter(Mandatory)][string]$Boundary,
+        [Parameter(Mandatory)][string]$Directory,
+        [switch]$Create
+    )
+
+    $boundaryPath = [IO.Path]::GetFullPath($Boundary)
+    $directoryPath = [IO.Path]::GetFullPath($Directory)
+    $relativePath = [IO.Path]::GetRelativePath($boundaryPath, $directoryPath)
+    if ($relativePath -ceq '.' -or
+        $relativePath -ceq '..' -or
+        $relativePath.StartsWith("..$([IO.Path]::DirectorySeparatorChar)") -or
+        [IO.Path]::IsPathRooted($relativePath)) {
+        throw "Controlled directory '$directoryPath' must be a strict descendant of '$boundaryPath'."
+    }
+
+    $boundaryRealPath = Get-RealDirectoryPath -Path $boundaryPath
+    $currentPath = $boundaryPath
+    foreach ($segment in $relativePath -split '[\\/]') {
+        if ([string]::IsNullOrWhiteSpace($segment)) {
+            throw "Controlled directory '$directoryPath' contains an empty path segment."
+        }
+        $currentPath = Join-Path $currentPath $segment
+        $item = Get-Item -LiteralPath $currentPath -Force -ErrorAction SilentlyContinue
+        if ($null -eq $item) {
+            if (-not $Create) {
+                throw "Controlled directory is missing: '$currentPath'."
+            }
+            New-Item -ItemType Directory -Path $currentPath | Out-Null
+        }
+        $null = Assert-RegularDirectory -Path $currentPath -Description 'A controlled output directory'
+    }
+
+    $directoryRealPath = Get-RealDirectoryPath -Path $directoryPath
+    $expectedRealPath = [IO.Path]::GetFullPath((Join-Path $boundaryRealPath $relativePath))
+    if ($directoryRealPath -cne $expectedRealPath) {
+        throw "Controlled directory '$directoryPath' resolves outside its real boundary."
+    }
+    return $directoryPath
+}
+
+function Remove-ControlledDirectoryTree {
+    param(
+        [Parameter(Mandatory)][string]$Boundary,
+        [Parameter(Mandatory)][string]$Directory
+    )
+
+    $item = Get-Item -LiteralPath $Directory -Force -ErrorAction SilentlyContinue
+    if ($null -eq $item) {
+        return
+    }
+    $validatedPath = Assert-ControlledDirectoryChain -Boundary $Boundary -Directory $Directory
+    Remove-Item -LiteralPath $validatedPath -Recurse -Force
+}
+
+function Assert-PackagedMacOSApplication {
+    param(
+        [Parameter(Mandatory)][string]$AppRoot,
+        [Parameter(Mandatory)][string]$DesktopRoot,
+        [Parameter(Mandatory)][string]$ExpectedLipoArch,
+        [System.Collections.IDictionary]$ExpectedPayloadDigests,
+        [switch]$RequireCodeSignature
+    )
+
+    $null = Assert-RegularDirectory -Path $AppRoot -Description 'A packaged macOS application'
+    $packagedBin = Join-Path $AppRoot 'Contents/Resources/bin'
+    $distributionGuard = Join-Path $DesktopRoot 'scripts/prepare-platform-binaries.js'
+    Invoke-Checked -Program 'node' -Arguments @(
+        '-e',
+        'require(process.argv[1]).assertMacOSPackagedApplication(process.argv[2])',
+        $distributionGuard,
+        $AppRoot
+    ) -Failure "The packaged application '$AppRoot' differs from the reviewed payload contract."
+
+    if ($null -ne $ExpectedPayloadDigests) {
+        foreach ($name in $ExpectedPayloadDigests.Keys) {
+            $payloadPath = Join-Path $packagedBin $name
+            $null = Assert-RegularFile -Path $payloadPath -Description 'A packaged macOS payload file'
+            $actualDigest = (Get-FileHash -LiteralPath $payloadPath -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($actualDigest -cne [string]$ExpectedPayloadDigests[$name]) {
+                throw "Packaged payload '$payloadPath' differs from the verified application image."
+            }
+        }
+    }
+
+    foreach ($binary in @(
+        (Join-Path $AppRoot 'Contents/MacOS/AccordLock'),
+        (Join-Path $packagedBin 'goose'),
+        (Join-Path $packagedBin 'accordlock-agent-runtime'),
+        (Join-Path $packagedBin 'accordlock-preflight-runner')
+    )) {
+        $null = Assert-RegularFile -Path $binary -Description 'A packaged macOS executable'
+        & /usr/bin/test -x $binary
+        if ($LASTEXITCODE -ne 0) {
+            throw "Packaged executable '$binary' does not have an executable mode."
+        }
+        $architectures = (& /usr/bin/lipo -archs $binary).Trim().Split(' ', [StringSplitOptions]::RemoveEmptyEntries)
+        if ($LASTEXITCODE -ne 0 -or $architectures.Count -ne 1 -or $architectures[0] -cne $ExpectedLipoArch) {
+            throw "Packaged executable '$binary' does not contain exactly the $ExpectedLipoArch slice."
+        }
+    }
+
+    if ($RequireCodeSignature) {
+        Invoke-Checked -Program '/usr/bin/codesign' -Arguments @(
+            '--verify', '--deep', '--strict', '--verbose=4', $AppRoot
+        ) -Failure "The archived application signature is invalid: '$AppRoot'."
+        Invoke-Checked -Program '/usr/bin/xcrun' -Arguments @(
+            'stapler', 'validate', '-v', $AppRoot
+        ) -Failure "The archived application has no valid stapled notarization ticket: '$AppRoot'."
+        Invoke-Checked -Program '/usr/sbin/spctl' -Arguments @(
+            '--assess', '--type', 'execute', '--verbose=4', $AppRoot
+        ) -Failure "Gatekeeper rejected the archived application: '$AppRoot'."
+    }
+}
+
 function Invoke-NotarySubmit {
     param([Parameter(Mandatory)][string]$Artifact)
 
@@ -379,7 +546,8 @@ $resolvedRuntimeRepo = (Resolve-Path -LiteralPath $RuntimeRepo -ErrorAction Stop
 $targetTriple = if ($Architecture -ceq 'arm64') { 'aarch64-apple-darwin' } else { 'x86_64-apple-darwin' }
 $binDirectory = Join-Path $DesktopRoot 'src/bin'
 $outputBase = [IO.Path]::GetFullPath((Join-Path $DesktopRoot 'out'))
-$outputRoot = [IO.Path]::GetFullPath((Join-Path $outputBase "macos/$Architecture"))
+$outputPlatformRoot = [IO.Path]::GetFullPath((Join-Path $outputBase 'macos'))
+$outputRoot = [IO.Path]::GetFullPath((Join-Path $outputPlatformRoot $Architecture))
 $expectedOutputPrefix = $outputBase.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
 if (-not $outputRoot.StartsWith($expectedOutputPrefix, [StringComparison]::Ordinal)) {
     throw 'Refusing to use a macOS output directory outside ui/desktop/out.'
@@ -402,11 +570,13 @@ $rustcHost = ([regex]::Match($rustcHostLines[0], '^host:\s*(\S+)\s*$')).Groups[1
 if ($rustcHost -cne $targetTriple) {
     throw "macOS packaging requires a native host/target pair: host=$rustcHost target=$targetTriple."
 }
-foreach ($program in @('/usr/bin/codesign', '/usr/bin/lipo', '/usr/bin/xcrun', '/usr/bin/hdiutil', '/usr/bin/tar', '/usr/bin/unzip')) {
+foreach ($program in @('/bin/chmod', '/usr/bin/codesign', '/usr/bin/lipo', '/usr/bin/xcrun', '/usr/bin/hdiutil', '/usr/bin/tar', '/usr/bin/test', '/usr/bin/unzip', '/usr/sbin/spctl')) {
     if (-not (Test-Path -LiteralPath $program -PathType Leaf)) {
         throw "Required macOS tool is missing: '$program'."
     }
 }
+$null = Assert-ControlledDirectoryChain -Boundary $DesktopRoot -Directory $outputBase -Create
+$null = Assert-ControlledDirectoryChain -Boundary $outputBase -Directory $outputPlatformRoot -Create
 Assert-MinimumVersion -Tool 'Node.js' -RawVersion (& node --version) -MinimumVersion ([version]'24.10.0')
 Assert-MinimumVersion -Tool 'Corepack' -RawVersion (& corepack --version) -MinimumVersion ([version]'0.34.0')
 Push-Location (Join-Path $GooseRoot 'ui')
@@ -507,6 +677,12 @@ try {
         Copy-FreshFile -Source $gooseBinary -Destination (Join-Path $binDirectory 'goose')
         Copy-FreshFile -Source $runtimeBinary -Destination (Join-Path $binDirectory 'accordlock-agent-runtime')
         Copy-FreshFile -Source $preflightBinary -Destination (Join-Path $binDirectory 'accordlock-preflight-runner')
+        Invoke-Checked -Program '/bin/chmod' -Arguments @(
+            '0755',
+            (Join-Path $binDirectory 'goose'),
+            (Join-Path $binDirectory 'accordlock-agent-runtime'),
+            (Join-Path $binDirectory 'accordlock-preflight-runner')
+        ) -Failure 'Could not establish deterministic executable modes for the macOS sidecars.'
     }
     finally {
         try {
@@ -542,6 +718,12 @@ try {
         schema_version = 1; component = 'accordlock-preflight-runner'; protocol_version = 1
         binary_sha256 = "sha256:$preflightDigest"; source_commit = $runtimeIdentity.Commit; dirty = $runtimeIdentity.Dirty
     })
+    Invoke-Checked -Program '/bin/chmod' -Arguments @(
+        '0644',
+        (Join-Path $binDirectory 'accordlock-build.json'),
+        (Join-Path $binDirectory 'accordlock-runtime-build.json'),
+        (Join-Path $binDirectory 'accordlock-preflight-runner-build.json')
+    ) -Failure 'Could not establish deterministic read modes for the macOS build markers.'
 
     if ($Release) {
         # Revalidate after compilation, immediately before release signing.
@@ -571,6 +753,7 @@ try {
         [Environment]::SetEnvironmentVariable('ACCORDLOCK_MACOS_PRESIGNED_SIDECARS', '1', 'Process')
     }
 
+    $stagedPayloadDigests = $null
     Push-Location $DesktopRoot
     try {
         Invoke-Checked -Program 'node' -Arguments @('scripts/verify-accordlock-backend.js') -Failure 'Sidecar marker verification failed.'
@@ -581,6 +764,12 @@ try {
         Invoke-Checked -Program 'node' -Arguments @('scripts/prepare-platform-binaries.js') -Failure 'macOS binary staging failed.'
         Invoke-Checked -Program 'corepack' -Arguments @('pnpm', 'run', 'build-goose-sdk') -Failure 'Desktop SDK build failed.'
         Invoke-Checked -Program 'corepack' -Arguments @('pnpm', 'run', 'i18n:compile') -Failure 'English interface compilation failed.'
+
+        $stagedPayloadDigests = [ordered]@{}
+        foreach ($payloadFile in Get-ChildItem -LiteralPath $binDirectory -Force) {
+            $payload = Assert-RegularFile -Path $payloadFile.FullName -Description 'A staged macOS payload file'
+            $stagedPayloadDigests[$payload.Name] = (Get-FileHash -LiteralPath $payload.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+        }
 
         if ($Release) {
             # Forge is a second release boundary after desktop asset generation.
@@ -594,9 +783,8 @@ try {
                 -ExpectedCommit $releaseLock.components.accordlock_core.commit
         }
 
-        if (Test-Path -LiteralPath $outputRoot) {
-            Remove-Item -LiteralPath $outputRoot -Recurse -Force
-        }
+        $null = Assert-ControlledDirectoryChain -Boundary $outputBase -Directory $outputPlatformRoot
+        Remove-ControlledDirectoryTree -Boundary $outputPlatformRoot -Directory $outputRoot
         Invoke-Checked -Program 'corepack' -Arguments @(
             'pnpm', 'exec', 'electron-forge', 'make', '--platform', 'darwin', '--arch', $Architecture
         ) -Failure 'Electron Forge did not produce the complete macOS artifact set.'
@@ -609,24 +797,19 @@ try {
     if (-not (Test-Path -LiteralPath $appRoot -PathType Container)) {
         throw "The packaged application is missing: '$appRoot'."
     }
-    $appExecutable = Join-Path $appRoot 'Contents/MacOS/AccordLock'
-    $packagedBin = Join-Path $appRoot 'Contents/Resources/bin'
+    $null = Assert-ControlledDirectoryChain -Boundary $outputPlatformRoot -Directory $outputRoot
     $expectedLipoArch = if ($Architecture -ceq 'x64') { 'x86_64' } else { 'arm64' }
-    foreach ($binary in @(
-        $appExecutable,
-        (Join-Path $packagedBin 'goose'),
-        (Join-Path $packagedBin 'accordlock-agent-runtime'),
-        (Join-Path $packagedBin 'accordlock-preflight-runner')
-    )) {
-        $null = Assert-RegularFile -Path $binary -Description 'A packaged macOS executable'
-        $architectures = (& /usr/bin/lipo -archs $binary).Trim().Split(' ', [StringSplitOptions]::RemoveEmptyEntries)
-        if ($LASTEXITCODE -ne 0 -or $architectures.Count -ne 1 -or $architectures[0] -cne $expectedLipoArch) {
-            throw "Packaged executable '$binary' does not contain exactly the $expectedLipoArch slice."
-        }
-    }
+    Assert-PackagedMacOSApplication `
+        -AppRoot $appRoot `
+        -DesktopRoot $DesktopRoot `
+        -ExpectedLipoArch $expectedLipoArch `
+        -ExpectedPayloadDigests $stagedPayloadDigests
 
     $dmgOutputDirectory = Join-Path $outputRoot "make/dmg/darwin/$Architecture"
-    New-Item -ItemType Directory -Force -Path $dmgOutputDirectory | Out-Null
+    $null = Assert-ControlledDirectoryChain `
+        -Boundary $outputRoot `
+        -Directory $dmgOutputDirectory `
+        -Create
     $dmgPath = Join-Path $dmgOutputDirectory "AccordLock-darwin-$Architecture.dmg"
     $appContainer = Split-Path -Parent $appRoot
     $applicationsLink = Join-Path $appContainer 'Applications'
@@ -686,7 +869,13 @@ try {
     }
     Invoke-Checked -Program '/usr/bin/hdiutil' -Arguments @('verify', $dmgFiles[0].FullName) -Failure 'The DMG structure is invalid.'
     $dmgMountPoint = Join-Path $outputRoot ".dmg-verify-$Architecture"
-    New-Item -ItemType Directory -Force -Path $dmgMountPoint | Out-Null
+    if (Test-Path -LiteralPath $dmgMountPoint) {
+        throw "Refusing to reuse the DMG verification directory: '$dmgMountPoint'."
+    }
+    $null = Assert-ControlledDirectoryChain `
+        -Boundary $outputRoot `
+        -Directory $dmgMountPoint `
+        -Create
     $dmgAttached = $false
     try {
         Invoke-Checked -Program '/usr/bin/hdiutil' -Arguments @(
@@ -695,15 +884,22 @@ try {
         ) -Failure 'The DMG could not be mounted for content verification.'
         $dmgAttached = $true
 
+        Assert-ExactDirectoryEntries `
+            -Directory $dmgMountPoint `
+            -ExpectedNames @('AccordLock.app', 'Applications') `
+            -Description 'The mounted DMG root'
         $mountedApplication = Join-Path $dmgMountPoint 'AccordLock.app'
-        if (-not (Test-Path -LiteralPath $mountedApplication -PathType Container)) {
-            throw "The DMG does not contain AccordLock.app at its root."
-        }
         $mountedApplicationsLink = Get-Item -LiteralPath (Join-Path $dmgMountPoint 'Applications') -Force
         if ([string]::IsNullOrEmpty($mountedApplicationsLink.LinkType) -or
             [string]$mountedApplicationsLink.Target -cne '/Applications') {
             throw "The DMG Applications entry is not a link to /Applications."
         }
+        Assert-PackagedMacOSApplication `
+            -AppRoot $mountedApplication `
+            -DesktopRoot $DesktopRoot `
+            -ExpectedLipoArch $expectedLipoArch `
+            -ExpectedPayloadDigests $stagedPayloadDigests `
+            -RequireCodeSignature:$Release
     }
     finally {
         if ($dmgAttached) {
@@ -711,11 +907,51 @@ try {
                 'detach', $dmgMountPoint
             ) -Failure 'The verified DMG could not be detached.'
         }
-        if (Test-Path -LiteralPath $dmgMountPoint) {
-            Remove-Item -LiteralPath $dmgMountPoint -Recurse -Force
-        }
+        Remove-ControlledDirectoryTree -Boundary $outputRoot -Directory $dmgMountPoint
     }
     Invoke-Checked -Program '/usr/bin/unzip' -Arguments @('-tq', $zipFiles[0].FullName) -Failure 'The ZIP structure is invalid.'
+    $zipEntries = @(& /usr/bin/unzip -Z1 $zipFiles[0].FullName)
+    if ($LASTEXITCODE -ne 0 -or $zipEntries.Count -eq 0) {
+        throw 'The ZIP entry inventory could not be read.'
+    }
+    foreach ($entry in $zipEntries) {
+        $normalizedEntry = ([string]$entry).Replace('\', '/')
+        if ([string]::IsNullOrWhiteSpace($normalizedEntry) -or
+            $normalizedEntry.StartsWith('/') -or
+            $normalizedEntry -match '^[A-Za-z]:/' -or
+            $normalizedEntry -match '(^|/)\.\.(/|$)' -or
+            ($normalizedEntry -cne 'AccordLock.app' -and
+             -not $normalizedEntry.StartsWith('AccordLock.app/'))) {
+            throw "The ZIP contains an entry outside its exact application root: '$entry'."
+        }
+    }
+
+    $zipVerifyRoot = Join-Path $outputRoot ".zip-verify-$Architecture"
+    if (Test-Path -LiteralPath $zipVerifyRoot) {
+        throw "Refusing to reuse the ZIP verification directory: '$zipVerifyRoot'."
+    }
+    $null = Assert-ControlledDirectoryChain `
+        -Boundary $outputRoot `
+        -Directory $zipVerifyRoot `
+        -Create
+    try {
+        Invoke-Checked -Program '/usr/bin/unzip' -Arguments @(
+            '-q', $zipFiles[0].FullName, '-d', $zipVerifyRoot
+        ) -Failure 'The ZIP could not be extracted for content verification.'
+        Assert-ExactDirectoryEntries `
+            -Directory $zipVerifyRoot `
+            -ExpectedNames @('AccordLock.app') `
+            -Description 'The extracted ZIP root'
+        Assert-PackagedMacOSApplication `
+            -AppRoot (Join-Path $zipVerifyRoot 'AccordLock.app') `
+            -DesktopRoot $DesktopRoot `
+            -ExpectedLipoArch $expectedLipoArch `
+            -ExpectedPayloadDigests $stagedPayloadDigests `
+            -RequireCodeSignature:$Release
+    }
+    finally {
+        Remove-ControlledDirectoryTree -Boundary $outputRoot -Directory $zipVerifyRoot
+    }
 
     $generatedSboms = @()
     if (-not [string]::IsNullOrWhiteSpace($SbomArchivePath)) {
