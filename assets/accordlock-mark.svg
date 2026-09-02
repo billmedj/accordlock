@@ -1,0 +1,17 @@
+<!-- Modified by AccordLock contributors; see UPSTREAM.md. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title description">
+  <title id="title">AccordLock</title>
+  <desc id="description">Two open flows meet at a verified transaction junction.</desc>
+  <defs>
+    <linearGradient id="signal" x1="458" y1="458" x2="566" y2="566" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5264E8"/>
+      <stop offset="1" stop-color="#8491FF"/>
+    </linearGradient>
+  </defs>
+  <path d="M365 46h294c177 0 319 142 319 319v294c0 177-142 319-319 319H365C188 978 46 836 46 659V365C46 188 188 46 365 46Z" fill="#111318"/>
+  <path d="M365 46h294c177 0 319 142 319 319v294c0 177-142 319-319 319H365C188 978 46 836 46 659V365C46 188 188 46 365 46Z" fill="none" stroke="#FFFFFF" stroke-opacity=".09" stroke-width="3"/>
+  <path d="M800 358H634c-74 0-122 48-122 122v64c0 74-48 122-122 122H224" fill="none" stroke="#7E8492" stroke-width="78" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M224 358h166c74 0 122 48 122 122v64c0 74 48 122 122 122h166" fill="none" stroke="#F4F1E9" stroke-width="78" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="446" y="446" width="132" height="132" rx="36" fill="url(#signal)"/>
+  <rect x="447.5" y="447.5" width="129" height="129" rx="34.5" fill="none" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="3"/>
+</svg>

@@ -6,6 +6,8 @@ import unittest
 
 from scripts.check_publication import (
     check_generated_files,
+    validate_brand_mark,
+    validate_public_copy_text,
     validate_workflow_text,
 )
 
@@ -42,6 +44,57 @@ steps:
         self.assertEqual(
             {finding.check for finding in findings},
             {"generated-file", "packaged-binary"},
+        )
+
+    def test_accepts_clear_public_copy(self) -> None:
+        text = "The runtime checks one action before dispatch.\n"
+        self.assertEqual(validate_public_copy_text("README.md", text), [])
+
+    def test_rejects_promotional_public_copy(self) -> None:
+        findings = validate_public_copy_text(
+            "README.md",
+            "A revolutionary and world-class runtime.\n",
+        )
+        self.assertEqual(
+            [finding.check for finding in findings],
+            ["promotional-copy"],
+        )
+
+    def test_rejects_formulaic_public_copy(self) -> None:
+        findings = validate_public_copy_text(
+            "ROADMAP.md",
+            "At its core, this is more than just a tool.\n",
+        )
+        self.assertEqual(
+            [finding.check for finding in findings],
+            ["formulaic-copy"],
+        )
+
+    def test_rejects_non_ascii_public_copy(self) -> None:
+        findings = validate_public_copy_text(
+            "README.md",
+            "The runtime checks the action - then records it.\u00a0\n",
+        )
+        self.assertEqual(
+            [finding.check for finding in findings],
+            ["public-copy-non-ascii"],
+        )
+
+    def test_language_guide_can_name_prohibited_copy(self) -> None:
+        self.assertEqual(
+            validate_public_copy_text(
+                "LANGUAGE.md",
+                "Do not use revolutionary or more than just.\n",
+            ),
+            [],
+        )
+
+    def test_public_mark_must_match_desktop_mark(self) -> None:
+        self.assertEqual(validate_brand_mark(b"same", b"same"), [])
+        findings = validate_brand_mark(b"public", b"desktop")
+        self.assertEqual(
+            [finding.check for finding in findings],
+            ["brand-asset-mismatch"],
         )
 
 

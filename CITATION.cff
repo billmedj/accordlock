@@ -10,9 +10,9 @@ date-released: 2026-09-01
 repository-code: "https://github.com/billmedj/accordlock"
 license: "Apache-2.0"
 abstract: >-
-  An open desktop agent and transactional execution runtime that binds
-  consequential tool actions to an approved task, current state, admitted
-  evidence, available authority, and shared constraints before execution.
+  An open desktop agent and execution-control runtime that checks protected
+  actions against an approved task, relevant state commitments, available
+  authority, and configured limits before dispatch.
 keywords:
   - autonomous agents
   - execution integrity

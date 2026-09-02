@@ -1,6 +1,8 @@
 # Product Status
 
-**Current stage:** Engineering Alpha / Technical Preview · **Snapshot date:** 2026-08-31 · **Production-ready:** no
+**Current stage:** Engineering Alpha / Technical Preview | **Validation
+snapshot:** 2026-08-31 | **Document revised:** 2026-09-02 | **Production-ready:**
+no
 
 ## What exists today
 
@@ -67,8 +69,8 @@ An implementation can be substantial without being live-proven. A passing fixtur
 | Credential-free worker protocol | Implemented locally | production remote runner service and hardened transport are not deployed |
 | Narrow Kubernetes image-update profile | Components implemented locally | no retained successful end-to-end EKS mutation or complete mediation proof |
 | Account-free Kubernetes no-send exhibit | Implemented locally | constructs and validates the patch, obtains no credential, performs no network I/O |
-| Disposable kind profile | Scripts and tests present; one partial live run reached a Ready control plane | no retained complete successful run from the current release snapshot |
-| PostgreSQL transaction state | Implemented and exercised locally | production roles, HA, backup, restore, and disaster recovery pending |
+| Disposable kind profile | Scripts and tests present; a pre-assembly developer run reported a Ready control plane | no retained post-assembly run or complete evidence package |
+| PostgreSQL transaction state | Source and tests present; an earlier component run was reported | post-assembly reproduction, production roles, HA, backup, restore, and disaster recovery pending |
 | Lean assurance core | 81 abstract theorems, pinned toolchain | no implementation refinement proof or end-to-end verification |
 | TLA+ models | eight bounded models | bounded exploration is not a proof of unmodeled code or deployment behavior |
 | AccordBench | 73 reviewable cases | fixture coverage is not a representative field-performance estimate |

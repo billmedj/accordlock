@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">AccordLock</title>
+  <desc id="desc">Execution control for autonomous agents.</desc>
+  <defs>
+    <linearGradient id="background" x1="80" y1="32" x2="1180" y2="608" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#171A21"/>
+      <stop offset="1" stop-color="#0F1116"/>
+    </linearGradient>
+    <linearGradient id="signal" x1="1081" y1="282" x2="1119" y2="320" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5264E8"/>
+      <stop offset="1" stop-color="#8491FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="640" fill="url(#background)"/>
+  <rect x="32" y="32" width="1216" height="576" rx="28" fill="none" stroke="#FFFFFF" stroke-opacity=".08"/>
+  <path d="M1280 166H1108c-118 0-194 76-194 194v20c0 118-76 194-194 194H548" fill="none" stroke="#7E8492" stroke-opacity=".08" stroke-width="92" stroke-linecap="round"/>
+  <path d="M548 166h172c118 0 194 76 194 194v20c0 118 76 194 194 194h172" fill="none" stroke="#F4F1E9" stroke-opacity=".05" stroke-width="92" stroke-linecap="round"/>
+  <g font-family="Segoe UI Variable, Segoe UI, Helvetica Neue, Arial, sans-serif">
+    <text x="94" y="120" fill="#F4F1E9" font-size="30" font-weight="650" letter-spacing="-.4">AccordLock</text>
+    <text x="94" y="256" fill="#F4F1E9" font-size="58" font-weight="620" letter-spacing="-2.2">
+      <tspan x="94" dy="0">Control what autonomous</tspan>
+      <tspan x="94" dy="70">agents can change.</tspan>
+    </text>
+    <text x="94" y="424" fill="#A8ACB7" font-size="24" font-weight="400">
+      <tspan x="94" dy="0">Bind each protected action to an approved task,</tspan>
+      <tspan x="94" dy="36">relevant state, and single-use execution grant.</tspan>
+    </text>
+    <text x="94" y="548" fill="#8491FF" font-size="17" font-weight="650" letter-spacing="2.4">ENGINEERING ALPHA</text>
+    <text x="330" y="548" fill="#696E79" font-size="17" font-weight="600" letter-spacing="2.1">APACHE-2.0</text>
+  </g>
+  <g transform="translate(920 130) scale(.36)">
+    <path d="M365 46h294c177 0 319 142 319 319v294c0 177-142 319-319 319H365C188 978 46 836 46 659V365C46 188 188 46 365 46Z" fill="#111318"/>
+    <path d="M365 46h294c177 0 319 142 319 319v294c0 177-142 319-319 319H365C188 978 46 836 46 659V365C46 188 188 46 365 46Z" fill="none" stroke="#FFFFFF" stroke-opacity=".12" stroke-width="3"/>
+    <path d="M800 358H634c-74 0-122 48-122 122v64c0 74-48 122-122 122H224" fill="none" stroke="#7E8492" stroke-width="78" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M224 358h166c74 0 122 48 122 122v64c0 74 48 122 122 122h166" fill="none" stroke="#F4F1E9" stroke-width="78" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="446" y="446" width="132" height="132" rx="36" fill="url(#signal)"/>
+    <rect x="447.5" y="447.5" width="129" height="129" rx="34.5" fill="none" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="3"/>
+  </g>
+</svg>

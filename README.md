@@ -1,278 +1,181 @@
 <p align="center">
-  <img src="desktop/ui/desktop/src/images/icon.svg" width="96" height="96" alt="AccordLock logo" />
+  <img src="assets/accordlock-mark.svg" width="88" height="88" alt="AccordLock">
 </p>
 
 <h1 align="center">AccordLock</h1>
 
-<p align="center"><strong>Agents can be wrong. Their actions do not have to be.</strong></p>
+<p align="center"><strong>Execution control for autonomous agents.</strong></p>
 
 <p align="center">
-  An open-source desktop agent and transactional runtime for teams evaluating AI agents on code and infrastructure.
+  An open desktop agent and runtime that checks protected actions before they reach code, systems, or infrastructure.
 </p>
 
 <p align="center">
-  <a href="https://github.com/billmedj/accordlock/actions/workflows/ci.yml"><img alt="Source CI" src="https://github.com/billmedj/accordlock/actions/workflows/ci.yml/badge.svg" /></a>
-  <a href="LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/badge/license-Apache--2.0-2563eb.svg" /></a>
-  <a href="docs/PRODUCT_STATUS.md"><img alt="Engineering Alpha" src="https://img.shields.io/badge/status-engineering%20alpha-d97706.svg" /></a>
+  <a href="https://github.com/billmedj/accordlock/actions/workflows/ci.yml"><img alt="Source CI" src="https://github.com/billmedj/accordlock/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="Apache 2.0" src="https://img.shields.io/badge/license-Apache--2.0-5264e8.svg"></a>
+  <a href="docs/PRODUCT_STATUS.md"><img alt="Engineering alpha" src="https://img.shields.io/badge/status-engineering%20alpha-7e8492.svg"></a>
 </p>
 
 > [!IMPORTANT]
-> AccordLock is an **engineering alpha** for local evaluation and security research. It is not a supported production security boundary. There is no signed public installer, completed live EKS validation, or independent security review yet.
+> AccordLock is an engineering alpha for local evaluation. It is not a
+> production security boundary. Signed installers, retained live cloud tests,
+> and an independent security review are not complete.
 
-AccordLock is built for platform, security, and SRE teams that need AI agents to work under bounded execution authority.
+## What AccordLock does
 
-## Why this exists
+An authenticated agent can still propose the wrong action. The cause can be a
+misunderstood request, untrusted repository content, prompt injection, stale
+state, or an unsafe retry.
 
-An agent can hold valid credentials and still do the wrong thing. The model may misunderstand the task, follow an injected instruction, invent a fact, act on stale state, exceed a shared limit, or retry an operation whose outcome is unknown.
-
-Identity and policy systems answer whether an actor may perform a class of action. AccordLock asks a narrower question immediately before execution:
-
-> Does this exact action still agree with the approved task, trusted evidence, current state, available authority, and shared constraints?
-
-If the answer cannot be established, AccordLock does not convert uncertainty into permission. It denies the action, requests a focused review, or records an unknown outcome for reconciliation.
-
-## Where AccordLock fits
-
-| Control layer | Question it answers |
-|---|---|
-| IAM and RBAC | Which actor may perform a class of action? |
-| Policy engines | Which actions satisfy organizational rules? |
-| Sandboxes | Where can code execute, and what can that environment reach? |
-| Supply-chain attestations | Where did an artifact come from, and how was it built? |
-| **AccordLock** | **May this exact action execute now under the approved task, admitted evidence, current state, available authority, shared resources, and transaction history?** |
-
-These controls remain in place. AccordLock supplies the per-action transaction boundary between them and an autonomous agent.
-
-## The transaction boundary
+AccordLock adds a transaction boundary before a protected effect. The model
+proposes an action. The runtime evaluates the approved task, policy, evidence,
+state, authority, limits, and expiry. A dedicated broker performs an allowed
+action and records the observed result.
 
 ```text
-Human objective
-      |
-      v
-Fixed task contract ---- workspace, expiry, allowed capabilities
-      |
-      v
-Untrusted model -------- may propose; cannot grant authority
-      |
-      v
-Normalized action ------ exact tool, arguments, target, state commitment
-      |
-      v
-AccordLock runtime ----- intent | evidence | state | authority | resources
-      |
-      +---------- deny / review
-      |
-      v
-Single-use authorization
-      |
-      v
-Brokered effect -------- exact effect constructed outside the model
-      |
-      v
-Observed result or UNKNOWN ---- audit, reconciliation, recovery
+approved task
+     |
+agent proposal
+     |
+policy + evidence + relevant state commitments
+     |
+ALLOW | APPROVAL REQUIRED | DENY
+     |
+single-use execution grant
+     |
+brokered action
+     |
+SUCCEEDED | FAILED | UNKNOWN
 ```
 
-The model may explore; execution authority stays in the runtime.
+IAM, policy engines, sandboxes, and supply-chain attestations remain in place.
+AccordLock controls whether one protected action may execute now under the
+approved task and current conditions.
 
-## What changes in practice
+## Security behavior
 
-| Failure mode | AccordLock behavior |
-|---|---|
-| Prompt injection changes a proposed tool call | Hostile content may change the proposal, but cannot by itself grant authority. Fixed task and policy constraints are evaluated outside the model. An overbroad approved task remains dangerous. |
-| The model invents evidence or a deployment fact | Model output is not trusted evidence. Missing or inconclusive evidence cannot authorize automatically. |
-| Approved arguments are changed before execution | The authorization no longer matches and is rejected. |
-| Policy, configuration, or target state changes | Stale authority and stale state fail closed. |
-| An authorization is captured and replayed | Consumption is atomic and single-use. |
-| A network response is lost after a mutation may have been sent | The effect becomes `UNKNOWN`; blind retry is blocked pending reconciliation. |
-| Concurrent agents compete for a protected resource | Componentwise limits and exclusive reservations are checked before dispatch. |
-| A safe read is within the task contract | It can proceed without interrupting the user. Approval is reserved for a real boundary. |
+| Failure mode | Runtime behavior |
+| --- | --- |
+| Prompt injection changes a proposal | Untrusted content cannot grant new authority on a fully mediated path. The runtime checks the resulting action. |
+| The model invents a fact | Model output is not trusted evidence. Missing or inconclusive evidence cannot enable automatic execution. |
+| A target or argument changes | The action no longer matches its decision and is rejected. |
+| Policy, authority, or target state changes | The stale grant is invalid. |
+| A consumed grant is replayed | Atomic consumption and replay records block reuse. |
+| A result cannot be confirmed | The result is `UNKNOWN`. Blind retry is blocked until reconciliation. |
 
-On fully mediated paths, AccordLock limits what model-influenced proposals can execute. It does not detect every prompt injection, prove an allowed action correct, or protect effects that bypass the runtime.
-
-## What AccordLock adds to Goose
-
-AccordLock Desktop starts from [Goose v1.47.0](desktop/UPSTREAM.md). The upstream agent foundation and the AccordLock security product have distinct, reviewable provenance.
-
-| Surface | Provenance | Role in this repository |
-|---|---|---|
-| Agent loop, provider and MCP ecosystem, desktop foundation | Goose | Untrusted planning, model access, tool integration, and the base desktop application |
-| AccordLock desktop distribution | AccordLock changes to Goose | Projects, fixed task contracts, exact approvals, protected-tool routing, activity, revocation, recovery, and deployment-preflight surfaces |
-| Transaction runtime | Independent AccordLock Rust components | Policy and evidence evaluation, signed single-use authorization, durable lifecycle state, controlled execution, audit, and reconciliation |
-| Cloud and remote-control path | AccordLock | GitHub, ECR, and Kubernetes preflight; narrow deployment profile; signed remote-decision protocols |
-| Assurance package | AccordLock | Lean models, TLA+ state machines, AccordBench, adversarial demonstrations, and claim-to-evidence traceability |
-
-The inherited files and AccordLock modifications are recorded in [the desktop modification inventory](desktop/MODIFICATIONS.md). The [engineering case study](docs/ENGINEERING_CASE_STUDY.md) follows the design from threat model to product, runtime, and evidence.
+This boundary applies only to supported actions routed through an AccordLock
+broker. AccordLock does not claim to detect every injected instruction, prove
+that an allowed action is correct, or protect an effect that bypasses the
+runtime.
 
 ## Product surface
 
-### Desktop agent
+| Surface | Current scope |
+| --- | --- |
+| Desktop agent | Projects, protected tasks, model providers, approvals, activity, audit, and settings |
+| Files and programs | Bounded file access, exact change previews, recoverable deletion, and explicit executable access |
+| Network | HTTPS `GET` and `HEAD` to exact configured public domains |
+| Audit | Durable action records, integrity checks, search, JSON and Markdown export, revocation, and supported file recovery |
+| Cloud preflight | Read-only GitHub, ECR, EKS, and Kubernetes observations with signed receipts |
+| Remote decisions | Signed Slack, Teams, Telegram, and WhatsApp protocol foundations; live gateways remain release work |
 
-- Projects and task history rather than an undifferentiated chat list.
-- A concise task contract: objective, workspace, capabilities, protected paths, and expiry.
-- Automatic bounded reads; exact previews for file changes and terminal commands.
-- Model choice through Goose's provider layer, with configuration paths for Anthropic, OpenAI, Mistral, OpenCode Zen, OpenRouter, and Ollama/local models. Provider and model compatibility varies; model output remains untrusted.
-- Protected filesystem operations, opt-in terminal programs, and an HTTPS GET/HEAD network broker with exact-domain controls.
-- Action history, exportable audit records, recovery events, and scoped revocation.
-- Foundations for signed Slack, Teams, Telegram, and WhatsApp approval decisions. Live provider acceptance and a deployable private gateway remain release work.
-
-### Independent Rust runtime
-
-- Typed, signed transaction objects and canonical commitments.
-- Deterministic policy and evidence aggregation.
-- Current-authority, current-state, revocation, and validity-window checks.
-- Short-lived, action-bound, single-use execution authorization.
-- Durable lifecycle state, replay tombstones, dispatch fencing, and resource reservations.
-- Brokered execution and explicit unknown-outcome reconciliation.
-- Read-only GitHub, ECR, and Kubernetes preflight adapters.
-- A deliberately narrow Kubernetes deployment profile and a credential-free request exhibit.
-
-### Cloud path
-
-The repository contains the engineering path for GitHub build evidence, ECR artifact evidence, EKS discovery, signed deployment preflight receipts, exact Kubernetes patch construction, and an execution worker that does not expose production credentials to the model.
-
-The authenticated GitHub–ECR–EKS chain has not yet been demonstrated against real accounts. The included cloud workflow is therefore a testable implementation path, not a production-readiness claim.
-
-## Research to implementation
-
-The published paper *Whence: The Fourth Coordinate of Computational Authority* argues that mutable authority depends on the provenance of active configuration, not only actor, action, and resource. AccordLock operationalizes that thesis by binding policy and configuration epochs, rooted registries, and current state into protected transactions so that drift invalidates stale authority.
-
-Read the [research provenance map](docs/RESEARCH_PROVENANCE.md), the [engineering case study](docs/ENGINEERING_CASE_STUDY.md), or the paper itself ([DOI 10.5281/zenodo.20905713](https://doi.org/10.5281/zenodo.20905713)). The paper motivates this design; it does not prove the software correct.
+The desktop derives from
+[Goose v1.47.0](desktop/UPSTREAM.md). Provider and model compatibility varies.
+Model output remains untrusted regardless of provider.
 
 ## Run the provider-free demo
 
-The fastest review path builds the two locked native entrypoints and exercises five real enforcement cases without an LLM, Docker, Kubernetes, cloud account, production credential, or external request:
+The fastest evaluation path needs no model account, cloud account, Docker,
+Kubernetes, production credential, or external request:
 
 ```powershell
 python scripts/run_demo.py --display markdown
 ```
 
-The launcher verifies its own safety profile and then demonstrates protected-path denial, exact-domain network denial before transport, exact approval with idempotent retry, single-use authorization, and stale-authority refusal. A successful run ends with:
+The demo builds the locked native entry points and runs five enforcement cases:
+protected-path denial, exact-domain denial before transport, bound approval,
+single-use authorization, and stale-authority refusal.
 
 ```text
 PASS provider_free_demo cases=5 provider=NONE network=NOT_ATTEMPTED
 ```
 
-It requires Python 3.11+ and the Rust toolchain pinned by the repository. Windows source builds also require Visual Studio Build Tools with the **Desktop development with C++** workload. After dependencies are cached, prevent Cargo from using the network:
+Requirements: Python 3.11+, the pinned Rust toolchain, and the Windows C++ build
+tools on Windows. See [the demo guide](demos/README.md) for offline mode and the
+adversarial walkthrough.
 
-```powershell
-python scripts/run_demo.py --offline --display markdown
-```
+## Evidence and limits
 
-For the compact native transaction report alone:
+The current source includes:
 
-```powershell
-cd runtime
-cargo run --locked -q -p accordlock-cli -- offline --compact
-```
-
-The report is machine-readable and deliberately includes `"production_ready": false`. It covers signed ingress, evidence evaluation, authorization issuance, transactional consumption, replay refusal, and constrained Kubernetes patch validation. It also lists the live checks the offline run cannot establish.
-
-The same proof can also run directly in Cargo's offline mode:
-
-```powershell
-cargo run --offline --locked -q -p accordlock-cli -- offline --compact
-```
-
-See [the demo package](demos/README.md) for the adversarial walkthrough and AccordBench adapter once the full report is needed.
-
-## Verify the public source boundary
-
-One standard-library command checks required public files, source provenance, generated artifacts, documentation links, pinned GitHub Actions, component publication guards, the claim-to-evidence map, and credentials or personal paths on AccordLock-authored publication surfaces:
-
-```powershell
-python scripts/check_publication.py
-```
-
-This is a source-hygiene and traceability gate. It does not replace the Rust, desktop, Lean, TLA+, PostgreSQL, live-provider, packaging, or independent-review gates. Those layers run separately so a missing tool cannot be mistaken for a pass.
-
-Run the fast source suite with `python scripts/test_all.py`. Add `--runtime`, `--formal`, or `--desktop` to opt into each heavier layer; `--all` selects all three. The formal layer requires the checksum-pinned TLC jar to be fetched explicitly, and the desktop layer may install its locked dependencies.
-
-## Assurance, with the claim boundary intact
-
-Machine-checked scope includes selected abstract properties that:
-
-- evidence cannot expand task authority;
-- consumed authorizations cannot be reused;
-- changed authority or state invalidates stale authorization;
-- evidence can restrict a decision but cannot expand authority;
-- resource admission respects componentwise bounds; and
-- an unresolved effect cannot be treated as a safe retry.
-
-At the current snapshot, the evidence set includes:
-
-- **81 Lean theorems** over selected properties of small abstract authorization models;
+- **81 Lean theorems** over selected abstract authorization properties;
 - **8 TLA+ models** for bounded lifecycle and concurrency exploration;
-- **73 AccordBench cases** covering intent conformance, transaction lifecycle, shared resources, and safe autonomy;
-- **10 scoped public assurance claims** mapped to proof, model, source, and executable-test references.
+- **73 AccordBench cases** across intent conformance, transaction lifecycle,
+  shared resources, and safe autonomy; and
+- **10 public assurance claims** linked to models, source, and tests.
 
-Run the traceability gate:
+These artifacts do not prove that the Rust implementation refines every model.
+They do not establish production behavior or external interoperability. Run the
+claim-to-evidence checks with:
 
 ```powershell
 python assurance/verify.py --root runtime --json
 python -m unittest discover -s assurance/tests -t assurance -v
 ```
 
-A passing report means the declared theorem names, configured invariants, implementation paths, test functions, and versioned contracts still exist at that revision. It does **not** prove that Lean or TLA+ refines the Rust implementation, that bounded exploration covers every state, or that AccordLock is formally verified end to end. Read [the assurance contract](assurance/README.md) before citing the result.
+Read [the assurance contract](assurance/README.md) before citing a result.
 
-The exact post-assembly commands, bounded state counts, passed gates, and unexecuted external gates are recorded in [Local validation](docs/LOCAL_VALIDATION.md).
+## Research basis
 
-## Build the desktop application
+[Whence](https://doi.org/10.5281/zenodo.20905713) motivates treating the
+provenance of active configuration as part of authorization state. AccordLock
+applies that idea through policy epochs, rooted registries, state commitments,
+and stale-authority refusal. The paper informs the design; it does not prove the
+implementation. See [Research provenance](docs/RESEARCH_PROVENANCE.md).
 
-The desktop is an AccordLock distribution of [Goose](https://github.com/aaif-goose/goose), with the protected task and execution path integrated into the native experience.
-
-```powershell
-cd desktop
-# Validate and prepare the locked desktop sources without packaging.
-./scripts/build-windows.ps1 -Development -PrepareOnly -RuntimeRepo ../runtime
-
-# Create the Windows development package with the checksum- and
-# Authenticode-verified NuGet 7.9.0 executable.
-./scripts/build-windows.ps1 -Development -RuntimeRepo ../runtime -NuGetToolPath C:\path\to\nuget.exe
-```
-
-The second command creates a development package. Release packaging has stricter clean-tree and build-marker gates. Until an installer is signed and tested on a clean machine, build from source and treat it as evaluation software. Detailed platform instructions live in [desktop/README.md](desktop/README.md).
-
-## Repository map
-
-| Path | What it contains |
-|---|---|
-| [`desktop/`](desktop/) | Desktop agent, provider integrations, task UX, protected tool bridge, and upstream Goose attribution |
-| [`runtime/`](runtime/) | Rust authorization/runtime stack, schemas, migrations, cloud adapters, formal models, and conformance corpus |
-| [`assurance/`](assurance/) | Machine-checkable claim-to-evidence manifest and fail-closed linter |
-| [`demos/`](demos/) | Provider-free adversarial demonstration and benchmark adapter |
-| [`docs/`](docs/) | Architecture, threat model, product status, limitations, and research provenance |
+The public
+[Effect Transaction Protocol (ETP)](https://github.com/billmedj/etp) defines
+product-neutral transaction records and executor rules. Native ETP mediation is
+an ordered roadmap item, not a current product claim.
 
 ## Current status
 
 | Area | Status |
-|---|---|
-| Local desktop task flow | Implemented locally; clean-checkout release-candidate validation pending |
-| Filesystem and exact-command mediation | Implemented; terminal containment is not a complete OS sandbox |
-| Network mediation | Exact-domain HTTPS GET/HEAD path implemented; broader enterprise profiles pending |
-| Durable audit, revocation, and recovery records | Implemented locally |
-| Intent-conformance framework | Implemented; no production-qualified general free-text evidence provider |
-| Formal and adversarial assurance assets | Included; scoped claims only |
-| GitHub/ECR/EKS preflight path | Implemented locally; real-account acceptance pending |
-| Remote approval channels | Signed contracts and local foundations implemented; live gateways pending |
-| Signed installer and automatic updates | Pending |
-| Independent security assessment | Pending |
-| Production readiness | **No** |
+| --- | --- |
+| Public Apache-2.0 source | The distributable source for this snapshot is present in the monorepo; see [`SOURCE_PROVENANCE.json`](SOURCE_PROVENANCE.json) |
+| Runtime | Post-assembly source and tests reproduced locally |
+| Desktop | Source and tests present; clean-checkout release validation remains |
+| File, program, network, audit, and recovery paths | Implemented within the documented boundary |
+| GitHub, ECR, EKS, and Kubernetes path | Read-only implementation; retained real-account validation remains |
+| Messaging channels | Protocol and local foundations implemented; live gateway validation remains |
+| Signed installers and updates | Not available |
+| Production approval | No |
 
-The complete boundary is documented in [Product status](docs/PRODUCT_STATUS.md), [Threat model](docs/THREAT_MODEL.md), and [Known limitations](docs/LIMITATIONS.md).
+See [Product status](docs/PRODUCT_STATUS.md) and
+[Local validation](docs/LOCAL_VALIDATION.md) for the exact evidence boundary.
 
-## Design principles
+## Repository map
 
-1. **The model proposes. The runtime decides.**
-2. **Authority is exact, current, narrow, and single-use.**
-3. **Evidence may restrict a decision; it cannot silently expand authority.**
-4. **Uncertainty is represented explicitly.**
-5. **Audit records describe what the system can establish, not what it hopes happened.**
-6. **Safe work should remain fluid.** Security that requires approving every read is not useful autonomy.
+| Path | Contents |
+| --- | --- |
+| [`desktop/`](desktop/) | AccordLock desktop distribution and Goose provenance |
+| [`runtime/`](runtime/) | Rust policy, authorization, brokers, connectors, audit, formal models, and evaluation corpus |
+| [`assurance/`](assurance/) | Claim-to-evidence manifest and verification tools |
+| [`demos/`](demos/) | Provider-free demonstration and benchmark adapter |
+| [`docs/`](docs/) | Architecture, threat model, limitations, status, and research provenance |
 
-## Contributing and security
+Start with the [Architecture](docs/ARCHITECTURE.md),
+[Threat model](docs/THREAT_MODEL.md), [Known limitations](docs/LIMITATIONS.md),
+and [Roadmap](ROADMAP.md).
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing a security boundary. Vulnerabilities should not be filed as public issues; follow [SECURITY.md](SECURITY.md).
+## Project policy
 
-The source code for this engineering alpha is public under the [Apache License 2.0](LICENSE). AccordLock is derived in part from Goose and preserves its notices and third-party attribution. See [NOTICE](NOTICE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+AccordLock is available under the [Apache License 2.0](LICENSE). It preserves
+the required Goose and third-party attribution in [NOTICE](NOTICE) and
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-Community expectations, support scope, decision rights, and brand use are documented in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), [SUPPORT.md](SUPPORT.md), [GOVERNANCE.md](GOVERNANCE.md), and [TRADEMARKS.md](TRADEMARKS.md).
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing a security boundary.
+Report vulnerabilities through [SECURITY.md](SECURITY.md), not a public issue.
+
+Public copy and visual rules are in [LANGUAGE.md](LANGUAGE.md) and
+[BRAND.md](BRAND.md).

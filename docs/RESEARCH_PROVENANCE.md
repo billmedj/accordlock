@@ -1,6 +1,7 @@
 # Research Provenance
 
-**Scope:** public concepts and assurance artifacts that inform AccordLock · **Claim policy:** research motivates design; repository evidence supports product claims
+**Scope:** public concepts and assurance artifacts that inform AccordLock |
+**Claim policy:** research motivates design; repository evidence supports product claims
 
 ## Published foundation
 
@@ -66,9 +67,9 @@ The implementation turns several research questions into testable interfaces.
 
 ### Can action authority remain exact across an agent stack?
 
-The desktop fixes task scope; the backend commits the actual plan and tool call; the runtime normalizes the proposal; the authorization repeats the exact commitments; the executor constructs the effect from typed inputs; the result closes the lineage.
+The desktop fixes task scope; the backend commits the recorded plan and tool call; the runtime normalizes the proposal; the authorization repeats the exact commitments; the executor constructs the effect from typed inputs; the result closes the lineage.
 
-The current evidence establishes this chain locally. A production claim requires complete mediation and live provider validation.
+Source and local tests cover the chain components. A production claim requires complete mediation and live provider validation.
 
 ### Can evidence improve safety without becoming a new authority source?
 
@@ -100,7 +101,7 @@ The public repository contains three complementary forms of research evidence.
 
 ### Lean 4 model
 
-The standalone project contains 81 theorems over abstract definitions for authority binding, authorization integrity, capability restriction, transaction lifecycle, evidence monotonicity, effect knowledge, resource reservations, and final dispatch.
+The Lean project in `runtime/formal` contains 81 theorems over abstract definitions for authority binding, authorization integrity, capability restriction, transaction lifecycle, evidence monotonicity, effect knowledge, resource reservations, and final dispatch.
 
 The theorem count is not a quality score. Each claim should name the relevant definition and theorem. The project does not prove cryptographic primitives, database isolation, operating-system enforcement, provider behavior, or implementation refinement.
 

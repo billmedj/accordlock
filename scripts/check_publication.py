@@ -26,7 +26,11 @@ REQUIRED_PATHS = (
     ".github/pull_request_template.md",
     ".github/workflows/ci.yml",
     ".github/workflows/reproducibility.yml",
+    "assets/accordlock-mark.svg",
+    "assets/social-card.png",
+    "assets/social-card.svg",
     "assurance/claims.yaml",
+    "BRAND.md",
     "assurance/verify.py",
     "demos/README.md",
     "docs/ARCHITECTURE.md",
@@ -34,8 +38,10 @@ REQUIRED_PATHS = (
     "docs/PRODUCT_STATUS.md",
     "docs/THREAT_MODEL.md",
     "LICENSE",
+    "LANGUAGE.md",
     "NOTICE",
     "README.md",
+    "ROADMAP.md",
     "SECURITY.md",
     "scripts/check_lean_sources.py",
     "scripts/check_source_provenance.py",
@@ -46,6 +52,7 @@ REQUIRED_PATHS = (
 
 ROOT_AUTHORED_PREFIXES = (
     ".github/",
+    "assets/",
     "assurance/",
     "demos/",
     "docs/",
@@ -55,14 +62,17 @@ ROOT_AUTHORED_PREFIXES = (
 
 ROOT_AUTHORED_FILES = {
     ".gitignore",
+    "BRAND.md",
     "CHANGELOG.md",
     "CITATION.cff",
     "CODE_OF_CONDUCT.md",
     "CONTRIBUTING.md",
     "GOVERNANCE.md",
     "LICENSE",
+    "LANGUAGE.md",
     "NOTICE",
     "README.md",
+    "ROADMAP.md",
     "SECURITY.md",
     "SOURCE_PROVENANCE.json",
     "SUPPORT.md",
@@ -96,6 +106,28 @@ GENERATED_PARTS = {
     "node_modules",
     "target",
 }
+
+PUBLIC_COPY_FILES = {
+    "README.md",
+    "BRAND.md",
+    "LANGUAGE.md",
+    "ROADMAP.md",
+    "assets/social-card.svg",
+}
+
+PROMOTIONAL_COPY = re.compile(
+    r"\b(?:bulletproof|cutting[- ]edge|game[- ]changing|groundbreaking|"
+    r"powerful|revolutionary|seamless(?:ly)?|unprecedented|world[- ]class)\b|"
+    r"\bstate[- ]of[- ]the[- ]art\b",
+    re.IGNORECASE,
+)
+
+FORMULAIC_COPY = re.compile(
+    r"\b(?:a testament to|at its core|more than just|not just|paradigm shift)\b|"
+    r"\bin (?:today's|an ever-changing|an ever-evolving) "
+    r"(?:world|landscape)\b",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
@@ -139,6 +171,27 @@ def check_required_paths() -> list[Finding]:
         for path in REQUIRED_PATHS
         if not (ROOT / path).is_file()
     ]
+
+
+def validate_brand_mark(public_mark: bytes, desktop_mark: bytes) -> list[Finding]:
+    normalized_public = public_mark.replace(b"\r\n", b"\n")
+    normalized_desktop = desktop_mark.replace(b"\r\n", b"\n")
+    if normalized_public == normalized_desktop:
+        return []
+    return [
+        Finding(
+            "brand-asset-mismatch",
+            "assets/accordlock-mark.svg differs from the canonical desktop mark",
+        )
+    ]
+
+
+def check_brand_mark() -> list[Finding]:
+    public_mark = ROOT / "assets/accordlock-mark.svg"
+    desktop_mark = ROOT / "desktop/ui/desktop/src/images/icon.svg"
+    if not public_mark.is_file() or not desktop_mark.is_file():
+        return []
+    return validate_brand_mark(public_mark.read_bytes(), desktop_mark.read_bytes())
 
 
 def check_generated_files(paths: Iterable[str]) -> list[Finding]:
@@ -210,6 +263,42 @@ def check_root_text(paths: Iterable[str]) -> list[Finding]:
             if match:
                 line = text.count("\n", 0, match.start()) + 1
                 findings.append(Finding(label, f"{relative}:{line}"))
+    return findings
+
+
+def validate_public_copy_text(relative: str, text: str) -> list[Finding]:
+    findings: list[Finding] = []
+    if not text.isascii():
+        index = next(index for index, character in enumerate(text) if not character.isascii())
+        line = text.count("\n", 0, index) + 1
+        findings.append(Finding("public-copy-non-ascii", f"{relative}:{line}"))
+
+    # The language guide names prohibited terms so reviewers know what to reject.
+    if relative == "LANGUAGE.md":
+        return findings
+
+    for label, pattern in (
+        ("promotional-copy", PROMOTIONAL_COPY),
+        ("formulaic-copy", FORMULAIC_COPY),
+    ):
+        match = pattern.search(text)
+        if match:
+            line = text.count("\n", 0, match.start()) + 1
+            findings.append(Finding(label, f"{relative}:{line}"))
+    return findings
+
+
+def check_public_copy(paths: Iterable[str]) -> list[Finding]:
+    findings: list[Finding] = []
+    for relative in paths:
+        if relative not in PUBLIC_COPY_FILES:
+            continue
+        try:
+            text = _read_text(ROOT / relative)
+        except (OSError, UnicodeError, ValueError) as error:
+            findings.append(Finding("public-copy-read", f"{relative}: {error}"))
+            continue
+        findings.extend(validate_public_copy_text(relative, text))
     return findings
 
 
@@ -315,8 +404,10 @@ def main() -> int:
 
     findings: list[Finding] = []
     findings.extend(check_required_paths())
+    findings.extend(check_brand_mark())
     findings.extend(check_generated_files(candidate))
     findings.extend(check_root_text(candidate))
+    findings.extend(check_public_copy(candidate))
     findings.extend(check_markdown_links(candidate))
     findings.extend(check_root_workflows(candidate))
 
