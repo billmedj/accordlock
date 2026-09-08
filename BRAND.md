@@ -1,19 +1,17 @@
 # AccordLock identity
 
-AccordLock is an execution-control product for autonomous agents. Its public
-identity must communicate precision, restraint, and operational clarity.
+AccordLock is a desktop AI agent with a separate execution-control runtime.
+Keep public pages focused on what a reader can run and inspect.
 
 ## Product description
 
 Use this sentence when space permits:
 
-> AccordLock checks each protected agent action against an approved task,
-> relevant state commitments, available authority, and configured limits before
-> dispatch.
+> A desktop AI agent that checks actions against an approved task.
 
 Use this line for compact listings:
 
-> Execution control for autonomous agents.
+> Task-scoped execution for AI agents.
 
 Do not call AccordLock an AI firewall, universal sandbox, compliance product,
 or prompt-injection detector. These labels imply properties that the project
@@ -63,6 +61,10 @@ diagram to a field of small cards. Use white space, short labels, and a
 restrained color range. Avoid glass effects, generic security illustrations,
 and decorative network graphs.
 
+[The action diagram](assets/action-flow.svg) shows the decision path.
+Keep detailed checks in the architecture guide. On dark backgrounds, use
+`#B4B8C1` for readable secondary text; keep Slate for the mark's observed flow.
+
 ## Writing
 
 Use the rules in [`LANGUAGE.md`](LANGUAGE.md). Put the product boundary near
@@ -74,3 +76,7 @@ use assurance adjectives in place of evidence.
 The root mark must retain the geometry and color of
 `desktop/ui/desktop/src/images/icon.svg`. Update both assets in one reviewed
 change.
+
+`assets/social-card.svg` is the editable sharing card. Render its matching PNG
+at 1280 by 640 pixels. Keep diagrams and sharing cards free of decorative badges
+and repeated slogans.

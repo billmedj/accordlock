@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="380" viewBox="0 0 880 380" role="img" aria-labelledby="title desc">
+  <title id="title">Each proposed action gets a decision</title>
+  <desc id="desc">The approved task and proposed action enter the runtime. Task and state checks return allow, approval required or deny. Allowed actions run through a broker, which records the outcome.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M1 1L6 3.5L1 6" fill="none" stroke="#8491FF" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="880" height="380" rx="12" fill="#111318"/>
+  <g font-family="Segoe UI, Helvetica Neue, Arial, sans-serif">
+    <text x="36" y="50" fill="#F4F1E9" font-size="28" font-weight="600">Each proposed action gets a decision</text>
+    <text x="36" y="137" fill="#F4F1E9" font-size="23">Approved task</text>
+    <text x="36" y="246" fill="#B4B8C1" font-size="23">Proposed action</text>
+    <text x="347" y="181" fill="#F4F1E9" font-size="25" font-weight="600">AccordLock</text>
+    <text x="347" y="213" fill="#B4B8C1" font-size="18">Task and state checks</text>
+    <text x="655" y="130" fill="#F4F1E9" font-size="24">Allow</text>
+    <text x="655" y="197" fill="#F4F1E9" font-size="24">Ask for approval</text>
+    <text x="655" y="264" fill="#F4F1E9" font-size="24">Deny</text>
+    <text x="36" y="346" fill="#B4B8C1" font-size="18">Allowed actions go through a broker. The result is recorded.</text>
+  </g>
+  <path d="M209 130H245C280 130 281 187 316 187" fill="none" stroke="#F4F1E9" stroke-width="3"/>
+  <path d="M218 239H245C280 239 281 187 316 187" fill="none" stroke="#7E8492" stroke-width="3"/>
+  <rect x="307" y="178" width="18" height="18" rx="5" fill="#5264E8"/>
+  <g fill="none" stroke="#8491FF" stroke-width="2" marker-end="url(#arrow)">
+    <path d="M547 187H590V122H635"/>
+    <path d="M590 187H635"/>
+    <path d="M590 187V256H635"/>
+  </g>
+</svg>
